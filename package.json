@@ -1,0 +1,34 @@
+{
+  "name": "@kittikjs/cursor",
+  "description": "",
+  "version": "0.1.0",
+  "main": "lib/Cursor.js",
+  "author": "ghaiklor",
+  "repository": {
+    "type": "git",
+    "url": "ghaiklor/@kittikjs/cursor"
+  },
+  "license": "MIT",
+  "scripts": {
+    "compile": "babel src --out-dir lib",
+    "prepublish": "npm run compile",
+    "test": "istanbul cover _mocha"
+  },
+  "devDependencies": {
+    "babel": "*",
+    "chai": "*",
+    "cz-conventional-changelog": "^1.1.4",
+    "istanbul": "*",
+    "mocha": "*",
+    "sinon": "*"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {}
+}
