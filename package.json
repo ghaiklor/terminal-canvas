@@ -15,17 +15,17 @@
     "test": "babel-node ./node_modules/.bin/isparta cover _mocha"
   },
   "dependencies": {
-    "charm": "^1.0.0"
+    "charm": "1.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.2.0",
-    "babel-preset-es2015-node5": "^1.1.0",
-    "babel-preset-stage-0": "^6.1.18",
-    "chai": "^3.4.1",
-    "cz-conventional-changelog": "^1.1.4",
-    "isparta": "^4.0.0",
-    "mocha": "^2.3.4",
-    "sinon": "^1.17.2"
+    "babel-cli": "6.2.0",
+    "babel-preset-es2015-node4": "2.0.1",
+    "babel-preset-stage-0": "6.1.18",
+    "chai": "3.4.1",
+    "cz-conventional-changelog": "1.1.4",
+    "isparta": "4.0.0",
+    "mocha": "2.3.4",
+    "sinon": "1.17.2"
   },
   "config": {
     "commitizen": {
