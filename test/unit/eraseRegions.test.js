@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { ERASE_REGIONS } from '../../../src/cursor/Cursor';
+import { ERASE_REGIONS } from '../../src/Cursor';
 
 describe('Cursor::ERASE_REGIONS', () => {
   it('Should properly export erase regions', () => {

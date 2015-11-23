@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { COLORS } from '../../../src/cursor/Cursor';
+import { COLORS } from '../../src/Cursor';
 
 describe('Cursor::COLORS', () => {
   it('Should properly export colors', () => {

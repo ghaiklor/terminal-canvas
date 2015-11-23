@@ -24,6 +24,7 @@
 
 work
 build
+src
 test
 pids
 logs
@@ -47,8 +48,3 @@ Thumbs.db
 .LSOverride
 .Spotlight-V100
 .Trashes
-
-# added by KAS
-test/
-src/
-babelhook.js
