@@ -1,34 +1,45 @@
 {
   "name": "@kittikjs/cursor",
-  "description": "",
-  "version": "0.1.0",
+  "version": "0.0.0-semantic-release",
+  "description": "Implements low-level API for access to cursor in terminal",
   "main": "lib/Cursor.js",
   "author": "ghaiklor",
   "repository": {
     "type": "git",
-    "url": "ghaiklor/@kittikjs/cursor"
+    "url": "https://github.com/kittikjs/cursor.git"
   },
   "license": "MIT",
   "scripts": {
     "compile": "babel src --out-dir lib",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "prepublish": "npm run compile",
-    "test": "istanbul cover _mocha"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "test": "babel-node ./node_modules/.bin/isparta cover _mocha"
+  },
+  "dependencies": {
+    "charm": "1.0.0"
   },
   "devDependencies": {
-    "babel": "*",
-    "chai": "*",
-    "cz-conventional-changelog": "^1.1.4",
-    "istanbul": "*",
-    "mocha": "*",
-    "sinon": "*"
+    "babel-cli": "6.2.0",
+    "babel-preset-es2015-node4": "2.0.2",
+    "babel-preset-stage-0": "6.1.18",
+    "chai": "3.4.1",
+    "coveralls": "2.11.4",
+    "cz-conventional-changelog": "1.1.4",
+    "isparta": "4.0.0",
+    "mocha": "2.3.4",
+    "semantic-release": "4.3.5",
+    "sinon": "1.17.2"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "directories": {
-    "test": "test"
+  "publishConfig": {
+    "tag": "latest"
   },
-  "dependencies": {}
+  "release": {
+    "branch": "master"
+  }
 }

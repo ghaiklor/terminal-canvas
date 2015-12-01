@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
-import { Cursor, COLORS, ERASE_REGIONS } from '../../../src/cursor/Cursor';
+import { Cursor, COLORS, ERASE_REGIONS } from '../../src/Cursor';
 
 before(() => {
   sinon.stub(console, 'error');
