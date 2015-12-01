@@ -1,12 +1,12 @@
 {
   "name": "@kittikjs/cursor",
+  "version": "0.0.0-semantic-release",
   "description": "",
-  "version": "0.1.0",
   "main": "lib/Cursor.js",
   "author": "ghaiklor",
   "repository": {
     "type": "git",
-    "url": "ghaiklor/@kittikjs/cursor"
+    "url": "kittikjs/cursor"
   },
   "license": "MIT",
   "scripts": {
