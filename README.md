@@ -2,12 +2,16 @@
 
 ![Build Status](https://img.shields.io/travis/kittikjs/cursor.svg)
 ![Coverage](https://img.shields.io/coveralls/kittikjs/cursor.svg)
+
 ![Downloads](https://img.shields.io/npm/dm/@kittikjs/cursor.svg)
 ![Downloads](https://img.shields.io/npm/dt/@kittikjs/cursor.svg)
 ![npm version](https://img.shields.io/npm/v/@kittikjs/cursor.svg)
+![License](https://img.shields.io/npm/l/@kittikjs/cursor.svg)
+
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 ![dependencies](https://img.shields.io/david/kittikjs/cursor.svg)
 ![dev dependencies](https://img.shields.io/david/dev/kittikjs/cursor.svg)
-![License](https://img.shields.io/npm/l/@kittikjs/cursor.svg)
 
 ## Getting Started
 
