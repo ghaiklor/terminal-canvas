@@ -1,5 +1,5 @@
 {
-  "name": "@kittikjs/cursor",
+  "name": "kittik-cursor",
   "version": "0.0.0-semantic-release",
   "description": "Implements low-level API for access to cursor in terminal",
   "main": "lib/Cursor.js",
