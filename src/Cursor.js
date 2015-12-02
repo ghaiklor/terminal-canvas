@@ -234,7 +234,7 @@ export class Cursor {
    */
   fill(options) {
     let {x1, y1, x2, y2, symbol = ' ', background, foreground} = options;
-    let filler = symbol.repeat(x2 - x1);
+    let filler = symbol.repeat(x2 - x1 + 1).split('');
 
     if (background) this.background(background);
     if (foreground) this.foreground(foreground);
@@ -242,7 +242,7 @@ export class Cursor {
     this.setPosition(x1, y1);
 
     while (y1 <= y2) {
-      this.write(filler);
+      filler.forEach(item => this.write(item));
       this.setPosition(x1, ++y1);
     }
 

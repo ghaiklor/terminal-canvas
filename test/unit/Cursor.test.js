@@ -215,10 +215,10 @@ describe('Cursor', () => {
 
     mock.expects('background').never();
     mock.expects('foreground').never();
-    mock.expects('setPosition').exactly(7);
-    mock.expects('write').exactly(6).withArgs('     ');
+    mock.expects('setPosition').exactly(6);
+    mock.expects('write').exactly(25).withArgs(' ');
 
-    cursor.fill({x1: 0, y1: 0, x2: 5, y2: 5});
+    cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5});
 
     mock.verify();
   });
@@ -229,10 +229,10 @@ describe('Cursor', () => {
 
     mock.expects('background').once().withArgs('yellow');
     mock.expects('foreground').once().withArgs('black');
-    mock.expects('setPosition').exactly(7);
-    mock.expects('write').exactly(6).withArgs('TTTTT');
+    mock.expects('setPosition').exactly(6);
+    mock.expects('write').exactly(25).withArgs('T');
 
-    cursor.fill({x1: 0, y1: 0, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});
+    cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});
 
     mock.verify();
   });
