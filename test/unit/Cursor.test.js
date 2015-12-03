@@ -41,7 +41,7 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor._cursor);
 
-    mock.expects('write').once().withArgs('test');
+    mock.expects('write').exactly(4);
 
     cursor.write('test');
 
@@ -216,7 +216,7 @@ describe('Cursor', () => {
     mock.expects('background').never();
     mock.expects('foreground').never();
     mock.expects('setPosition').exactly(6);
-    mock.expects('write').exactly(25).withArgs(' ');
+    mock.expects('write').exactly(5).withArgs('     ');
 
     cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5});
 
@@ -230,7 +230,7 @@ describe('Cursor', () => {
     mock.expects('background').once().withArgs('yellow');
     mock.expects('foreground').once().withArgs('black');
     mock.expects('setPosition').exactly(6);
-    mock.expects('write').exactly(25).withArgs('T');
+    mock.expects('write').exactly(5).withArgs('TTTTT');
 
     cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});
 
