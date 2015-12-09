@@ -1,7 +1,7 @@
 import { Transform } from 'stream';
 import { COLORS } from './colors';
-import { DISPLAY_MODES } from './displayModes';
 import { ERASE_REGIONS } from './eraseRegions';
+import { FORMAT_MODES } from './formatModes';
 
 /**
  * Cursor implements low-level API to terminal control codes.
@@ -57,7 +57,7 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   setPosition(x, y) {
-    this.write(Cursor.encodeToVT100('[' + Math.floor(y) + ';' + Math.floor(x) + 'f'));
+    this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
     return this;
   }
 
@@ -85,7 +85,7 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   up(y = 1) {
-    this.write(Cursor.encodeToVT100('[' + Math.floor(y) + 'A'));
+    this.write(Cursor.encodeToVT100(`[${Math.floor(y)}A`));
     return this;
   }
 
@@ -96,7 +96,7 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   down(y = 1) {
-    this.write(Cursor.encodeToVT100('[' + Math.floor(y) + 'B'));
+    this.write(Cursor.encodeToVT100(`[${Math.floor(y)}B`));
     return this;
   }
 
@@ -107,7 +107,7 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   right(x = 1) {
-    this.write(Cursor.encodeToVT100('[' + Math.floor(x) + 'C'));
+    this.write(Cursor.encodeToVT100(`[${Math.floor(x)}C`));
     return this;
   }
 
@@ -118,21 +118,28 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   left(x = 1) {
-    this.write(Cursor.encodeToVT100('[' + Math.floor(x) + 'D'));
+    this.write(Cursor.encodeToVT100(`[${Math.floor(x)}D`));
     return this;
   }
 
-  column(x) {
-    this.write(Cursor.encodeToVT100('[' + Math.floor(x) + 'G'));
-    return this;
-  }
-
-  push(withAttributes) {
+  /**
+   * Save current cursor position.
+   *
+   * @param withAttributes
+   * @returns {Cursor}
+   */
+  save(withAttributes = true) {
     this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
     return this;
   }
 
-  pop(withAttributes) {
+  /**
+   * Restore cursor position after a save().
+   *
+   * @param withAttributes
+   * @returns {Cursor}
+   */
+  restore(withAttributes = true) {
     this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
     return this;
   }
@@ -149,47 +156,47 @@ export class Cursor extends Transform {
    * cursor.erase(ERASE_REGIONS.CURRENT_LINE); // Erases current line
    */
   erase(region) {
-    if (region === ERASE_REGIONS.FROM_CURSOR_TO_END) return this.write(Cursor.encodeToVT100('[K'));
-    if (region === ERASE_REGIONS.FROM_CURSOR_TO_START) return this.write(Cursor.encodeToVT100('[1K'));
-    if (region === ERASE_REGIONS.FROM_CURSOR_TO_DOWN) return this.write(Cursor.encodeToVT100('[J'));
-    if (region === ERASE_REGIONS.FROM_CURSOR_TO_UP) return this.write(Cursor.encodeToVT100('[1J'));
-    if (region === ERASE_REGIONS.CURRENT_LINE) return this.write(Cursor.encodeToVT100('[2K'));
-    if (region === ERASE_REGIONS.ENTIRE_SCREEN) return this.write(Cursor.encodeToVT100('[1J'));
-
-    this.emit('error', new Error(`Unknown erase type: ${region}`));
+    this.write(Cursor.encodeToVT100(region));
     return this;
   }
 
-  delete(s, n = 1) {
-    if (s === 'line') {
-      this.write(Cursor.encodeToVT100('[' + n + 'M'));
-    } else if (s === 'char') {
-      this.write(Cursor.encodeToVT100('[' + n + 'M'));
-    } else {
-      this.emit('error', new Error('Unknown delete type: ' + s));
-    }
-
+  format(c) {
+    this.write(Cursor.encodeToVT100(`[${c}m`));
     return this;
   }
 
-  insert(mode, n = 1) {
-    if (mode === true) {
-      this.write(Cursor.encodeToVT100('[4h'));
-    } else if (mode === false) {
-      this.write(Cursor.encodeToVT100('[l'));
-    } else if (mode === 'line') {
-      this.write(Cursor.encodeToVT100('[' + n + 'L'));
-    } else if (mode === 'char') {
-      this.write(Cursor.encodeToVT100('[' + n + '@'));
-    } else {
-      this.emit('error', new Error('Unknown delete type: ' + s));
-    }
-
+  bold(isBold) {
+    this.format(isBold ? FORMAT_MODES.BOLD : FORMAT_MODES.RESET_BOLD);
     return this;
   }
 
-  display(c) {
-    this.write(Cursor.encodeToVT100('[' + c + 'm'));
+  dim(isDim) {
+    this.format(isDim ? FORMAT_MODES.DIM : FORMAT_MODES.RESET_DIM);
+    return this;
+  }
+
+  underlined(isUnderlined) {
+    this.format(isUnderlined ? FORMAT_MODES.UNDERLINED : FORMAT_MODES.RESET_UNDERLINED);
+    return this;
+  }
+
+  blink(isBlink) {
+    this.format(isBlink ? FORMAT_MODES.BLINK : FORMAT_MODES.RESET_BLINK);
+    return this;
+  }
+
+  reverse(isReverse) {
+    this.format(isReverse ? FORMAT_MODES.REVERSE : FORMAT_MODES.RESET_REVERSE);
+    return this;
+  }
+
+  hidden(isHidden) {
+    this.format(isHidden ? FORMAT_MODES.HIDDEN : FORMAT_MODES.RESET_HIDDEN);
+    return this;
+  }
+
+  lineWrap(isEnabled) {
+    this.write(Cursor.encodeToVT100(isEnabled ? '[7h' : '[7l'));
     return this;
   }
 
@@ -284,9 +291,7 @@ export class Cursor extends Transform {
   }
 
   /**
-   * Resets the entire screen.
-   * It's not the same as {@link Cursor.erase}.
-   * reset() resets the TTY settings to default.
+   * Reset all terminal settings to default.
    *
    * @returns {Cursor}
    */

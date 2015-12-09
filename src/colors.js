@@ -1,3 +1,7 @@
+/**
+ * Map of colors for using in Cursor API.
+ * This map is using 256 bit color palette and can be used in any of Cursor operations.
+ */
 export const COLORS = {
   BLACK: 0,
   MAROON: 1,
