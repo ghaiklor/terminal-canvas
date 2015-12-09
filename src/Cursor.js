@@ -1,7 +1,7 @@
-import charm from 'charm';
-
-export * from './colors';
-export * from './eraseRegions';
+import { Transform } from 'stream';
+import { COLORS } from './colors';
+import { DISPLAY_MODES } from './displayModes';
+import { ERASE_REGIONS } from './eraseRegions';
 
 /**
  * Cursor implements low-level API to terminal control codes.
@@ -10,9 +10,7 @@ export * from './eraseRegions';
  * @since 1.0.0
  * @version 1.0.0
  */
-export class Cursor {
-  _cursor = charm();
-
+export class Cursor extends Transform {
   /**
    * By default, creates simple cursor that writes direct to `stdout`.
    *
@@ -33,45 +31,21 @@ export class Cursor {
    * let cursor = new Cursor([new MyTransformStream(), process.stdout], [process.stdin]);
    */
   constructor(stdout = [process.stdout], stdin = []) {
-    if (stdout.length > 0) stdout.reduce((cursor, pipe) => cursor.pipe(pipe), this._cursor);
-    if (stdin.length > 0) stdin.reduce((cursor, pipe) => cursor.pipe(pipe)).pipe(this._cursor);
-  }
+    super();
 
-  /**
-   * Sets a listener on cursor stream.
-   *
-   * @param {String} event Event name
-   * @param {Function} handler Handler for the specified event
-   * @returns {Cursor}
-   */
-  on(event, handler) {
-    this._cursor.on(event, handler);
-    return this;
-  }
-
-  /**
-   * Removes all listeners or specified listener from the event.
-   *
-   * If handler is not defined then removes all listeners from the specified event.
-   *
-   * @param {String} event Event name
-   * @param {Function} [handler] Handler that you want to delete from the event
-   * @returns {Cursor}
-   */
-  off(event, handler) {
-    handler ? this._cursor.removeListener(event, handler) : this._cursor.removeAllListeners(event);
-    return this;
+    if (stdout.length > 0) stdout.reduce((cursor, pipe) => cursor.pipe(pipe), this);
+    if (stdin.length > 0) stdin.reduce((cursor, pipe) => cursor.pipe(pipe)).pipe(this);
   }
 
   /**
    * Write to the stream.
    * It can be whatever info you want, but usually it's just a text that you want to print out.
    *
-   * @param {String} message Message to write to the stream
+   * @param {Buffer|String} message Message to write to the stream
    * @returns {Cursor}
    */
   write(message) {
-    message.split('').forEach(this._cursor.write.bind(this._cursor));
+    this.emit('data', message);
     return this;
   }
 
@@ -83,28 +57,8 @@ export class Cursor {
    * @returns {Cursor}
    */
   setPosition(x, y) {
-    this._cursor.position(x, y);
+    this.write(Cursor.encodeToVT100('[' + Math.floor(y) + ';' + Math.floor(x) + 'f'));
     return this;
-  }
-
-  /**
-   * Get the cursor position in absolute coordinates.
-   *
-   * @returns {Promise}
-   * @example
-   * let cursor = new Cursor();
-   *
-   * // Old-fashioned way
-   * cursor.getPosition().then(position => {x: position.x, y: position.y});
-   *
-   * // In async\await style
-   * async function myMagicFunction() {
-   *   let {x, y} = await cursor.getPosition();
-   *   doSomethingWithPosition(x, y);
-   * }
-   */
-  getPosition() {
-    return new Promise((resolve, reject) => this._cursor.position((x, y) => resolve({x, y})));
   }
 
   /**
@@ -115,7 +69,12 @@ export class Cursor {
    * @returns {Cursor}
    */
   move(x, y) {
-    this._cursor.move(x, y);
+    if (y < 0) this.up(-y);
+    if (y > 0) this.down(y);
+
+    if (x < 0) this.left(-x);
+    if (x > 0) this.right(x);
+
     return this;
   }
 
@@ -126,7 +85,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   up(y = 1) {
-    this._cursor.up(y);
+    this.write(Cursor.encodeToVT100('[' + Math.floor(y) + 'A'));
     return this;
   }
 
@@ -137,18 +96,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   down(y = 1) {
-    this._cursor.down(y);
-    return this;
-  }
-
-  /**
-   * Move the cursor left.
-   *
-   * @param {Number} [x=1] Columns count
-   * @returns {Cursor}
-   */
-  left(x = 1) {
-    this._cursor.left(x);
+    this.write(Cursor.encodeToVT100('[' + Math.floor(y) + 'B'));
     return this;
   }
 
@@ -159,7 +107,33 @@ export class Cursor {
    * @returns {Cursor}
    */
   right(x = 1) {
-    this._cursor.right(x);
+    this.write(Cursor.encodeToVT100('[' + Math.floor(x) + 'C'));
+    return this;
+  }
+
+  /**
+   * Move the cursor left.
+   *
+   * @param {Number} [x=1] Columns count
+   * @returns {Cursor}
+   */
+  left(x = 1) {
+    this.write(Cursor.encodeToVT100('[' + Math.floor(x) + 'D'));
+    return this;
+  }
+
+  column(x) {
+    this.write(Cursor.encodeToVT100('[' + Math.floor(x) + 'G'));
+    return this;
+  }
+
+  push(withAttributes) {
+    this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
+    return this;
+  }
+
+  pop(withAttributes) {
+    this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
     return this;
   }
 
@@ -175,7 +149,47 @@ export class Cursor {
    * cursor.erase(ERASE_REGIONS.CURRENT_LINE); // Erases current line
    */
   erase(region) {
-    this._cursor.erase(region);
+    if (region === ERASE_REGIONS.FROM_CURSOR_TO_END) return this.write(Cursor.encodeToVT100('[K'));
+    if (region === ERASE_REGIONS.FROM_CURSOR_TO_START) return this.write(Cursor.encodeToVT100('[1K'));
+    if (region === ERASE_REGIONS.FROM_CURSOR_TO_DOWN) return this.write(Cursor.encodeToVT100('[J'));
+    if (region === ERASE_REGIONS.FROM_CURSOR_TO_UP) return this.write(Cursor.encodeToVT100('[1J'));
+    if (region === ERASE_REGIONS.CURRENT_LINE) return this.write(Cursor.encodeToVT100('[2K'));
+    if (region === ERASE_REGIONS.ENTIRE_SCREEN) return this.write(Cursor.encodeToVT100('[1J'));
+
+    this.emit('error', new Error(`Unknown erase type: ${region}`));
+    return this;
+  }
+
+  delete(s, n = 1) {
+    if (s === 'line') {
+      this.write(Cursor.encodeToVT100('[' + n + 'M'));
+    } else if (s === 'char') {
+      this.write(Cursor.encodeToVT100('[' + n + 'M'));
+    } else {
+      this.emit('error', new Error('Unknown delete type: ' + s));
+    }
+
+    return this;
+  }
+
+  insert(mode, n = 1) {
+    if (mode === true) {
+      this.write(Cursor.encodeToVT100('[4h'));
+    } else if (mode === false) {
+      this.write(Cursor.encodeToVT100('[l'));
+    } else if (mode === 'line') {
+      this.write(Cursor.encodeToVT100('[' + n + 'L'));
+    } else if (mode === 'char') {
+      this.write(Cursor.encodeToVT100('[' + n + '@'));
+    } else {
+      this.emit('error', new Error('Unknown delete type: ' + s));
+    }
+
+    return this;
+  }
+
+  display(c) {
+    this.write(Cursor.encodeToVT100('[' + c + 'm'));
     return this;
   }
 
@@ -192,7 +206,7 @@ export class Cursor {
    * cursor.foreground(COLORS.BLACK);
    */
   foreground(color) {
-    this._cursor.foreground(color);
+    this.write(Cursor.encodeToVT100('[38;5;' + color + 'm'));
     return this;
   }
 
@@ -209,7 +223,27 @@ export class Cursor {
    * cursor.background(COLORS.YELLOW);
    */
   background(color) {
-    this._cursor.background(color);
+    this.write(Cursor.encodeToVT100('[48;5;' + color + 'm'));
+    return this;
+  }
+
+  /**
+   * Set the cursor invisible.
+   *
+   * @returns {Cursor}
+   */
+  hide() {
+    this.write(Cursor.encodeToVT100('[?25l'));
+    return this;
+  }
+
+  /**
+   * Set the cursor visible.
+   *
+   * @returns {Cursor}
+   */
+  show() {
+    this.write(Cursor.encodeToVT100('[?25h'));
     return this;
   }
 
@@ -250,26 +284,6 @@ export class Cursor {
   }
 
   /**
-   * Set the cursor invisible.
-   *
-   * @returns {Cursor}
-   */
-  hide() {
-    this._cursor.cursor(false);
-    return this;
-  }
-
-  /**
-   * Set the cursor visible.
-   *
-   * @returns {Cursor}
-   */
-  show() {
-    this._cursor.cursor(true);
-    return this;
-  }
-
-  /**
    * Resets the entire screen.
    * It's not the same as {@link Cursor.erase}.
    * reset() resets the TTY settings to default.
@@ -277,7 +291,9 @@ export class Cursor {
    * @returns {Cursor}
    */
   reset() {
-    this._cursor.reset();
+    this.write(Cursor.encodeToVT100('[0m'));
+    this.write(Cursor.encodeToVT100('[2J'));
+    this.write(Cursor.encodeToVT100('c'));
     return this;
   }
 
@@ -287,8 +303,19 @@ export class Cursor {
    * @returns {Cursor}
    */
   destroy() {
-    this._cursor.destroy();
+    this.emit('end');
     return this;
+  }
+
+  /**
+   * Bytes to encode to VT100 standard.
+   *
+   * @static
+   * @param {String} string
+   * @returns {Buffer} Returns encoded bytes
+   */
+  static encodeToVT100(string) {
+    return new Buffer([0x1b].concat(string.split('').map(item => item.charCodeAt(0))));
   }
 
   /**
