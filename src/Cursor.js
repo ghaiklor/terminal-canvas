@@ -134,7 +134,10 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   erase(region) {
+    this.save();
+    this.resetAllAttributes();
     this.write(Cursor.encodeToVT100(region));
+    this.restore();
     return this;
   }
 
