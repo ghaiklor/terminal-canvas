@@ -128,9 +128,9 @@ export class Cursor extends Transform {
   }
 
   /**
-   * Save current cursor position.
+   * Save current cursor position and attributes in stack.
    *
-   * @param withAttributes
+   * @param {Boolean} [withAttributes=true] If true, save it with attributes settings too
    * @returns {Cursor}
    */
   save(withAttributes = true) {
@@ -139,9 +139,9 @@ export class Cursor extends Transform {
   }
 
   /**
-   * Restore cursor position after a save().
+   * Restore cursor position and attributes from stack.
    *
-   * @param withAttributes
+   * @param {Boolean} [withAttributes=true] If true, restore it with attributes settings too
    * @returns {Cursor}
    */
   restore(withAttributes = true) {
@@ -154,52 +154,154 @@ export class Cursor extends Transform {
    *
    * @param {String} region Value from {@link ERASE_REGIONS}
    * @returns {Cursor}
-   * @example
-   * import { Cursor, ERASE_REGIONS } from './src/Cursor';
-   *
-   * let cursor = new Cursor();
-   * cursor.erase(ERASE_REGIONS.CURRENT_LINE); // Erases current line
    */
   erase(region) {
     this.write(Cursor.encodeToVT100(region));
     return this;
   }
 
-  display(c) {
-    this.write(Cursor.encodeToVT100(`[${c}m`));
+  /**
+   * Erase from current position to end of the line.
+   *
+   * @returns {Cursor}
+   */
+  eraseToEnd() {
+    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_END);
     return this;
   }
 
-  bold(isBold) {
+  /**
+   * Erase from current position to start of the line.
+   *
+   * @returns {Cursor}
+   */
+  eraseToStart() {
+    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_START);
+    return this;
+  }
+
+  /**
+   * Erase from current line to down.
+   *
+   * @returns {Cursor}
+   */
+  eraseToDown() {
+    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
+    return this;
+  }
+
+  /**
+   * Erase from current line to up.
+   *
+   * @returns {Cursor}
+   */
+  eraseToUp() {
+    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_UP);
+    return this;
+  }
+
+  /**
+   * Erase current line.
+   *
+   * @returns {Cursor}
+   */
+  eraseLine() {
+    this.erase(ERASE_REGIONS.CURRENT_LINE);
+    return this;
+  }
+
+  /**
+   * Erase the entire screen.
+   *
+   * @returns {Cursor}
+   */
+  eraseScreen() {
+    this.erase(ERASE_REGIONS.ENTIRE_SCREEN);
+    return this;
+  }
+
+  /**
+   * Change display mode.
+   *
+   * @param {Number} mode Mode identifier from {@link DISPLAY_MODES}
+   * @returns {Cursor}
+   */
+  display(mode) {
+    this.write(Cursor.encodeToVT100(`[${mode}m`));
+    return this;
+  }
+
+  /**
+   * Toggle bold font.
+   *
+   * @param {Boolean} [isBold=true]
+   * @returns {Cursor}
+   */
+  bold(isBold = true) {
     this.display(isBold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD);
     return this;
   }
 
-  dim(isDim) {
+  /**
+   * Toggle dim font.
+   *
+   * @param {Boolean} [isDim=true]
+   * @returns {Cursor}
+   */
+  dim(isDim = true) {
     this.display(isDim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM);
     return this;
   }
 
-  underlined(isUnderlined) {
+  /**
+   * Toggle underlined font.
+   *
+   * @param {Boolean} [isUnderlined=true]
+   * @returns {Cursor}
+   */
+  underlined(isUnderlined = true) {
     this.display(isUnderlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED);
     return this;
   }
 
-  blink(isBlink) {
+  /**
+   * Toggle blink font.
+   *
+   * @param {Boolean} [isBlink=true]
+   * @returns {Cursor}
+   */
+  blink(isBlink = true) {
     this.display(isBlink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK);
     return this;
   }
 
-  reverse(isReverse) {
+  /**
+   * Toggle reverse display mode.
+   *
+   * @param {Boolean} [isReverse=true]
+   * @returns {Cursor}
+   */
+  reverse(isReverse = true) {
     this.display(isReverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE);
     return this;
   }
 
-  hidden(isHidden) {
+  /**
+   * Toggle hidden display mode.
+   *
+   * @param {Boolean} [isHidden=true]
+   * @returns {Cursor}
+   */
+  hidden(isHidden = true) {
     this.display(isHidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN);
     return this;
   }
 
+  /**
+   * Reset all display modes.
+   *
+   * @returns {Cursor}
+   */
   resetAllAttributes() {
     this.display(DISPLAY_MODES.RESET_ALL);
     return this;
@@ -220,13 +322,8 @@ export class Cursor extends Transform {
    * Set the foreground color.
    * This color is used when text is rendering.
    *
-   * @param {String} color Value from {@link COLORS}
+   * @param {Number} color Value from {@link COLORS}
    * @returns {Cursor}
-   * @example
-   * import { Cursor, COLORS } from './src/Cursor';
-   *
-   * let cursor = new Cursor();
-   * cursor.foreground(COLORS.BLACK);
    */
   foreground(color) {
     this.write(Cursor.encodeToVT100(`[38;5;${color}m`));
@@ -237,13 +334,8 @@ export class Cursor extends Transform {
    * Set the background color.
    * This color is used for filling the whole cell in the TTY.
    *
-   * @param {String} color Value from {@link COLORS}
+   * @param {Number} color Value from {@link COLORS}
    * @returns {Cursor}
-   * @example
-   * import { Cursor, COLORS } from './src/Cursor';
-   *
-   * let cursor = new Cursor();
-   * cursor.background(COLORS.YELLOW);
    */
   background(color) {
     this.write(Cursor.encodeToVT100(`[48;5;${color}m`));
