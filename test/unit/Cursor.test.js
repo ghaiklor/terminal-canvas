@@ -124,9 +124,9 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('write').once().withArgs(new Buffer('\u001b[10;10f'));
+    mock.expects('write').once().withArgs(new Buffer('\u001b[10;5f'));
 
-    cursor.position(10, 10);
+    cursor.position(5, 10);
 
     mock.verify();
   });
@@ -137,12 +137,12 @@ describe('Cursor', () => {
 
     mock.expects('right').once().withArgs(10);
     mock.expects('down').once().withArgs(5);
-    cursor.move(10, 5);
-    mock.verify();
-
     mock.expects('left').once().withArgs(10);
     mock.expects('up').once().withArgs(5);
+
+    cursor.move(10, 5);
     cursor.move(-10, -5);
+
     mock.verify();
   });
 
