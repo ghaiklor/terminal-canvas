@@ -44,7 +44,7 @@ export class Cursor extends Transform {
 
   /**
    * Write to the stream.
-   * It can be whatever you want, but usually it's just a text that you want to print out.
+   * Usually it's just a text that you want to print out but also can be a Buffer with control codes.
    *
    * @param {Buffer|String} data Data to write to the stream
    * @returns {Cursor}
@@ -124,28 +124,6 @@ export class Cursor extends Transform {
    */
   left(x = 1) {
     this.write(Cursor.encodeToVT100(`[${Math.floor(x)}D`));
-    return this;
-  }
-
-  /**
-   * Save current cursor position and attributes in stack.
-   *
-   * @param {Boolean} [withAttributes=true] If true, save it with attributes settings too
-   * @returns {Cursor}
-   */
-  save(withAttributes = true) {
-    this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
-    return this;
-  }
-
-  /**
-   * Restore cursor position and attributes from stack.
-   *
-   * @param {Boolean} [withAttributes=true] If true, restore it with attributes settings too
-   * @returns {Cursor}
-   */
-  restore(withAttributes = true) {
-    this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
     return this;
   }
 
@@ -359,6 +337,29 @@ export class Cursor extends Transform {
    */
   show() {
     this.write(Cursor.encodeToVT100('[?25h'));
+    return this;
+  }
+
+  /**
+   * Save current cursor position and attributes in stack.
+   * Doesn't return any information about stack.
+   *
+   * @param {Boolean} [withAttributes=true] If true, save it with attributes settings too
+   * @returns {Cursor}
+   */
+  save(withAttributes = true) {
+    this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
+    return this;
+  }
+
+  /**
+   * Restore cursor position and attributes from stack.
+   *
+   * @param {Boolean} [withAttributes=true] If true, restore it with attributes settings too
+   * @returns {Cursor}
+   */
+  restore(withAttributes = true) {
+    this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
     return this;
   }
 
