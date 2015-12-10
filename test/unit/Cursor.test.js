@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
-import { Cursor, COLORS, ERASE_REGIONS } from '../../src/Cursor';
+import { Cursor, COLORS, DISPLAY_MODES, ERASE_REGIONS } from '../../src/Cursor';
 
 before(() => {
   sinon.stub(console, 'error');
@@ -21,78 +21,22 @@ describe('Cursor', () => {
     assert.instanceOf(cursor, Cursor);
   });
 
-  it('Should properly trigger events', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-    let handler = () => true;
-
-    mock.expects('on').once().withArgs('test', handler);
-    mock.expects('removeListener').once().withArgs('test', handler);
-    mock.expects('removeAllListeners').once().withArgs('test');
-
-    cursor.on('test', handler);
-    cursor.off('test', handler);
-    cursor.off('test');
-
-    mock.verify();
-  });
-
   it('Should properly write to the cursor', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('write').exactly(4);
+    mock.expects('emit').once().withArgs('data', 'test');
 
     cursor.write('test');
 
     mock.verify();
   });
 
-  it('Should properly set absolute position of cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-
-    mock.expects('position').once().withArgs(10, 10);
-
-    cursor.setPosition(10, 10);
-
-    mock.verify();
-  });
-
-  it('Should properly get absolute position of cursor', done => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-
-    mock.expects('position').once().callsArgWith(0, 10, 10);
-
-    cursor
-      .getPosition()
-      .then(({x, y}) => {
-        assert.equal(x, 10);
-        assert.equal(y, 10);
-        done();
-      })
-      .catch(done);
-
-    mock.verify();
-  });
-
-  it('Should properly move cursor by relative coordinates', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-
-    mock.expects('move').once().withArgs(10, 10);
-
-    cursor.move(10, 10);
-
-    mock.verify();
-  });
-
   it('Should properly move cursor up with default arguments', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('up').once().withArgs(1);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1A'));
 
     cursor.up();
 
@@ -101,9 +45,9 @@ describe('Cursor', () => {
 
   it('Should properly move cursor up with custom arguments', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('up').once().withArgs(5);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[5A'));
 
     cursor.up(5);
 
@@ -112,9 +56,9 @@ describe('Cursor', () => {
 
   it('Should properly move cursor down with default arguments', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('down').once().withArgs(1);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1B'));
 
     cursor.down();
 
@@ -123,42 +67,20 @@ describe('Cursor', () => {
 
   it('Should properly move cursor down with custom arguments', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('down').once().withArgs(5);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[5B'));
 
     cursor.down(5);
 
     mock.verify();
   });
 
-  it('Should properly move cursor left with default arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-
-    mock.expects('left').once().withArgs(1);
-
-    cursor.left();
-
-    mock.verify();
-  });
-
-  it('Should properly move cursor left with custom arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-
-    mock.expects('left').once().withArgs(5);
-
-    cursor.left(5);
-
-    mock.verify();
-  });
-
   it('Should properly move cursor right with default arguments', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('right').once().withArgs(1);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1C'));
 
     cursor.right();
 
@@ -167,31 +89,68 @@ describe('Cursor', () => {
 
   it('Should properly move cursor right with custom arguments', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('right').once().withArgs(5);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[5C'));
 
     cursor.right(5);
 
     mock.verify();
   });
 
-  it('Should properly erase the specified region', () => {
+  it('Should properly move cursor left with default arguments', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withArgs('screen');
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1D'));
 
-    cursor.erase(ERASE_REGIONS.ENTIRE_SCREEN);
+    cursor.left();
 
+    mock.verify();
+  });
+
+  it('Should properly move cursor left with custom arguments', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[5D'));
+
+    cursor.left(5);
+
+    mock.verify();
+  });
+
+  it('Should properly set absolute position of cursor', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[10;10f'));
+
+    cursor.position(10, 10);
+
+    mock.verify();
+  });
+
+  it('Should properly move cursor by relative coordinates', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('right').once().withArgs(10);
+    mock.expects('down').once().withArgs(5);
+    cursor.move(10, 5);
+    mock.verify();
+
+    mock.expects('left').once().withArgs(10);
+    mock.expects('up').once().withArgs(5);
+    cursor.move(-10, -5);
     mock.verify();
   });
 
   it('Should properly change foreground color', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('foreground').once().withArgs('yellow');
+    mock.expects('write').once().withArgs(new Buffer('\u001b[38;5;11m'));
 
     cursor.foreground(COLORS.YELLOW);
 
@@ -200,11 +159,325 @@ describe('Cursor', () => {
 
   it('Should properly change background color', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('background').once().withArgs('black');
+    mock.expects('write').once().withArgs(new Buffer('\u001b[48;5;0m'));
 
     cursor.background(COLORS.BLACK);
+
+    mock.verify();
+  });
+
+  it('Should properly change display mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[5m'));
+
+    cursor.display(DISPLAY_MODES.BLINK);
+
+    mock.verify();
+  });
+
+  it('Should properly enable bold mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1m'));
+    cursor.bold();
+    mock.verify();
+  });
+
+  it('Should properly disable bold mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[21m'));
+    cursor.bold(false);
+    mock.verify();
+  });
+
+  it('Should properly enable dim mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[2m'));
+    cursor.dim();
+    mock.verify();
+  });
+
+  it('Should properly disable dim mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[22m'));
+    cursor.dim(false);
+    mock.verify();
+  });
+
+  it('Should properly enable underlined mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[4m'));
+    cursor.underlined();
+    mock.verify();
+  });
+
+  it('Should properly disable underlined mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[24m'));
+    cursor.underlined(false);
+    mock.verify();
+  });
+
+  it('Should properly enable blink mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[5m'));
+    cursor.blink();
+    mock.verify();
+  });
+
+  it('Should properly disable blink mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[25m'));
+    cursor.blink(false);
+    mock.verify();
+  });
+
+  it('Should properly enable reverse mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[7m'));
+    cursor.reverse();
+    mock.verify();
+  });
+
+  it('Should properly disable reverse mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[27m'));
+    cursor.reverse(false);
+    mock.verify();
+  });
+
+  it('Should properly enable hidden mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[8m'));
+    cursor.hidden();
+    mock.verify();
+  });
+
+  it('Should properly disable hidden mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[28m'));
+    cursor.hidden(false);
+    mock.verify();
+  });
+
+  it('Should properly reset all display modes/attributes', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[0m'));
+    cursor.resetAllAttributes();
+    mock.verify();
+  });
+
+  it('Should properly erase the specified region', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('save').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001b[2J'));
+    mock.expects('restore').once();
+
+    cursor.erase(ERASE_REGIONS.ENTIRE_SCREEN);
+
+    mock.verify();
+  });
+
+  it('Should properly erase from current position to the end of line', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('save').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001b[K'));
+    mock.expects('restore').once();
+
+    cursor.eraseToEnd();
+
+    mock.verify();
+  });
+
+  it('Should properly erase from current position to the start of line', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('save').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1K'));
+    mock.expects('restore').once();
+
+    cursor.eraseToStart();
+
+    mock.verify();
+  });
+
+  it('Should properly erase from current line to down', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('save').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001b[J'));
+    mock.expects('restore').once();
+
+    cursor.eraseToDown();
+
+    mock.verify();
+  });
+
+  it('Should properly erase from current line to up', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('save').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1J'));
+    mock.expects('restore').once();
+
+    cursor.eraseToUp();
+
+    mock.verify();
+  });
+
+  it('Should properly erase the current line', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('save').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001b[2K'));
+    mock.expects('restore').once();
+
+    cursor.eraseLine();
+
+    mock.verify();
+  });
+
+  it('Should properly erase the entire screen', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('save').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001b[2J'));
+    mock.expects('restore').once();
+
+    cursor.eraseScreen();
+
+    mock.verify();
+  });
+
+  it('Should properly hide the cursor', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[?25l'));
+
+    cursor.hide();
+
+    mock.verify();
+  });
+
+  it('Should properly show the cursor', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[?25h'));
+
+    cursor.show();
+
+    mock.verify();
+  });
+
+  it('Should properly save the cursor state with attributes', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b7'));
+
+    cursor.save();
+
+    mock.verify();
+  });
+
+  it('Should properly save the cursor state without attributes', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[s'));
+
+    cursor.save(false);
+
+    mock.verify();
+  });
+
+  it('Should properly restore the cursor state with attributes', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b8'));
+
+    cursor.restore();
+
+    mock.verify();
+  });
+
+  it('Should properly restore the cursor state without attributes', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[u'));
+
+    cursor.restore(false);
+
+    mock.verify();
+  });
+
+  it('Should properly enable line wrap', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[7h'));
+
+    cursor.lineWrap(true);
+
+    mock.verify();
+  });
+
+  it('Should properly disable line wrap', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[7l'));
+
+    cursor.lineWrap(false);
 
     mock.verify();
   });
@@ -215,7 +488,7 @@ describe('Cursor', () => {
 
     mock.expects('background').never();
     mock.expects('foreground').never();
-    mock.expects('setPosition').exactly(6);
+    mock.expects('position').exactly(6);
     mock.expects('write').exactly(5).withArgs('     ');
 
     cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5});
@@ -227,9 +500,9 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('background').once().withArgs('yellow');
-    mock.expects('foreground').once().withArgs('black');
-    mock.expects('setPosition').exactly(6);
+    mock.expects('background').once().withArgs(11);
+    mock.expects('foreground').once().withArgs(0);
+    mock.expects('position').exactly(6);
     mock.expects('write').exactly(5).withArgs('TTTTT');
 
     cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});
@@ -237,33 +510,13 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly hide the cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-
-    mock.expects('cursor').once().withArgs(false);
-
-    cursor.hide();
-
-    mock.verify();
-  });
-
-  it('Should properly show the cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
-
-    mock.expects('cursor').once().withArgs(true);
-
-    cursor.show();
-
-    mock.verify();
-  });
-
   it('Should properly reset the TTY state', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('reset').once();
+    mock.expects('resetAllAttributes').once();
+    mock.expects('eraseScreen').once();
+    mock.expects('write').once().withArgs(new Buffer('\u001bc'));
 
     cursor.reset();
 
@@ -272,13 +525,17 @@ describe('Cursor', () => {
 
   it('Should properly destroy the cursor', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._cursor);
+    let mock = sinon.mock(cursor);
 
-    mock.expects('destroy').once();
+    mock.expects('emit').once().withArgs('end');
 
     cursor.destroy();
 
     mock.verify();
+  });
+
+  it('Should properly encode to VT100 compatible symbol', () => {
+    assert.deepEqual(Cursor.encodeToVT100('[J'), new Buffer('\u001b[J'));
   });
 
   it('Should properly get TTY size based on process.stdout.getWindowSize', () => {

@@ -13,7 +13,6 @@ export * from './eraseRegions';
  * @see http://www.termsys.demon.co.uk/vtansi.htm
  * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
  * @since 1.0.0
- * @version 1.0.0
  */
 export class Cursor extends Transform {
   /**
@@ -381,8 +380,8 @@ export class Cursor extends Transform {
    * @param {Number} options.x2 End coordinate X
    * @param {Number} options.y2 End coordinate Y
    * @param {String} [options.symbol] Symbol that will be used for filling the region
-   * @param {String} [options.background] Background color from {@link COLORS}
-   * @param {String} [options.foreground] Foreground color from {@link COLORS}
+   * @param {Number} [options.background] Background color from {@link COLORS}
+   * @param {Number} [options.foreground] Foreground color from {@link COLORS}
    * @returns {Cursor}
    * @example
    * let cursor = new Cursor();
@@ -394,8 +393,8 @@ export class Cursor extends Transform {
     let {x1, y1, x2, y2, symbol = ' ', background, foreground} = options;
     let filler = symbol.repeat(x2 - x1 + 1);
 
-    if (background) this.background(background);
-    if (foreground) this.foreground(foreground);
+    if (typeof background !== 'undefined') this.background(background);
+    if (typeof foreground !== 'undefined') this.foreground(foreground);
 
     this.position(x1, y1);
 
@@ -413,8 +412,8 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   reset() {
-    this.write(Cursor.encodeToVT100('[0m'));
-    this.write(Cursor.encodeToVT100('[2J'));
+    this.resetAllAttributes();
+    this.eraseScreen();
     this.write(Cursor.encodeToVT100('c'));
     return this;
   }
