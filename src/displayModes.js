@@ -1,4 +1,8 @@
-export const FORMAT_MODES = {
+/**
+ * Map of the display modes that can be used in Cursor API.
+ * There are the most commonly supported control sequences for formatting text and their resetting.
+ */
+export const DISPLAY_MODES = {
   RESET_ALL: 0,
   BOLD: 1,
   DIM: 2,

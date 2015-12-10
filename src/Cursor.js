@@ -1,12 +1,17 @@
 import { Transform } from 'stream';
 import { COLORS } from './colors';
+import { DISPLAY_MODES } from './displayModes';
 import { ERASE_REGIONS } from './eraseRegions';
-import { FORMAT_MODES } from './formatModes';
+
+export * from './colors';
+export * from './displayModes';
+export * from './eraseRegions';
 
 /**
  * Cursor implements low-level API to terminal control codes.
  *
  * @see http://www.termsys.demon.co.uk/vtansi.htm
+ * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
  * @since 1.0.0
  * @version 1.0.0
  */
@@ -39,13 +44,13 @@ export class Cursor extends Transform {
 
   /**
    * Write to the stream.
-   * It can be whatever info you want, but usually it's just a text that you want to print out.
+   * It can be whatever you want, but usually it's just a text that you want to print out.
    *
-   * @param {Buffer|String} message Message to write to the stream
+   * @param {Buffer|String} data Data to write to the stream
    * @returns {Cursor}
    */
-  write(message) {
-    this.emit('data', message);
+  write(data) {
+    this.emit('data', data);
     return this;
   }
 
@@ -56,7 +61,7 @@ export class Cursor extends Transform {
    * @param {Number} y Coordinate Y
    * @returns {Cursor}
    */
-  setPosition(x, y) {
+  position(x, y) {
     this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
     return this;
   }
@@ -160,41 +165,52 @@ export class Cursor extends Transform {
     return this;
   }
 
-  format(c) {
+  display(c) {
     this.write(Cursor.encodeToVT100(`[${c}m`));
     return this;
   }
 
   bold(isBold) {
-    this.format(isBold ? FORMAT_MODES.BOLD : FORMAT_MODES.RESET_BOLD);
+    this.display(isBold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD);
     return this;
   }
 
   dim(isDim) {
-    this.format(isDim ? FORMAT_MODES.DIM : FORMAT_MODES.RESET_DIM);
+    this.display(isDim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM);
     return this;
   }
 
   underlined(isUnderlined) {
-    this.format(isUnderlined ? FORMAT_MODES.UNDERLINED : FORMAT_MODES.RESET_UNDERLINED);
+    this.display(isUnderlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED);
     return this;
   }
 
   blink(isBlink) {
-    this.format(isBlink ? FORMAT_MODES.BLINK : FORMAT_MODES.RESET_BLINK);
+    this.display(isBlink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK);
     return this;
   }
 
   reverse(isReverse) {
-    this.format(isReverse ? FORMAT_MODES.REVERSE : FORMAT_MODES.RESET_REVERSE);
+    this.display(isReverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE);
     return this;
   }
 
   hidden(isHidden) {
-    this.format(isHidden ? FORMAT_MODES.HIDDEN : FORMAT_MODES.RESET_HIDDEN);
+    this.display(isHidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN);
     return this;
   }
 
+  resetAllAttributes() {
+    this.display(DISPLAY_MODES.RESET_ALL);
+    return this;
+  }
+
+  /**
+   * Text wraps to next line if longer that the length of the display area.
+   *
+   * @param {Boolean} isEnabled
+   * @returns {Cursor}
+   */
   lineWrap(isEnabled) {
     this.write(Cursor.encodeToVT100(isEnabled ? '[7h' : '[7l'));
     return this;
@@ -213,7 +229,7 @@ export class Cursor extends Transform {
    * cursor.foreground(COLORS.BLACK);
    */
   foreground(color) {
-    this.write(Cursor.encodeToVT100('[38;5;' + color + 'm'));
+    this.write(Cursor.encodeToVT100(`[38;5;${color}m`));
     return this;
   }
 
@@ -230,7 +246,7 @@ export class Cursor extends Transform {
    * cursor.background(COLORS.YELLOW);
    */
   background(color) {
-    this.write(Cursor.encodeToVT100('[48;5;' + color + 'm'));
+    this.write(Cursor.encodeToVT100(`[48;5;${color}m`));
     return this;
   }
 

@@ -1,6 +1,8 @@
 /**
- * Map of colors for using in Cursor API.
- * This map is using 256 bit color palette and can be used in any of Cursor operations.
+ * Some terminals can support 256 colors.
+ * Here are the control sequences that permit you to use them.
+ *
+ * The colors number 256 is only supported by vte (GNOME Terminal, XFCE4 Terminal, Nautilus Terminal, Terminator, ...)
  */
 export const COLORS = {
   BLACK: 0,
