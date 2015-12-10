@@ -55,35 +55,6 @@ export class Cursor extends Transform {
   }
 
   /**
-   * Set the cursor position by absolute coordinates.
-   *
-   * @param {Number} x Coordinate X
-   * @param {Number} y Coordinate Y
-   * @returns {Cursor}
-   */
-  position(x, y) {
-    this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
-    return this;
-  }
-
-  /**
-   * Move the cursor by the relative coordinates starting from the current position of cursor.
-   *
-   * @param {Number} x Coordinate X
-   * @param {Number} y Coordinate Y
-   * @returns {Cursor}
-   */
-  move(x, y) {
-    if (y < 0) this.up(-y);
-    if (y > 0) this.down(y);
-
-    if (x < 0) this.left(-x);
-    if (x > 0) this.right(x);
-
-    return this;
-  }
-
-  /**
    * Move the cursor up.
    *
    * @param {Number} [y=1] Rows count
@@ -128,7 +99,150 @@ export class Cursor extends Transform {
   }
 
   /**
+   * Set the cursor position by absolute coordinates.
+   *
+   * @param {Number} x Coordinate X
+   * @param {Number} y Coordinate Y
+   * @returns {Cursor}
+   */
+  position(x, y) {
+    this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
+    return this;
+  }
+
+  /**
+   * Move the cursor by the relative coordinates starting from the current position of cursor.
+   *
+   * @param {Number} x Coordinate X
+   * @param {Number} y Coordinate Y
+   * @returns {Cursor}
+   */
+  move(x, y) {
+    if (y < 0) this.up(-y);
+    if (y > 0) this.down(y);
+
+    if (x < 0) this.left(-x);
+    if (x > 0) this.right(x);
+
+    return this;
+  }
+
+  /**
+   * Set the foreground color.
+   * This color is used when text is rendering.
+   *
+   * @param {Number} color Value from {@link COLORS}
+   * @returns {Cursor}
+   */
+  foreground(color) {
+    this.write(Cursor.encodeToVT100(`[38;5;${color}m`));
+    return this;
+  }
+
+  /**
+   * Set the background color.
+   * This color is used for filling the whole cell in the TTY.
+   *
+   * @param {Number} color Value from {@link COLORS}
+   * @returns {Cursor}
+   */
+  background(color) {
+    this.write(Cursor.encodeToVT100(`[48;5;${color}m`));
+    return this;
+  }
+
+  /**
+   * Change display mode.
+   * You can also use helper methods like {@link bold} or {@link blink}, etc...
+   *
+   * @param {Number} mode Mode identifier from {@link DISPLAY_MODES}
+   * @returns {Cursor}
+   */
+  display(mode) {
+    this.write(Cursor.encodeToVT100(`[${mode}m`));
+    return this;
+  }
+
+  /**
+   * Toggle bold display mode.
+   *
+   * @param {Boolean} [isBold=true] If false, disables bold mode
+   * @returns {Cursor}
+   */
+  bold(isBold = true) {
+    this.display(isBold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD);
+    return this;
+  }
+
+  /**
+   * Toggle dim display mode.
+   *
+   * @param {Boolean} [isDim=true] If false, disables dim mode
+   * @returns {Cursor}
+   */
+  dim(isDim = true) {
+    this.display(isDim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM);
+    return this;
+  }
+
+  /**
+   * Toggle underlined display mode.
+   *
+   * @param {Boolean} [isUnderlined=true] If false, disables underlined mode
+   * @returns {Cursor}
+   */
+  underlined(isUnderlined = true) {
+    this.display(isUnderlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED);
+    return this;
+  }
+
+  /**
+   * Toggle blink display mode.
+   *
+   * @param {Boolean} [isBlink=true] If false, disables blink mode
+   * @returns {Cursor}
+   */
+  blink(isBlink = true) {
+    this.display(isBlink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK);
+    return this;
+  }
+
+  /**
+   * Toggle reverse display mode.
+   *
+   * @param {Boolean} [isReverse=true] If false, disables reverse display mode
+   * @returns {Cursor}
+   */
+  reverse(isReverse = true) {
+    this.display(isReverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE);
+    return this;
+  }
+
+  /**
+   * Toggle hidden display mode.
+   *
+   * @param {Boolean} [isHidden=true] If false, disables hidden display mode
+   * @returns {Cursor}
+   */
+  hidden(isHidden = true) {
+    this.display(isHidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN);
+    return this;
+  }
+
+  /**
+   * Reset all display modes to default attributes.
+   *
+   * @returns {Cursor}
+   */
+  resetAllAttributes() {
+    this.display(DISPLAY_MODES.RESET_ALL);
+    return this;
+  }
+
+  /**
    * Erase a defined region.
+   * Before erase the region it saves cursor attributes to stack and erases the region with default attributes.
+   * Afterwards it restores the cursor attributes as it was before.
    *
    * @param {String} region Value from {@link ERASE_REGIONS}
    * @returns {Cursor}
@@ -202,128 +316,6 @@ export class Cursor extends Transform {
   }
 
   /**
-   * Change display mode.
-   *
-   * @param {Number} mode Mode identifier from {@link DISPLAY_MODES}
-   * @returns {Cursor}
-   */
-  display(mode) {
-    this.write(Cursor.encodeToVT100(`[${mode}m`));
-    return this;
-  }
-
-  /**
-   * Toggle bold font.
-   *
-   * @param {Boolean} [isBold=true]
-   * @returns {Cursor}
-   */
-  bold(isBold = true) {
-    this.display(isBold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD);
-    return this;
-  }
-
-  /**
-   * Toggle dim font.
-   *
-   * @param {Boolean} [isDim=true]
-   * @returns {Cursor}
-   */
-  dim(isDim = true) {
-    this.display(isDim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM);
-    return this;
-  }
-
-  /**
-   * Toggle underlined font.
-   *
-   * @param {Boolean} [isUnderlined=true]
-   * @returns {Cursor}
-   */
-  underlined(isUnderlined = true) {
-    this.display(isUnderlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED);
-    return this;
-  }
-
-  /**
-   * Toggle blink font.
-   *
-   * @param {Boolean} [isBlink=true]
-   * @returns {Cursor}
-   */
-  blink(isBlink = true) {
-    this.display(isBlink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK);
-    return this;
-  }
-
-  /**
-   * Toggle reverse display mode.
-   *
-   * @param {Boolean} [isReverse=true]
-   * @returns {Cursor}
-   */
-  reverse(isReverse = true) {
-    this.display(isReverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE);
-    return this;
-  }
-
-  /**
-   * Toggle hidden display mode.
-   *
-   * @param {Boolean} [isHidden=true]
-   * @returns {Cursor}
-   */
-  hidden(isHidden = true) {
-    this.display(isHidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN);
-    return this;
-  }
-
-  /**
-   * Reset all display modes.
-   *
-   * @returns {Cursor}
-   */
-  resetAllAttributes() {
-    this.display(DISPLAY_MODES.RESET_ALL);
-    return this;
-  }
-
-  /**
-   * Text wraps to next line if longer that the length of the display area.
-   *
-   * @param {Boolean} isEnabled
-   * @returns {Cursor}
-   */
-  lineWrap(isEnabled) {
-    this.write(Cursor.encodeToVT100(isEnabled ? '[7h' : '[7l'));
-    return this;
-  }
-
-  /**
-   * Set the foreground color.
-   * This color is used when text is rendering.
-   *
-   * @param {Number} color Value from {@link COLORS}
-   * @returns {Cursor}
-   */
-  foreground(color) {
-    this.write(Cursor.encodeToVT100(`[38;5;${color}m`));
-    return this;
-  }
-
-  /**
-   * Set the background color.
-   * This color is used for filling the whole cell in the TTY.
-   *
-   * @param {Number} color Value from {@link COLORS}
-   * @returns {Cursor}
-   */
-  background(color) {
-    this.write(Cursor.encodeToVT100(`[48;5;${color}m`));
-    return this;
-  }
-
-  /**
    * Set the cursor invisible.
    *
    * @returns {Cursor}
@@ -346,6 +338,7 @@ export class Cursor extends Transform {
   /**
    * Save current cursor position and attributes in stack.
    * Doesn't return any information about stack.
+   * You can restore saved information with {@link restore}
    *
    * @param {Boolean} [withAttributes=true] If true, save it with attributes settings too
    * @returns {Cursor}
@@ -363,6 +356,18 @@ export class Cursor extends Transform {
    */
   restore(withAttributes = true) {
     this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
+    return this;
+  }
+
+  /**
+   * Text wraps to next line if longer that the length of the display area.
+   *
+   * @param {Boolean} isEnabled
+   * @returns {Cursor}
+   */
+  lineWrap(isEnabled) {
+    // TODO: think if we need this
+    this.write(Cursor.encodeToVT100(isEnabled ? '[7h' : '[7l'));
     return this;
   }
 
@@ -392,11 +397,11 @@ export class Cursor extends Transform {
     if (background) this.background(background);
     if (foreground) this.foreground(foreground);
 
-    this.setPosition(x1, y1);
+    this.position(x1, y1);
 
     while (y1 <= y2) {
       this.write(filler);
-      this.setPosition(x1, ++y1);
+      this.position(x1, ++y1);
     }
 
     return this;
