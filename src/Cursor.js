@@ -1,4 +1,3 @@
-import { Transform } from 'stream';
 import { COLORS } from './colors';
 import { DISPLAY_MODES } from './displayModes';
 import { ERASE_REGIONS } from './eraseRegions';
@@ -14,7 +13,7 @@ export * from './eraseRegions';
  * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
  * @since 1.0.0
  */
-export class Cursor extends Transform {
+export class Cursor {
   /**
    * By default, creates simple cursor that writes direct to `stdout`.
    *
@@ -22,23 +21,11 @@ export class Cursor extends Transform {
    * It's useful when you want to chain few streams before pipe it into the cursor or want to modify what cursor pipes to `stdout`.
    *
    * @constructor
-   * @param {Array<Stream.Transform>} [stdout=[process.stdout]] Array of Transform streams that will be used as target source for cursor
-   * @param {Array<Stream.Transform>} [stdin=[]] Array of Transform streams that will be used as data source for cursor
-   * @example
-   * import { Cursor } from './Cursor';
-   *
-   * // Creates simple cursor that renders direct to `process.stdout`
-   * let cursor = new Cursor();
-   *
-   * // Creates cursor that takes data from `stdin` and pipes to cursor.
-   * // Afterwards to some Transform stream and `stdout`.
-   * let cursor = new Cursor([new MyTransformStream(), process.stdout], [process.stdin]);
+   * @param {Stream} [stdout=process.stdout] Array of Transform streams that will be used as target source for cursor
    */
-  constructor(stdout = [process.stdout], stdin = []) {
-    super();
-
-    if (stdout.length > 0) stdout.reduce((cursor, pipe) => cursor.pipe(pipe), this);
-    if (stdin.length > 0) stdin.reduce((cursor, pipe) => cursor.pipe(pipe)).pipe(this);
+  constructor(stdout = process.stdout) {
+    this._stdout = stdout;
+    this._buffer = [];
   }
 
   /**
@@ -49,7 +36,13 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   write(data) {
-    this.emit('data', data);
+    this._buffer.push(Buffer.isBuffer(data) ? data : new Buffer(data));
+    return this;
+  }
+
+  flush() {
+    this._stdout.write(this._buffer.join(''));
+    this._buffer = [];
     return this;
   }
 
@@ -229,16 +222,6 @@ export class Cursor extends Transform {
   }
 
   /**
-   * Reset all display modes to default attributes.
-   *
-   * @returns {Cursor}
-   */
-  resetCursor() {
-    this.display(DISPLAY_MODES.RESET_ALL);
-    return this;
-  }
-
-  /**
    * Erase a defined region.
    * Before erase the region it saves cursor attributes to stack and erases the region with default attributes.
    * Afterwards it restores the cursor attributes as it was before.
@@ -355,6 +338,16 @@ export class Cursor extends Transform {
    */
   restoreCursor(withAttributes = true) {
     this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
+    return this;
+  }
+
+  /**
+   * Reset all display modes and cursor attributes to default.
+   *
+   * @returns {Cursor}
+   */
+  resetCursor() {
+    this.display(DISPLAY_MODES.RESET_ALL);
     return this;
   }
 
