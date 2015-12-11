@@ -460,28 +460,6 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly enable line wrap', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b[7h'));
-
-    cursor.lineWrap(true);
-
-    mock.verify();
-  });
-
-  it('Should properly disable line wrap', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b[7l'));
-
-    cursor.lineWrap(false);
-
-    mock.verify();
-  });
-
   it('Should properly fill the specified region without optional arguments', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);

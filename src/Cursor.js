@@ -359,18 +359,6 @@ export class Cursor extends Transform {
   }
 
   /**
-   * Text wraps to next line if longer that the length of the display area.
-   *
-   * @param {Boolean} isEnabled
-   * @returns {Cursor}
-   */
-  lineWrap(isEnabled) {
-    // TODO: think if we need this
-    this.write(Cursor.encodeToVT100(isEnabled ? '[7h' : '[7l'));
-    return this;
-  }
-
-  /**
    * Fill the specified region with symbol.
    * By default this symbol is whitespace but you can change it and fill with another symbol.
    *
