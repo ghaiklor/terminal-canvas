@@ -233,7 +233,7 @@ export class Cursor extends Transform {
    *
    * @returns {Cursor}
    */
-  resetAllAttributes() {
+  resetCursor() {
     this.display(DISPLAY_MODES.RESET_ALL);
     return this;
   }
@@ -247,10 +247,10 @@ export class Cursor extends Transform {
    * @returns {Cursor}
    */
   erase(region) {
-    this.save();
-    this.resetAllAttributes();
+    this.saveCursor();
+    this.resetCursor();
     this.write(Cursor.encodeToVT100(region));
-    this.restore();
+    this.restoreCursor();
     return this;
   }
 
@@ -319,7 +319,7 @@ export class Cursor extends Transform {
    *
    * @returns {Cursor}
    */
-  hide() {
+  hideCursor() {
     this.write(Cursor.encodeToVT100('[?25l'));
     return this;
   }
@@ -329,7 +329,7 @@ export class Cursor extends Transform {
    *
    * @returns {Cursor}
    */
-  show() {
+  showCursor() {
     this.write(Cursor.encodeToVT100('[?25h'));
     return this;
   }
@@ -337,12 +337,12 @@ export class Cursor extends Transform {
   /**
    * Save current cursor position and attributes in stack.
    * Doesn't return any information about stack.
-   * You can restore saved information with {@link restore}
+   * You can restore saved information with {@link restoreCursor}
    *
    * @param {Boolean} [withAttributes=true] If true, save it with attributes settings too
    * @returns {Cursor}
    */
-  save(withAttributes = true) {
+  saveCursor(withAttributes = true) {
     this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
     return this;
   }
@@ -353,8 +353,18 @@ export class Cursor extends Transform {
    * @param {Boolean} [withAttributes=true] If true, restore it with attributes settings too
    * @returns {Cursor}
    */
-  restore(withAttributes = true) {
+  restoreCursor(withAttributes = true) {
     this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
+    return this;
+  }
+
+  /**
+   * Destroy the cursor.
+   *
+   * @returns {Cursor}
+   */
+  destroyCursor() {
+    this.emit('end');
     return this;
   }
 
@@ -399,20 +409,10 @@ export class Cursor extends Transform {
    *
    * @returns {Cursor}
    */
-  reset() {
-    this.resetAllAttributes();
+  resetTTY() {
+    this.resetCursor();
     this.eraseScreen();
     this.write(Cursor.encodeToVT100('c'));
-    return this;
-  }
-
-  /**
-   * Destroy the cursor.
-   *
-   * @returns {Cursor}
-   */
-  destroy() {
-    this.emit('end');
     return this;
   }
 
