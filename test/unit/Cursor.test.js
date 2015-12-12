@@ -26,7 +26,7 @@ describe('Cursor', () => {
 
     assert.deepEqual(cursor._buffer, []);
     cursor.write('test');
-    assert.deepEqual(cursor._buffer, new Buffer(['test']));
+    assert.deepEqual(cursor._buffer, [new Buffer('test')]);
   });
 
   it('Should properly move cursor up with default arguments', () => {
@@ -124,21 +124,6 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[10;5f'));
 
     cursor.moveTo(5, 10);
-
-    mock.verify();
-  });
-
-  it('Should properly move cursor by relative coordinates', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('right').once().withArgs(10);
-    mock.expects('down').once().withArgs(5);
-    mock.expects('left').once().withArgs(10);
-    mock.expects('up').once().withArgs(5);
-
-    cursor.move(10, 5);
-    cursor.move(-10, -5);
 
     mock.verify();
   });
@@ -297,10 +282,10 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('saveCursor').once();
-    mock.expects('resetCursor').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001b[2J'));
-    mock.expects('restoreCursor').once();
+    mock.expects('saveCursor').once().returns(cursor);
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[2J')).returns(cursor);
+    mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.erase(ERASE_REGIONS.ENTIRE_SCREEN);
 
@@ -311,10 +296,10 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('saveCursor').once();
-    mock.expects('resetCursor').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001b[K'));
-    mock.expects('restoreCursor').once();
+    mock.expects('saveCursor').once().returns(cursor);
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[K')).returns(cursor);
+    mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.eraseToEnd();
 
@@ -325,10 +310,10 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('saveCursor').once();
-    mock.expects('resetCursor').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001b[1K'));
-    mock.expects('restoreCursor').once();
+    mock.expects('saveCursor').once().returns(cursor);
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1K')).returns(cursor);
+    mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.eraseToStart();
 
@@ -339,10 +324,10 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('saveCursor').once();
-    mock.expects('resetCursor').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001b[J'));
-    mock.expects('restoreCursor').once();
+    mock.expects('saveCursor').once().returns(cursor);
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[J')).returns(cursor);
+    mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.eraseToDown();
 
@@ -353,10 +338,10 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('saveCursor').once();
-    mock.expects('resetCursor').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001b[1J'));
-    mock.expects('restoreCursor').once();
+    mock.expects('saveCursor').once().returns(cursor);
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[1J')).returns(cursor);
+    mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.eraseToUp();
 
@@ -367,10 +352,10 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('saveCursor').once();
-    mock.expects('resetCursor').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001b[2K'));
-    mock.expects('restoreCursor').once();
+    mock.expects('saveCursor').once().returns(cursor);
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[2K')).returns(cursor);
+    mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.eraseLine();
 
@@ -381,10 +366,10 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('saveCursor').once();
-    mock.expects('resetCursor').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001b[2J'));
-    mock.expects('restoreCursor').once();
+    mock.expects('saveCursor').once().returns(cursor);
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001b[2J')).returns(cursor);
+    mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.eraseScreen();
 
@@ -489,22 +474,11 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('resetCursor').once();
-    mock.expects('eraseScreen').once();
-    mock.expects('write').once().withArgs(new Buffer('\u001bc'));
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('eraseScreen').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001bc')).returns(cursor);
 
     cursor.resetTTY();
-
-    mock.verify();
-  });
-
-  it('Should properly destroy the cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('emit').once().withArgs('end');
-
-    cursor.destroyCursor();
 
     mock.verify();
   });
@@ -513,12 +487,13 @@ describe('Cursor', () => {
     assert.deepEqual(Cursor.encodeToVT100('[J'), new Buffer('\u001b[J'));
   });
 
-  it('Should properly get TTY size based on process.stdout.getWindowSize', () => {
+  it('Should properly get TTY size based on getWindowSize', () => {
+    let cursor = new Cursor();
     let mock = sinon.mock(process.stdout);
 
     mock.expects('getWindowSize').twice().returns([10, 10]);
 
-    let {width, height} = Cursor.getTTYSize();
+    let {width, height} = cursor.getTTYSize();
     assert.equal(width, 10);
     assert.equal(height, 10);
 
@@ -530,7 +505,8 @@ describe('Cursor', () => {
     process.stdout.columns = 10;
     process.stdout.rows = 10;
 
-    let {width, height} = Cursor.getTTYSize();
+    let cursor = new Cursor();
+    let {width, height} = cursor.getTTYSize();
     assert.equal(width, 10);
     assert.equal(height, 10);
   });
@@ -540,25 +516,28 @@ describe('Cursor', () => {
     process.stdout.columns = null;
     process.stdout.rows = null;
 
-    assert.throws(() => Cursor.getTTYSize(), Error);
+    let cursor = new Cursor();
+    assert.throws(() => cursor.getTTYSize(), Error);
   });
 
   it('Should properly get TTY width', () => {
-    let mock = sinon.mock(Cursor);
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
 
     mock.expects('getTTYSize').once().returns({width: 10, height: 10});
 
-    assert.equal(Cursor.getTTYWidth(), 10);
+    assert.equal(cursor.getTTYWidth(), 10);
 
     mock.verify();
   });
 
   it('Should properly get TTY height', () => {
-    let mock = sinon.mock(Cursor);
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
 
     mock.expects('getTTYSize').once().returns({width: 10, height: 10});
 
-    assert.equal(Cursor.getTTYHeight(), 10);
+    assert.equal(cursor.getTTYHeight(), 10);
 
     mock.verify();
   });
