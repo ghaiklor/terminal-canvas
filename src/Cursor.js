@@ -21,10 +21,10 @@ export class Cursor {
    * It's useful when you want to chain few streams before pipe it into the cursor or want to modify what cursor pipes to `stdout`.
    *
    * @constructor
-   * @param {Stream} [stdout=process.stdout] Array of Transform streams that will be used as target source for cursor
+   * @param {Stream} [stream=process.stdout] Array of Transform streams that will be used as target source for cursor
    */
-  constructor(stdout = process.stdout) {
-    this._stdout = stdout;
+  constructor(stream = process.stdout) {
+    this._stream = stream;
     this._buffer = [];
   }
 
@@ -46,7 +46,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    this._stdout.write(this._buffer.join(''));
+    this._stream.write(this._buffer.join(''));
     this._buffer = [];
     return this;
   }
