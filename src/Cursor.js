@@ -40,6 +40,11 @@ export class Cursor {
     return this;
   }
 
+  /**
+   * Write from the buffer to stream and clear it up.
+   *
+   * @returns {Cursor}
+   */
   flush() {
     this._stdout.write(this._buffer.join(''));
     this._buffer = [];
