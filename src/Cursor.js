@@ -128,7 +128,7 @@ export class Cursor {
   }
 
   /**
-   * Change display mode.
+   * Change display mode (format of text).
    * You can also use helper methods like {@link bold} or {@link blink}, etc...
    *
    * @param {Number} mode Mode identifier from {@link DISPLAY_MODES}
@@ -207,11 +207,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   erase(region) {
-    this.saveCursor();
-    this.resetCursor();
-    this.write(Cursor.encodeToVT100(region));
-    this.restoreCursor();
-    return this;
+    return this.saveCursor().resetCursor().write(Cursor.encodeToVT100(region)).restoreCursor();
   }
 
   /**
@@ -318,16 +314,6 @@ export class Cursor {
   }
 
   /**
-   * Destroy the cursor.
-   *
-   * @returns {Cursor}
-   */
-  destroyCursor() {
-    this.emit('end');
-    return this;
-  }
-
-  /**
    * Fill the specified region with symbol.
    * By default this symbol is whitespace but you can change it and fill with another symbol.
    *
@@ -340,11 +326,6 @@ export class Cursor {
    * @param {Number} [options.background] Background color from {@link COLORS}
    * @param {Number} [options.foreground] Foreground color from {@link COLORS}
    * @returns {Cursor}
-   * @example
-   * let cursor = new Cursor();
-   *
-   * // Renders the rectangle at top of TTY
-   * cursor.fill({x1: 0, y1: 0, x2: Cursor.getTTYWidth(), y2: 4, background: COLORS.YELLOW});
    */
   fill(options) {
     let {x1, y1, x2, y2, symbol = ' ', background, foreground} = options;
@@ -369,9 +350,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   resetTTY() {
-    this.resetCursor();
-    this.eraseScreen();
-    return this.write(Cursor.encodeToVT100('c'));
+    return this.resetCursor().eraseScreen().write(Cursor.encodeToVT100('c'));
   }
 
   /**
