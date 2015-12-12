@@ -95,6 +95,24 @@ export class Cursor {
   }
 
   /**
+   * Move the cursor position relative on current coordinates.
+   *
+   * @param {Number} x Coordinate X
+   * @param {Number} y Coordinate Y
+   * @returns {Cursor}
+   */
+  move(x, y) {
+    // TODO: think about proper name for this method
+    if (x < 0) this.left(-x);
+    if (x > 0) this.right(x);
+
+    if (y < 0) this.up(-y);
+    if (y > 0) this.down(y);
+
+    return this;
+  }
+
+  /**
    * Set the cursor position by absolute coordinates.
    *
    * @param {Number} x Coordinate X
