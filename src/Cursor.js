@@ -314,6 +314,48 @@ export class Cursor {
   }
 
   /**
+   * Get TTY sizes from stream, if it's possible.
+   *
+   * @returns {{width: Number, height: Number}}
+   */
+  getTTYSize() {
+    if (this._stream.getWindowSize) {
+      return {width: this._stream.getWindowSize()[0], height: this._stream.getWindowSize()[1]};
+    } else if (this._stream.columns && this._stream.rows) {
+      return {width: this._stream.columns, height: this._stream.rows};
+    } else {
+      throw new Error('Failed to determine TTY size');
+    }
+  }
+
+  /**
+   * Get width of TTY.
+   *
+   * @returns {Number}
+   */
+  getTTYWidth() {
+    return this.getTTYSize().width;
+  }
+
+  /**
+   * Get height of TTY.
+   *
+   * @returns {Number}
+   */
+  getTTYHeight() {
+    return this.getTTYSize().height;
+  }
+
+  /**
+   * Reset all terminal settings to default.
+   *
+   * @returns {Cursor}
+   */
+  resetTTY() {
+    return this.resetCursor().eraseScreen().write(Cursor.encodeToVT100('c'));
+  }
+
+  /**
    * Fill the specified region with symbol.
    * By default this symbol is whitespace but you can change it and fill with another symbol.
    *
@@ -328,6 +370,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   fill(options) {
+    // TODO: maybe move it to Rectangle shape?
     let {x1, y1, x2, y2, symbol = ' ', background, foreground} = options;
     let filler = symbol.repeat(x2 - x1 + 1);
 
@@ -345,15 +388,6 @@ export class Cursor {
   }
 
   /**
-   * Reset all terminal settings to default.
-   *
-   * @returns {Cursor}
-   */
-  resetTTY() {
-    return this.resetCursor().eraseScreen().write(Cursor.encodeToVT100('c'));
-  }
-
-  /**
    * Bytes to encode to VT100 standard.
    *
    * @static
@@ -362,42 +396,6 @@ export class Cursor {
    */
   static encodeToVT100(string) {
     return new Buffer([0x1b].concat(string.split('').map(item => item.charCodeAt(0))));
-  }
-
-  /**
-   * Get TTY sizes.
-   *
-   * @static
-   * @returns {{width: Number, height: Number}}
-   */
-  static getTTYSize() {
-    if (process.stdout.getWindowSize) {
-      return {width: process.stdout.getWindowSize()[0], height: process.stdout.getWindowSize()[1]};
-    } else if (process.stdout.columns && process.stdout.rows) {
-      return {width: process.stdout.columns, height: process.stdout.rows};
-    } else {
-      throw new Error('Failed to determine TTY size');
-    }
-  }
-
-  /**
-   * Get width of TTY.
-   *
-   * @static
-   * @returns {Number}
-   */
-  static getTTYWidth() {
-    return Cursor.getTTYSize().width;
-  }
-
-  /**
-   * Get height of TTY.
-   *
-   * @static
-   * @returns {Number}
-   */
-  static getTTYHeight() {
-    return Cursor.getTTYSize().height;
   }
 
   /**
