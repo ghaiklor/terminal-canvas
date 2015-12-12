@@ -88,8 +88,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   up(y = 1) {
-    this.write(Cursor.encodeToVT100(`[${Math.floor(y)}A`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}A`));
   }
 
   /**
@@ -99,8 +98,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   down(y = 1) {
-    this.write(Cursor.encodeToVT100(`[${Math.floor(y)}B`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}B`));
   }
 
   /**
@@ -110,8 +108,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   right(x = 1) {
-    this.write(Cursor.encodeToVT100(`[${Math.floor(x)}C`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}C`));
   }
 
   /**
@@ -121,8 +118,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   left(x = 1) {
-    this.write(Cursor.encodeToVT100(`[${Math.floor(x)}D`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}D`));
   }
 
   /**
@@ -133,8 +129,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   position(x, y) {
-    this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
   }
 
   /**
@@ -162,8 +157,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   foreground(color) {
-    this.write(Cursor.encodeToVT100(`[38;5;${color}m`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[38;5;${color}m`));
   }
 
   /**
@@ -174,8 +168,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   background(color) {
-    this.write(Cursor.encodeToVT100(`[48;5;${color}m`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[48;5;${color}m`));
   }
 
   /**
@@ -186,8 +179,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   display(mode) {
-    this.write(Cursor.encodeToVT100(`[${mode}m`));
-    return this;
+    return this.write(Cursor.encodeToVT100(`[${mode}m`));
   }
 
   /**
@@ -197,8 +189,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   bold(isBold = true) {
-    this.display(isBold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD);
-    return this;
+    return this.display(isBold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD);
   }
 
   /**
@@ -208,8 +199,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   dim(isDim = true) {
-    this.display(isDim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM);
-    return this;
+    return this.display(isDim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM);
   }
 
   /**
@@ -219,8 +209,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   underlined(isUnderlined = true) {
-    this.display(isUnderlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED);
-    return this;
+    return this.display(isUnderlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED);
   }
 
   /**
@@ -230,8 +219,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   blink(isBlink = true) {
-    this.display(isBlink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK);
-    return this;
+    return this.display(isBlink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK);
   }
 
   /**
@@ -241,8 +229,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   reverse(isReverse = true) {
-    this.display(isReverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE);
-    return this;
+    return this.display(isReverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE);
   }
 
   /**
@@ -252,8 +239,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   hidden(isHidden = true) {
-    this.display(isHidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN);
-    return this;
+    return this.display(isHidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN);
   }
 
   /**
@@ -278,8 +264,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   eraseToEnd() {
-    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_END);
-    return this;
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_END);
   }
 
   /**
@@ -288,8 +273,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   eraseToStart() {
-    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_START);
-    return this;
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_START);
   }
 
   /**
@@ -298,8 +282,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   eraseToDown() {
-    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
-    return this;
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
   }
 
   /**
@@ -308,8 +291,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   eraseToUp() {
-    this.erase(ERASE_REGIONS.FROM_CURSOR_TO_UP);
-    return this;
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_UP);
   }
 
   /**
@@ -318,8 +300,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    this.erase(ERASE_REGIONS.CURRENT_LINE);
-    return this;
+    return this.erase(ERASE_REGIONS.CURRENT_LINE);
   }
 
   /**
@@ -328,8 +309,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   eraseScreen() {
-    this.erase(ERASE_REGIONS.ENTIRE_SCREEN);
-    return this;
+    return this.erase(ERASE_REGIONS.ENTIRE_SCREEN);
   }
 
   /**
@@ -338,8 +318,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   hideCursor() {
-    this.write(Cursor.encodeToVT100('[?25l'));
-    return this;
+    return this.write(Cursor.encodeToVT100('[?25l'));
   }
 
   /**
@@ -348,8 +327,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   showCursor() {
-    this.write(Cursor.encodeToVT100('[?25h'));
-    return this;
+    return this.write(Cursor.encodeToVT100('[?25h'));
   }
 
   /**
@@ -361,8 +339,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   saveCursor(withAttributes = true) {
-    this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
-    return this;
+    return this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
   }
 
   /**
@@ -372,8 +349,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   restoreCursor(withAttributes = true) {
-    this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
-    return this;
+    return this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
   }
 
   /**
@@ -382,8 +358,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   resetCursor() {
-    this.display(DISPLAY_MODES.RESET_ALL);
-    return this;
+    return this.display(DISPLAY_MODES.RESET_ALL);
   }
 
   /**
@@ -440,8 +415,7 @@ export class Cursor {
   resetTTY() {
     this.resetCursor();
     this.eraseScreen();
-    this.write(Cursor.encodeToVT100('c'));
-    return this;
+    return this.write(Cursor.encodeToVT100('c'));
   }
 
   /**
