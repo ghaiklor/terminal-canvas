@@ -15,6 +15,36 @@ export * from './eraseRegions';
  */
 export class Cursor {
   /**
+   * Get list of all available colors for Cursor API.
+   *
+   * @constructor
+   * @returns {COLORS}
+   */
+  get COLORS() {
+    return COLORS;
+  }
+
+  /**
+   * Get list of all available display modes for Cursor API.
+   *
+   * @constructor
+   * @returns {DISPLAY_MODES}
+   */
+  get DISPLAY_MODES() {
+    return DISPLAY_MODES;
+  }
+
+  /**
+   * Get list of all available erase regions for Cursor API.
+   *
+   * @constructor
+   * @returns {ERASE_REGIONS}
+   */
+  get ERASE_REGIONS() {
+    return ERASE_REGIONS;
+  }
+
+  /**
    * By default, creates simple cursor that writes direct to `stdout`.
    *
    * If you want to work with other streams, you can pass custom `stdout` and `stdin` streams in.
