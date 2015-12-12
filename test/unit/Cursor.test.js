@@ -23,13 +23,10 @@ describe('Cursor', () => {
 
   it('Should properly write to the cursor', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
 
-    mock.expects('emit').once().withArgs('data', 'test');
-
+    assert.deepEqual(cursor._buffer, []);
     cursor.write('test');
-
-    mock.verify();
+    assert.deepEqual(cursor._buffer, new Buffer(['test']));
   });
 
   it('Should properly move cursor up with default arguments', () => {
@@ -126,7 +123,7 @@ describe('Cursor', () => {
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[10;5f'));
 
-    cursor.position(5, 10);
+    cursor.moveTo(5, 10);
 
     mock.verify();
   });
@@ -466,7 +463,7 @@ describe('Cursor', () => {
 
     mock.expects('background').never();
     mock.expects('foreground').never();
-    mock.expects('position').exactly(6);
+    mock.expects('moveTo').exactly(6);
     mock.expects('write').exactly(5).withArgs('     ');
 
     cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5});
@@ -480,7 +477,7 @@ describe('Cursor', () => {
 
     mock.expects('background').once().withArgs(11);
     mock.expects('foreground').once().withArgs(0);
-    mock.expects('position').exactly(6);
+    mock.expects('moveTo').exactly(6);
     mock.expects('write').exactly(5).withArgs('TTTTT');
 
     cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});

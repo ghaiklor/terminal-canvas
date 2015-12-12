@@ -14,53 +14,26 @@ export * from './eraseRegions';
  * @since 1.0.0
  */
 export class Cursor {
-  /**
-   * Get list of all available colors for Cursor API.
-   *
-   * @constructor
-   * @returns {COLORS}
-   */
-  get COLORS() {
-    return COLORS;
-  }
-
-  /**
-   * Get list of all available display modes for Cursor API.
-   *
-   * @constructor
-   * @returns {DISPLAY_MODES}
-   */
-  get DISPLAY_MODES() {
-    return DISPLAY_MODES;
-  }
-
-  /**
-   * Get list of all available erase regions for Cursor API.
-   *
-   * @constructor
-   * @returns {ERASE_REGIONS}
-   */
-  get ERASE_REGIONS() {
-    return ERASE_REGIONS;
-  }
+  COLORS = COLORS;
+  DISPLAY_MODES = DISPLAY_MODES;
+  ERASE_REGIONS = ERASE_REGIONS;
 
   /**
    * By default, creates simple cursor that writes direct to `stdout`.
-   *
-   * If you want to work with other streams, you can pass custom `stdout` and `stdin` streams in.
-   * It's useful when you want to chain few streams before pipe it into the cursor or want to modify what cursor pipes to `stdout`.
+   * If you want to work with other streams, you can pass custom `stdout` stream in.
    *
    * @constructor
-   * @param {Stream} [stream=process.stdout] Array of Transform streams that will be used as target source for cursor
+   * @param {Stream} [stream=process.stdout] Streams that will be used as target for cursor
    */
   constructor(stream = process.stdout) {
-    this._stream = stream;
     this._buffer = [];
+    this._stream = stream;
   }
 
   /**
-   * Write to the stream.
+   * Write to the buffer.
    * Usually it's just a text that you want to print out but also can be a Buffer with control codes.
+   * Cursor has a feature to buffering data, so when you will be ready to push to the stream, call {@link flush} method.
    *
    * @param {Buffer|String} data Data to write to the stream
    * @returns {Cursor}
@@ -128,25 +101,8 @@ export class Cursor {
    * @param {Number} y Coordinate Y
    * @returns {Cursor}
    */
-  position(x, y) {
+  moveTo(x, y) {
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
-  }
-
-  /**
-   * Move the cursor by the relative coordinates starting from the current position of cursor.
-   *
-   * @param {Number} x Coordinate X
-   * @param {Number} y Coordinate Y
-   * @returns {Cursor}
-   */
-  move(x, y) {
-    if (y < 0) this.up(-y);
-    if (y > 0) this.down(y);
-
-    if (x < 0) this.left(-x);
-    if (x > 0) this.right(x);
-
-    return this;
   }
 
   /**
@@ -397,11 +353,11 @@ export class Cursor {
     if (typeof background !== 'undefined') this.background(background);
     if (typeof foreground !== 'undefined') this.foreground(foreground);
 
-    this.position(x1, y1);
+    this.moveTo(x1, y1);
 
     while (y1 <= y2) {
       this.write(filler);
-      this.position(x1, ++y1);
+      this.moveTo(x1, ++y1);
     }
 
     return this;
