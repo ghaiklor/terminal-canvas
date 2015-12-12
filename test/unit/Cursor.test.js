@@ -287,7 +287,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[2J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.erase(ERASE_REGIONS.ENTIRE_SCREEN);
+    cursor.clear(ERASE_REGIONS.ENTIRE_SCREEN);
 
     mock.verify();
   });
@@ -301,7 +301,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[K')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.eraseToEnd();
+    cursor.clearToEnd();
 
     mock.verify();
   });
@@ -315,7 +315,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[1K')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.eraseToStart();
+    cursor.clearToStart();
 
     mock.verify();
   });
@@ -329,7 +329,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.eraseToDown();
+    cursor.clearToDown();
 
     mock.verify();
   });
@@ -343,7 +343,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[1J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.eraseToUp();
+    cursor.clearToUp();
 
     mock.verify();
   });
@@ -357,7 +357,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[2K')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.eraseLine();
+    cursor.clearLine();
 
     mock.verify();
   });
@@ -371,7 +371,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[2J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.eraseScreen();
+    cursor.clearScreen();
 
     mock.verify();
   });
@@ -451,7 +451,7 @@ describe('Cursor', () => {
     mock.expects('moveTo').exactly(6);
     mock.expects('write').exactly(5).withArgs('     ');
 
-    cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5});
+    cursor.fillRect({x1: 1, y1: 1, x2: 5, y2: 5});
 
     mock.verify();
   });
@@ -465,7 +465,7 @@ describe('Cursor', () => {
     mock.expects('moveTo').exactly(6);
     mock.expects('write').exactly(5).withArgs('TTTTT');
 
-    cursor.fill({x1: 1, y1: 1, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});
+    cursor.fillRect({x1: 1, y1: 1, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});
 
     mock.verify();
   });
@@ -475,7 +475,7 @@ describe('Cursor', () => {
     let mock = sinon.mock(cursor);
 
     mock.expects('resetCursor').once().returns(cursor);
-    mock.expects('eraseScreen').once().returns(cursor);
+    mock.expects('clearScreen').once().returns(cursor);
     mock.expects('write').once().withArgs(new Buffer('\u001bc')).returns(cursor);
 
     cursor.resetTTY();

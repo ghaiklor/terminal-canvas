@@ -123,6 +123,10 @@ export class Cursor {
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
   }
 
+  lineTo(x, y) {
+    return this;
+  }
+
   /**
    * Set the foreground color.
    * This color is used when text is rendering.
@@ -224,7 +228,7 @@ export class Cursor {
    * @param {String} region Value from {@link ERASE_REGIONS}
    * @returns {Cursor}
    */
-  erase(region) {
+  clear(region) {
     return this.saveCursor().resetCursor().write(Cursor.encodeToVT100(region)).restoreCursor();
   }
 
@@ -233,8 +237,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  eraseToEnd() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_END);
+  clearToEnd() {
+    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_END);
   }
 
   /**
@@ -242,8 +246,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  eraseToStart() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_START);
+  clearToStart() {
+    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_START);
   }
 
   /**
@@ -251,8 +255,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  eraseToDown() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
+  clearToDown() {
+    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
   }
 
   /**
@@ -260,8 +264,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  eraseToUp() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_UP);
+  clearToUp() {
+    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_UP);
   }
 
   /**
@@ -269,8 +273,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  eraseLine() {
-    return this.erase(ERASE_REGIONS.CURRENT_LINE);
+  clearLine() {
+    return this.clear(ERASE_REGIONS.CURRENT_LINE);
   }
 
   /**
@@ -278,8 +282,22 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  eraseScreen() {
-    return this.erase(ERASE_REGIONS.ENTIRE_SCREEN);
+  clearScreen() {
+    return this.clear(ERASE_REGIONS.ENTIRE_SCREEN);
+  }
+
+  clearRect(options = {}) {
+    let {x, y, width, height} = options;
+    let filler = ''.repeat(width + 1);
+
+    this.moveTo(x, y);
+
+    while (y <= height) {
+      this.write(filler);
+      this.moveTo(x1, ++y1);
+    }
+
+    return this;
   }
 
   /**
@@ -370,7 +388,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   resetTTY() {
-    return this.resetCursor().eraseScreen().write(Cursor.encodeToVT100('c'));
+    return this.resetCursor().clearScreen().write(Cursor.encodeToVT100('c'));
   }
 
   /**
@@ -387,21 +405,42 @@ export class Cursor {
    * @param {Number} [options.foreground] Foreground color from {@link COLORS}
    * @returns {Cursor}
    */
-  fill(options) {
-    // TODO: maybe move it to Rectangle shape?
-    let {x1, y1, x2, y2, symbol = ' ', background, foreground} = options;
-    let filler = symbol.repeat(x2 - x1 + 1);
+  fillRect(options = {}) {
+    let {x, y, width, height, symbol = ' ', background, foreground} = options;
+    let filler = symbol.repeat(width + 1);
 
     if (typeof background !== 'undefined') this.background(background);
     if (typeof foreground !== 'undefined') this.foreground(foreground);
 
-    this.moveTo(x1, y1);
+    this.moveTo(x, y);
 
-    while (y1 <= y2) {
+    while (y <= height + y) {
       this.write(filler);
-      this.moveTo(x1, ++y1);
+      this.moveTo(x, ++y);
     }
 
+    return this;
+  }
+
+  strokeRect(options = {}) {
+    let {x, y, width, height} = options;
+
+    return this;
+  }
+
+  fillText(options = {}) {
+    let {text, x, y} = options;
+
+    return this;
+  }
+
+  strokeText(options = {}) {
+    let {text, x, y} = options;
+
+    return this;
+  }
+
+  measureText(text) {
     return this;
   }
 
