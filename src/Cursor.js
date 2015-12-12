@@ -101,8 +101,7 @@ export class Cursor {
    * @param {Number} y Coordinate Y
    * @returns {Cursor}
    */
-  move(x, y) {
-    // TODO: think about proper name for this method
+  moveBy(x, y) {
     if (x < 0) this.left(-x);
     if (x > 0) this.right(x);
 
@@ -121,10 +120,6 @@ export class Cursor {
    */
   moveTo(x, y) {
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
-  }
-
-  lineTo(x, y) {
-    return this;
   }
 
   /**
@@ -228,7 +223,7 @@ export class Cursor {
    * @param {String} region Value from {@link ERASE_REGIONS}
    * @returns {Cursor}
    */
-  clear(region) {
+  erase(region) {
     return this.saveCursor().resetCursor().write(Cursor.encodeToVT100(region)).restoreCursor();
   }
 
@@ -237,8 +232,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  clearToEnd() {
-    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_END);
+  eraseToEnd() {
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_END);
   }
 
   /**
@@ -246,8 +241,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  clearToStart() {
-    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_START);
+  eraseToStart() {
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_START);
   }
 
   /**
@@ -255,8 +250,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  clearToDown() {
-    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
+  eraseToDown() {
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
   }
 
   /**
@@ -264,8 +259,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  clearToUp() {
-    return this.clear(ERASE_REGIONS.FROM_CURSOR_TO_UP);
+  eraseToUp() {
+    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_UP);
   }
 
   /**
@@ -273,8 +268,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  clearLine() {
-    return this.clear(ERASE_REGIONS.CURRENT_LINE);
+  eraseLine() {
+    return this.erase(ERASE_REGIONS.CURRENT_LINE);
   }
 
   /**
@@ -282,22 +277,8 @@ export class Cursor {
    *
    * @returns {Cursor}
    */
-  clearScreen() {
-    return this.clear(ERASE_REGIONS.ENTIRE_SCREEN);
-  }
-
-  clearRect(options = {}) {
-    let {x, y, width, height} = options;
-    let filler = ''.repeat(width + 1);
-
-    this.moveTo(x, y);
-
-    while (y <= height) {
-      this.write(filler);
-      this.moveTo(x1, ++y1);
-    }
-
-    return this;
+  eraseScreen() {
+    return this.erase(ERASE_REGIONS.ENTIRE_SCREEN);
   }
 
   /**
@@ -388,60 +369,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   resetTTY() {
-    return this.resetCursor().clearScreen().write(Cursor.encodeToVT100('c'));
-  }
-
-  /**
-   * Fill the specified region with symbol.
-   * By default this symbol is whitespace but you can change it and fill with another symbol.
-   *
-   * @param {Object} options
-   * @param {Number} options.x1 Start coordinate X
-   * @param {Number} options.y1 Start coordinate Y
-   * @param {Number} options.x2 End coordinate X
-   * @param {Number} options.y2 End coordinate Y
-   * @param {String} [options.symbol] Symbol that will be used for filling the region
-   * @param {Number} [options.background] Background color from {@link COLORS}
-   * @param {Number} [options.foreground] Foreground color from {@link COLORS}
-   * @returns {Cursor}
-   */
-  fillRect(options = {}) {
-    let {x, y, width, height, symbol = ' ', background, foreground} = options;
-    let filler = symbol.repeat(width + 1);
-
-    if (typeof background !== 'undefined') this.background(background);
-    if (typeof foreground !== 'undefined') this.foreground(foreground);
-
-    this.moveTo(x, y);
-
-    while (y <= height + y) {
-      this.write(filler);
-      this.moveTo(x, ++y);
-    }
-
-    return this;
-  }
-
-  strokeRect(options = {}) {
-    let {x, y, width, height} = options;
-
-    return this;
-  }
-
-  fillText(options = {}) {
-    let {text, x, y} = options;
-
-    return this;
-  }
-
-  strokeText(options = {}) {
-    let {text, x, y} = options;
-
-    return this;
-  }
-
-  measureText(text) {
-    return this;
+    return this.resetCursor().eraseScreen().write(Cursor.encodeToVT100('c'));
   }
 
   /**

@@ -287,7 +287,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[2J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.clear(ERASE_REGIONS.ENTIRE_SCREEN);
+    cursor.erase(ERASE_REGIONS.ENTIRE_SCREEN);
 
     mock.verify();
   });
@@ -301,7 +301,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[K')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.clearToEnd();
+    cursor.eraseToEnd();
 
     mock.verify();
   });
@@ -315,7 +315,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[1K')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.clearToStart();
+    cursor.eraseToStart();
 
     mock.verify();
   });
@@ -329,7 +329,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.clearToDown();
+    cursor.eraseToDown();
 
     mock.verify();
   });
@@ -343,7 +343,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[1J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.clearToUp();
+    cursor.eraseToUp();
 
     mock.verify();
   });
@@ -357,7 +357,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[2K')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.clearLine();
+    cursor.eraseLine();
 
     mock.verify();
   });
@@ -371,7 +371,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[2J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.clearScreen();
+    cursor.eraseScreen();
 
     mock.verify();
   });
@@ -442,40 +442,12 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly fill the specified region without optional arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('background').never();
-    mock.expects('foreground').never();
-    mock.expects('moveTo').exactly(6);
-    mock.expects('write').exactly(5).withArgs('     ');
-
-    cursor.fillRect({x1: 1, y1: 1, x2: 5, y2: 5});
-
-    mock.verify();
-  });
-
-  it('Should properly fill the specified region with optional arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('background').once().withArgs(11);
-    mock.expects('foreground').once().withArgs(0);
-    mock.expects('moveTo').exactly(6);
-    mock.expects('write').exactly(5).withArgs('TTTTT');
-
-    cursor.fillRect({x1: 1, y1: 1, x2: 5, y2: 5, symbol: 'T', background: COLORS.YELLOW, foreground: COLORS.BLACK});
-
-    mock.verify();
-  });
-
   it('Should properly reset the TTY state', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
     mock.expects('resetCursor').once().returns(cursor);
-    mock.expects('clearScreen').once().returns(cursor);
+    mock.expects('eraseScreen').once().returns(cursor);
     mock.expects('write').once().withArgs(new Buffer('\u001bc')).returns(cursor);
 
     cursor.resetTTY();
