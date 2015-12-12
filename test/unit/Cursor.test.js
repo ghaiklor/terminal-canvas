@@ -2,14 +2,6 @@ import { assert } from 'chai';
 import sinon from 'sinon';
 import { Cursor, COLORS, DISPLAY_MODES, ERASE_REGIONS } from '../../src/Cursor';
 
-before(() => {
-  sinon.stub(console, 'error');
-});
-
-after(() => {
-  console.error.restore();
-});
-
 describe('Cursor', () => {
   it('Should properly export colors, display modes and erase regions', () => {
     let cursor = new Cursor();
@@ -556,7 +548,9 @@ describe('Cursor', () => {
   });
 
   it('Should properly create new instance from static create()', () => {
-    let cursor = Cursor.create([], []);
+    let cursor = Cursor.create(process.stdout);
     assert.instanceOf(cursor, Cursor);
+    assert.deepEqual(cursor._buffer, []);
+    assert.equal(cursor._stream, process.stdout);
   });
 });
