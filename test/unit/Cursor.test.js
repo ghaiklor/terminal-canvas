@@ -11,14 +11,24 @@ after(() => {
 });
 
 describe('Cursor', () => {
+  it('Should properly export colors, display modes and erase regions', () => {
+    let cursor = new Cursor();
+    assert.isObject(cursor.COLORS);
+    assert.isObject(cursor.DISPLAY_MODES);
+    assert.isObject(cursor.ERASE_REGIONS);
+  });
+
   it('Should properly initialize with default arguments', () => {
     let cursor = new Cursor();
     assert.instanceOf(cursor, Cursor);
+    assert.equal(cursor._stream, process.stdout);
+    assert.deepEqual(cursor._buffer, []);
   });
 
-  it('Should properly initialize with custom stdout and stdin', () => {
-    let cursor = new Cursor([], [process.stdin, process.stdin]);
+  it('Should properly initialize with custom stdout', () => {
+    let cursor = new Cursor('test');
     assert.instanceOf(cursor, Cursor);
+    assert.equal(cursor._stream, 'test');
   });
 
   it('Should properly write to the cursor', () => {
@@ -27,6 +37,22 @@ describe('Cursor', () => {
     assert.deepEqual(cursor._buffer, []);
     cursor.write('test');
     assert.deepEqual(cursor._buffer, [new Buffer('test')]);
+    cursor.write(new Buffer('another'));
+    assert.deepEqual(cursor._buffer, [new Buffer('test'), new Buffer('another')]);
+  });
+
+  it('Should properly flush the buffer into the stream', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor._stream);
+
+    mock.expects('write').once().withArgs([new Buffer('test').toString(), new Buffer('another').toString()].join(''));
+
+    cursor.write('test');
+    cursor.write('another');
+    cursor.flush();
+
+    assert.deepEqual(cursor._buffer, []);
+    mock.verify();
   });
 
   it('Should properly move cursor up with default arguments', () => {
@@ -113,6 +139,21 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[5D'));
 
     cursor.left(5);
+
+    mock.verify();
+  });
+
+  it('Should properly set relative position of cursor', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('right').once().withArgs(5);
+    mock.expects('down').once().withArgs(10);
+    mock.expects('left').once().withArgs(5);
+    mock.expects('up').once().withArgs(10);
+
+    cursor.moveBy(5, 10);
+    cursor.moveBy(-5, -10);
 
     mock.verify();
   });
@@ -266,15 +307,6 @@ describe('Cursor', () => {
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[28m'));
     cursor.hidden(false);
-    mock.verify();
-  });
-
-  it('Should properly reset all display modes/attributes', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b[0m'));
-    cursor.resetCursor();
     mock.verify();
   });
 
@@ -442,21 +474,13 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly reset the TTY state', () => {
+  it('Should properly reset all display modes/attributes', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('resetCursor').once().returns(cursor);
-    mock.expects('eraseScreen').once().returns(cursor);
-    mock.expects('write').once().withArgs(new Buffer('\u001bc')).returns(cursor);
-
-    cursor.resetTTY();
-
+    mock.expects('write').once().withArgs(new Buffer('\u001b[0m'));
+    cursor.resetCursor();
     mock.verify();
-  });
-
-  it('Should properly encode to VT100 compatible symbol', () => {
-    assert.deepEqual(Cursor.encodeToVT100('[J'), new Buffer('\u001b[J'));
   });
 
   it('Should properly get TTY size based on getWindowSize', () => {
@@ -512,6 +536,23 @@ describe('Cursor', () => {
     assert.equal(cursor.getTTYHeight(), 10);
 
     mock.verify();
+  });
+
+  it('Should properly reset the TTY state', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('resetCursor').once().returns(cursor);
+    mock.expects('eraseScreen').once().returns(cursor);
+    mock.expects('write').once().withArgs(new Buffer('\u001bc')).returns(cursor);
+
+    cursor.resetTTY();
+
+    mock.verify();
+  });
+
+  it('Should properly encode to VT100 compatible symbol', () => {
+    assert.deepEqual(Cursor.encodeToVT100('[J'), new Buffer('\u001b[J'));
   });
 
   it('Should properly create new instance from static create()', () => {
