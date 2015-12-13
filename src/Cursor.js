@@ -14,10 +14,6 @@ export * from './eraseRegions';
  * @since 1.0.0
  */
 export class Cursor {
-  COLORS = COLORS;
-  DISPLAY_MODES = DISPLAY_MODES;
-  ERASE_REGIONS = ERASE_REGIONS;
-
   /**
    * By default, creates simple cursor that writes direct to `stdout`.
    * If you want to work with other streams, you can pass custom `stdout` stream in.
@@ -26,6 +22,10 @@ export class Cursor {
    * @param {Stream} [stream=process.stdout] Streams that will be used as target for cursor
    */
   constructor(stream = process.stdout) {
+    this.COLORS = COLORS;
+    this.DISPLAY_MODES = DISPLAY_MODES;
+    this.ERASE_REGIONS = ERASE_REGIONS;
+
     this._buffer = [];
     this._stream = stream;
   }
