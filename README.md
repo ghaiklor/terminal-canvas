@@ -21,11 +21,15 @@ Install it via npm:
 npm install kittik-cursor
 ```
 
-And include in your project:
+Include in your project:
 
 ```javascript
 import { Cursor } from 'kittik-cursor';
 ```
+
+## API
+
+For API documentation, take a look into [Cursor.md](docs/Cursor.md).
 
 ## License
 
