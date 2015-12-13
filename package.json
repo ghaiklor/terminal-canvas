@@ -10,7 +10,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "compile": "babel src --out-dir lib",
+    "clean": "rm -rf ./lib",
+    "compile": "npm run clean; babel src --out-dir lib",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "prepublish": "npm run compile",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
