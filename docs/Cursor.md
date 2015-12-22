@@ -240,6 +240,26 @@ Erase the entire screen.
 
 **Returns**: `Cursor`
 
+### Cursor.image(image, name, width, height, preserveAspectRatio, inline) 
+
+Draw an image in terminal.
+
+**Parameters**
+
+**image**: `String`, Base64 encoded image contents
+
+**name**: `String`, Base64 encoded filename
+
+**width**: `Number`, Width to render, can be 100 (cells), 100px, 100% or auto
+
+**height**: `Number`, Height to render, can be 100 (cells), 100px, 100% or auto
+
+**preserveAspectRatio**: `Boolean`, If set to 0, the image's aspect ratio will not be respected
+
+**inline**: `Boolean`, If set to 1, the file will be displayed inline in the terminal
+
+**Returns**: `Cursor`
+
 ### Cursor.hideCursor() 
 
 Set the cursor invisible.
