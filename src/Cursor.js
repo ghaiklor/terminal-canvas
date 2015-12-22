@@ -282,6 +282,22 @@ export class Cursor {
   }
 
   /**
+   * Draw an image in terminal.
+   *
+   * @param {String} image Base64 encoded image contents
+   * @param {String} [name='Unnamed file'] Base64 encoded filename
+   * @param {Number} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Number} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Boolean} [preserveAspectRatio=true] If set to 0, the image's aspect ratio will not be respected
+   * @param {Boolean} [inline=true] If set to 1, the file will be displayed inline in the terminal
+   * @returns {Cursor}
+   */
+  image({image, name='Unnamed file', width='auto', height='auto', preserveAspectRatio = true, inline = true}) {
+    let args = `name=${name};width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=${inline ? 1 : 0}`;
+    return this.write(Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
+  }
+
+  /**
    * Set the cursor invisible.
    *
    * @returns {Cursor}
