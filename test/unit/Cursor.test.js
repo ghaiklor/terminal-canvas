@@ -400,6 +400,35 @@ describe('Cursor', () => {
     mock.verify();
   });
 
+  it('Should properly render image with default options', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=name=Unnamed file;width=auto;height=auto;preserveAspectRatio=1;inline=1:base64Image^G'));
+
+    cursor.image({image: 'base64Image'});
+
+    mock.verify();
+  });
+
+  it('Should properly render image with custom options', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=name=test;width=200px;height=200px;preserveAspectRatio=0;inline=0:base64Image^G'));
+
+    cursor.image({
+      image: 'base64Image',
+      name: 'test',
+      width: '200px',
+      height: '200px',
+      preserveAspectRatio: false,
+      inline: false
+    });
+
+    mock.verify();
+  });
+
   it('Should properly hide the cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
