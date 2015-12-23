@@ -240,6 +240,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   erase(region) {
+    if (Object.keys(ERASE_REGIONS).every(key => region !== ERASE_REGIONS[key])) return this;
     return this.saveCursor().resetCursor().write(Cursor.encodeToVT100(region)).restoreCursor();
   }
 
