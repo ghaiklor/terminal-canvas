@@ -353,13 +353,7 @@ export class Cursor {
    * @returns {{width: Number, height: Number}}
    */
   getTTYSize() {
-    if (this._stream.getWindowSize) {
-      return {width: this._stream.getWindowSize()[0], height: this._stream.getWindowSize()[1]};
-    } else if (this._stream.columns && this._stream.rows) {
-      return {width: this._stream.columns, height: this._stream.rows};
-    } else {
-      throw new Error('Failed to determine TTY size');
-    }
+    return {width: this.getTTYWidth(), height: this.getTTYHeight()};
   }
 
   /**
@@ -368,7 +362,7 @@ export class Cursor {
    * @returns {Number}
    */
   getTTYWidth() {
-    return this.getTTYSize().width;
+    return +this._stream.columns;
   }
 
   /**
@@ -377,7 +371,7 @@ export class Cursor {
    * @returns {Number}
    */
   getTTYHeight() {
-    return this.getTTYSize().height;
+    return +this._stream.rows;
   }
 
   /**
