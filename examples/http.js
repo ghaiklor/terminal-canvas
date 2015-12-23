@@ -5,8 +5,7 @@ var theta = 0;
 var points = [];
 
 http.createServer(function (req, res) {
-  res.setHeader('content-type', 'text/plain');
-  res.setHeader('charset', 'us-ascii');
+  res.setHeader('content-type', 'text/plain; charset=us-ascii');
 
   var cursor = new Cursor(res).resetTTY();
   var colors = [cursor.COLORS.RED, cursor.COLORS.YELLOW, cursor.COLORS.GREEN, cursor.COLORS.DARK_CYAN, cursor.COLORS.BLUE, cursor.COLORS.MAGENTA];
