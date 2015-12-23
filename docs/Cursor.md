@@ -35,13 +35,29 @@ Write from the buffer to stream and clear it up.
 
 **Returns**: `Cursor`
 
+### Cursor.image(image, width, height, preserveAspectRatio) 
+
+Draw an image in terminal.
+
+**Parameters**
+
+**image**: `String`, Base64 encoded image contents
+
+**width**: `Number`, Width to render, can be 100 (cells), 100px, 100% or auto
+
+**height**: `Number`, Height to render, can be 100 (cells), 100px, 100% or auto
+
+**preserveAspectRatio**: `Boolean`, If set to 0, the image's aspect ratio will not be respected
+
+**Returns**: `Cursor`
+
 ### Cursor.up(y) 
 
 Move the cursor up.
 
 **Parameters**
 
-**y**: `Number`, Rows count
+**y**: `Number`, Rows count must be positive number otherwise it just wouldn't work
 
 **Returns**: `Cursor`
 
@@ -51,7 +67,7 @@ Move the cursor down.
 
 **Parameters**
 
-**y**: `Number`, Rows count
+**y**: `Number`, Rows count must be positive number otherwise it just wouldn't work
 
 **Returns**: `Cursor`
 
@@ -61,7 +77,7 @@ Move the cursor right.
 
 **Parameters**
 
-**x**: `Number`, Columns count
+**x**: `Number`, Columns count must be positive number otherwise it just wouldn't work
 
 **Returns**: `Cursor`
 
@@ -71,19 +87,19 @@ Move the cursor left.
 
 **Parameters**
 
-**x**: `Number`, Columns count
+**x**: `Number`, Columns count must be positive number otherwise it just wouldn't work
 
 **Returns**: `Cursor`
 
 ### Cursor.moveBy(x, y) 
 
-Move the cursor position relative on current coordinates.
+Move the cursor position relative current coordinates.
 
 **Parameters**
 
-**x**: `Number`, Coordinate X
+**x**: `Number`, Offset by X coordinate
 
-**y**: `Number`, Coordinate Y
+**y**: `Number`, Offset by Y coordinate
 
 **Returns**: `Cursor`
 
@@ -93,9 +109,9 @@ Set the cursor position by absolute coordinates.
 
 **Parameters**
 
-**x**: `Number`, Coordinate X
+**x**: `Number`, X coordinate
 
-**y**: `Number`, Coordinate Y
+**y**: `Number`, Y coordinate
 
 **Returns**: `Cursor`
 
@@ -103,6 +119,7 @@ Set the cursor position by absolute coordinates.
 
 Set the foreground color.
 This color is used when text is rendering.
+Color can be in range 0...255 (256-bit palette).
 
 **Parameters**
 
@@ -114,6 +131,7 @@ This color is used when text is rendering.
 
 Set the background color.
 This color is used for filling the whole cell in the TTY.
+Color can be in range 0...255 (256-bit palette).
 
 **Parameters**
 
@@ -237,26 +255,6 @@ Erase current line.
 ### Cursor.eraseScreen() 
 
 Erase the entire screen.
-
-**Returns**: `Cursor`
-
-### Cursor.image(image, name, width, height, preserveAspectRatio, inline) 
-
-Draw an image in terminal.
-
-**Parameters**
-
-**image**: `String`, Base64 encoded image contents
-
-**name**: `String`, Base64 encoded filename
-
-**width**: `Number`, Width to render, can be 100 (cells), 100px, 100% or auto
-
-**height**: `Number`, Height to render, can be 100 (cells), 100px, 100% or auto
-
-**preserveAspectRatio**: `Boolean`, If set to 0, the image's aspect ratio will not be respected
-
-**inline**: `Boolean`, If set to 1, the file will be displayed inline in the terminal
 
 **Returns**: `Cursor`
 
