@@ -404,7 +404,7 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=name=Unnamed file;width=auto;height=auto;preserveAspectRatio=1;inline=1:base64Image^G'));
+    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=auto;height=auto;preserveAspectRatio=1;inline=1:base64Image^G'));
 
     cursor.image({image: 'base64Image'});
 
@@ -415,15 +415,13 @@ describe('Cursor', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
-    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=name=test;width=200px;height=200px;preserveAspectRatio=0;inline=0:base64Image^G'));
+    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=200px;height=200px;preserveAspectRatio=0;inline=1:base64Image^G'));
 
     cursor.image({
       image: 'base64Image',
-      name: 'test',
       width: '200px',
       height: '200px',
-      preserveAspectRatio: false,
-      inline: false
+      preserveAspectRatio: false
     });
 
     mock.verify();
