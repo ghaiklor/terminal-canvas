@@ -58,8 +58,8 @@ export class Cursor {
    * Draw an image in terminal.
    *
    * @param {String} image Base64 encoded image contents
-   * @param {Number} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Number} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Number|String} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Number|String} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
    * @param {Boolean} [preserveAspectRatio=true] If set to 0, the image's aspect ratio will not be respected
    * @returns {Cursor}
    */
