@@ -516,59 +516,21 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly get TTY size based on getWindowSize', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(process.stdout);
-
-    mock.expects('getWindowSize').twice().returns([10, 10]);
-
-    let {width, height} = cursor.getTTYSize();
-    assert.equal(width, 10);
-    assert.equal(height, 10);
-
-    mock.verify();
-  });
-
   it('Should properly get TTY size based on process columns and rows', () => {
-    process.stdout.getWindowSize = null;
-    process.stdout.columns = 10;
-    process.stdout.rows = 10;
-
     let cursor = new Cursor();
     let {width, height} = cursor.getTTYSize();
-    assert.equal(width, 10);
-    assert.equal(height, 10);
-  });
-
-  it('Should properly throw error if failed to determine TTY size', () => {
-    process.stdout.getWindowSize = null;
-    process.stdout.columns = null;
-    process.stdout.rows = null;
-
-    let cursor = new Cursor();
-    assert.throws(() => cursor.getTTYSize(), Error);
+    assert.isNumber(width);
+    assert.isNumber(height);
   });
 
   it('Should properly get TTY width', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('getTTYSize').once().returns({width: 10, height: 10});
-
-    assert.equal(cursor.getTTYWidth(), 10);
-
-    mock.verify();
+    assert.isNumber(cursor.getTTYWidth());
   });
 
   it('Should properly get TTY height', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('getTTYSize').once().returns({width: 10, height: 10});
-
-    assert.equal(cursor.getTTYHeight(), 10);
-
-    mock.verify();
+    assert.isNumber(cursor.getTTYHeight());
   });
 
   it('Should properly reset the TTY state', () => {
