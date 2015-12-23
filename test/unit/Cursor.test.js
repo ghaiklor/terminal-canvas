@@ -302,6 +302,20 @@ describe('Cursor', () => {
     mock.verify();
   });
 
+  it('Should properly ignore wrong erase region', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('saveCursor').never().returns(cursor);
+    mock.expects('resetCursor').never().returns(cursor);
+    mock.expects('write').never().returns(cursor);
+    mock.expects('restoreCursor').never().returns(cursor);
+
+    assert.instanceOf(cursor.erase('wrong'), Cursor);
+
+    mock.verify();
+  });
+
   it('Should properly erase the specified region', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
