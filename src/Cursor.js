@@ -55,9 +55,23 @@ export class Cursor {
   }
 
   /**
+   * Draw an image in terminal.
+   *
+   * @param {String} image Base64 encoded image contents
+   * @param {Number} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Number} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Boolean} [preserveAspectRatio=true] If set to 0, the image's aspect ratio will not be respected
+   * @returns {Cursor}
+   */
+  image({image, width='auto', height='auto', preserveAspectRatio = true}) {
+    let args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
+    return this.write(Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
+  }
+
+  /**
    * Move the cursor up.
    *
-   * @param {Number} [y=1] Rows count
+   * @param {Number} [y=1] Rows count must be positive number otherwise it just wouldn't work
    * @returns {Cursor}
    */
   up(y = 1) {
@@ -67,7 +81,7 @@ export class Cursor {
   /**
    * Move the cursor down.
    *
-   * @param {Number} [y=1] Rows count
+   * @param {Number} [y=1] Rows count must be positive number otherwise it just wouldn't work
    * @returns {Cursor}
    */
   down(y = 1) {
@@ -77,7 +91,7 @@ export class Cursor {
   /**
    * Move the cursor right.
    *
-   * @param {Number} [x=1] Columns count
+   * @param {Number} [x=1] Columns count must be positive number otherwise it just wouldn't work
    * @returns {Cursor}
    */
   right(x = 1) {
@@ -87,7 +101,7 @@ export class Cursor {
   /**
    * Move the cursor left.
    *
-   * @param {Number} [x=1] Columns count
+   * @param {Number} [x=1] Columns count must be positive number otherwise it just wouldn't work
    * @returns {Cursor}
    */
   left(x = 1) {
@@ -95,10 +109,10 @@ export class Cursor {
   }
 
   /**
-   * Move the cursor position relative on current coordinates.
+   * Move the cursor position relative current coordinates.
    *
-   * @param {Number} x Coordinate X
-   * @param {Number} y Coordinate Y
+   * @param {Number} x Offset by X coordinate
+   * @param {Number} y Offset by Y coordinate
    * @returns {Cursor}
    */
   moveBy(x, y) {
@@ -114,8 +128,8 @@ export class Cursor {
   /**
    * Set the cursor position by absolute coordinates.
    *
-   * @param {Number} x Coordinate X
-   * @param {Number} y Coordinate Y
+   * @param {Number} x X coordinate
+   * @param {Number} y Y coordinate
    * @returns {Cursor}
    */
   moveTo(x, y) {
@@ -125,6 +139,7 @@ export class Cursor {
   /**
    * Set the foreground color.
    * This color is used when text is rendering.
+   * Color can be in range 0...255 (256-bit palette).
    *
    * @param {Number} color Value from {@link COLORS}
    * @returns {Cursor}
@@ -136,6 +151,7 @@ export class Cursor {
   /**
    * Set the background color.
    * This color is used for filling the whole cell in the TTY.
+   * Color can be in range 0...255 (256-bit palette).
    *
    * @param {Number} color Value from {@link COLORS}
    * @returns {Cursor}
@@ -279,22 +295,6 @@ export class Cursor {
    */
   eraseScreen() {
     return this.erase(ERASE_REGIONS.ENTIRE_SCREEN);
-  }
-
-  /**
-   * Draw an image in terminal.
-   *
-   * @param {String} image Base64 encoded image contents
-   * @param {String} [name='Unnamed file'] Base64 encoded filename
-   * @param {Number} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Number} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Boolean} [preserveAspectRatio=true] If set to 0, the image's aspect ratio will not be respected
-   * @param {Boolean} [inline=true] If set to 1, the file will be displayed inline in the terminal
-   * @returns {Cursor}
-   */
-  image({image, name='Unnamed file', width='auto', height='auto', preserveAspectRatio = true, inline = true}) {
-    let args = `name=${name};width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=${inline ? 1 : 0}`;
-    return this.write(Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
   }
 
   /**
