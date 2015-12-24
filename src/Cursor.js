@@ -18,7 +18,7 @@ export * from './eraseRegions';
 export class Cursor {
   /**
    * By default, creates simple cursor that writes direct to `stdout`.
-   * If you want to work with other streams, you can pass custom `stdout` stream in.
+   * If you want to work with other streams, you can pass custom `stdout` stream in or an array of streams.
    *
    * @constructor
    * @param {Stream|Array<Stream>} [stream=process.stdout] Streams that will be used as target for cursor
@@ -28,8 +28,8 @@ export class Cursor {
     this.DISPLAY_MODES = DISPLAY_MODES;
     this.ERASE_REGIONS = ERASE_REGIONS;
 
-    this._buffer = [];
-    this._stream = Array.isArray(stream) ? stream : [stream];
+    this._buffer = '';
+    this._streams = Array.isArray(stream) ? stream : [stream];
   }
 
   /**
@@ -41,7 +41,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    this._buffer.push(Buffer.isBuffer(data) ? data : new Buffer(data));
+    this._buffer += Buffer.isBuffer(data) ? data.toString() : data;
     return this;
   }
 
@@ -51,35 +51,36 @@ export class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    const buffer = this._buffer.join('');
-    this._stream.forEach(stream => stream.write(buffer));
-    this._buffer = [];
+    this._streams.forEach(stream => stream.write(this._buffer));
+    this._buffer = '';
     return this;
   }
 
   /**
-   * Pipe cursor into another stream.
+   * Pipe cursor to another stream.
    * Useful when you want to attach cursor to another stream, response stream, for instance.
+   * It doesn't clear previous streams, just pushes the new one to them.
    *
    * @param {Stream} stream
    * @returns {Cursor}
    */
   pipe(stream) {
-    this._stream.push(stream);
+    this._streams.push(stream);
     return this;
   }
 
   /**
    * Draw an image in terminal.
+   * Supports only by few terminals, as I know only in iTerm 2 (v2.9).
    *
-   * @param {String} image Base64 encoded image contents
+   * @param {String} image Base64 encoded image content
    * @param {Number|String} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
    * @param {Number|String} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Boolean} [preserveAspectRatio=true] If set to 0, the image's aspect ratio will not be respected
+   * @param {Boolean} [preserveAspectRatio=true] If set to false, the image's aspect ratio will not be respected
    * @returns {Cursor}
    */
   image({image, width='auto', height='auto', preserveAspectRatio = true}) {
-    let args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
+    const args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
     return this.write(Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
   }
 
