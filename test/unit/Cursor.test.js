@@ -13,45 +13,45 @@ describe('Cursor', () => {
   it('Should properly initialize with default arguments', () => {
     let cursor = new Cursor();
     assert.instanceOf(cursor, Cursor);
-    assert.deepEqual(cursor._stream, [process.stdout]);
-    assert.deepEqual(cursor._buffer, []);
+    assert.deepEqual(cursor._streams, [process.stdout]);
+    assert.equal(cursor._buffer, '');
   });
 
   it('Should properly initialize with custom stdout', () => {
     let cursor = new Cursor(['test', 'another']);
     assert.instanceOf(cursor, Cursor);
-    assert.deepEqual(cursor._stream, ['test', 'another']);
+    assert.deepEqual(cursor._streams, ['test', 'another']);
   });
 
   it('Should properly write to the cursor', () => {
     let cursor = new Cursor();
 
-    assert.deepEqual(cursor._buffer, []);
+    assert.equal(cursor._buffer, '');
     cursor.write('test');
-    assert.deepEqual(cursor._buffer, [new Buffer('test')]);
+    assert.equal(cursor._buffer, 'test');
     cursor.write(new Buffer('another'));
-    assert.deepEqual(cursor._buffer, [new Buffer('test'), new Buffer('another')]);
+    assert.equal(cursor._buffer, 'testanother');
   });
 
   it('Should properly flush the buffer into the stream', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._stream[0]);
+    let mock = sinon.mock(cursor._streams[0]);
 
-    mock.expects('write').once().withArgs([new Buffer('test').toString(), new Buffer('another').toString()].join(''));
+    mock.expects('write').once().withArgs('testanother');
 
     cursor.write('test');
     cursor.write('another');
     cursor.flush();
 
-    assert.deepEqual(cursor._buffer, []);
+    assert.equal(cursor._buffer, '');
     mock.verify();
   });
 
   it('Should properly pipe into another stream', () => {
     let cursor = new Cursor();
-    assert.deepEqual(cursor._stream, [process.stdout]);
+    assert.deepEqual(cursor._streams, [process.stdout]);
     assert.instanceOf(cursor.pipe('ANOTHER_STREAM'), Cursor);
-    assert.deepEqual(cursor._stream, [process.stdout, 'ANOTHER_STREAM']);
+    assert.deepEqual(cursor._streams, [process.stdout, 'ANOTHER_STREAM']);
   });
 
   it('Should properly move cursor up with default arguments', () => {
@@ -543,7 +543,7 @@ describe('Cursor', () => {
   it('Should properly create new instance from static create()', () => {
     let cursor = Cursor.create(process.stdout);
     assert.instanceOf(cursor, Cursor);
-    assert.deepEqual(cursor._buffer, []);
-    assert.deepEqual(cursor._stream, [process.stdout]);
+    assert.equal(cursor._buffer, '');
+    assert.deepEqual(cursor._streams, [process.stdout]);
   });
 });
