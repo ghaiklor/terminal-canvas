@@ -516,23 +516,6 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly get TTY size based on process columns and rows', () => {
-    let cursor = new Cursor();
-    let {width, height} = cursor.getTTYSize();
-    assert.isNumber(width);
-    assert.isNumber(height);
-  });
-
-  it('Should properly get TTY width', () => {
-    let cursor = new Cursor();
-    assert.isNumber(cursor.getTTYWidth());
-  });
-
-  it('Should properly get TTY height', () => {
-    let cursor = new Cursor();
-    assert.isNumber(cursor.getTTYHeight());
-  });
-
   it('Should properly reset the TTY state', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
