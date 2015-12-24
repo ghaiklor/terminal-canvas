@@ -15,7 +15,7 @@
 
 ## Class: Cursor
 By default, creates simple cursor that writes direct to `stdout`.
-If you want to work with other streams, you can pass custom `stdout` stream in.
+If you want to work with other streams, you can pass custom `stdout` stream in or an array of streams.
 
 ### Cursor.write(data) 
 
@@ -35,19 +35,34 @@ Write from the buffer to stream and clear it up.
 
 **Returns**: `Cursor`
 
-### Cursor.image(image, width, height, preserveAspectRatio) 
+### Cursor.pipe(stream) 
 
-Draw an image in terminal.
+Pipe cursor to another stream.
+Useful when you want to attach cursor to another stream, response stream, for instance.
+It doesn't clear previous streams, just pushes the new one to them.
 
 **Parameters**
 
-**image**: `String`, Base64 encoded image contents
+**stream**: `Stream`, Pipe cursor to another stream.
+Useful when you want to attach cursor to another stream, response stream, for instance.
+It doesn't clear previous streams, just pushes the new one to them.
 
-**width**: `Number`, Width to render, can be 100 (cells), 100px, 100% or auto
+**Returns**: `Cursor`
 
-**height**: `Number`, Height to render, can be 100 (cells), 100px, 100% or auto
+### Cursor.image(image, width, height, preserveAspectRatio) 
 
-**preserveAspectRatio**: `Boolean`, If set to 0, the image's aspect ratio will not be respected
+Draw an image in terminal.
+Supports only by few terminals, as I know only in iTerm 2 (v2.9).
+
+**Parameters**
+
+**image**: `String`, Base64 encoded image content
+
+**width**: `Number | String`, Width to render, can be 100 (cells), 100px, 100% or auto
+
+**height**: `Number | String`, Height to render, can be 100 (cells), 100px, 100% or auto
+
+**preserveAspectRatio**: `Boolean`, If set to false, the image's aspect ratio will not be respected
 
 **Returns**: `Cursor`
 
@@ -297,24 +312,6 @@ Restore cursor position and attributes from stack.
 Reset all display modes and cursor attributes to default.
 
 **Returns**: `Cursor`
-
-### Cursor.getTTYSize() 
-
-Get TTY sizes from stream, if it's possible.
-
-**Returns**: `Object`
-
-### Cursor.getTTYWidth() 
-
-Get width of TTY.
-
-**Returns**: `Number`
-
-### Cursor.getTTYHeight() 
-
-Get height of TTY.
-
-**Returns**: `Number`
 
 ### Cursor.resetTTY() 
 
