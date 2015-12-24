@@ -19,7 +19,7 @@ export class Cursor {
    * If you want to work with other streams, you can pass custom `stdout` stream in.
    *
    * @constructor
-   * @param {Stream} [stream=process.stdout] Streams that will be used as target for cursor
+   * @param {Stream|Array<Stream>} [stream=process.stdout] Streams that will be used as target for cursor
    */
   constructor(stream = process.stdout) {
     this.COLORS = COLORS;
@@ -27,7 +27,7 @@ export class Cursor {
     this.ERASE_REGIONS = ERASE_REGIONS;
 
     this._buffer = [];
-    this._stream = stream;
+    this._stream = Array.isArray(stream) ? stream : [stream];
   }
 
   /**
@@ -49,7 +49,8 @@ export class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    this._stream.write(this._buffer.join(''));
+    const buffer = this._buffer.join('');
+    this._stream.forEach(stream => stream.write(buffer));
     this._buffer = [];
     return this;
   }
