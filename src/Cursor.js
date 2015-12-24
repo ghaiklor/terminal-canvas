@@ -56,6 +56,18 @@ export class Cursor {
   }
 
   /**
+   * Pipe cursor into another stream.
+   * Useful when you want to attach cursor to another stream, response stream, for instance.
+   *
+   * @param {Stream} stream
+   * @returns {Cursor}
+   */
+  pipe(stream) {
+    this._stream.push(stream);
+    return this;
+  }
+
+  /**
    * Draw an image in terminal.
    *
    * @param {String} image Base64 encoded image contents
