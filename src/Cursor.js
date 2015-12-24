@@ -348,33 +348,6 @@ export class Cursor {
   }
 
   /**
-   * Get TTY sizes from stream, if it's possible.
-   *
-   * @returns {{width: Number, height: Number}}
-   */
-  getTTYSize() {
-    return {width: this.getTTYWidth(), height: this.getTTYHeight()};
-  }
-
-  /**
-   * Get width of TTY.
-   *
-   * @returns {Number}
-   */
-  getTTYWidth() {
-    return +this._stream.columns;
-  }
-
-  /**
-   * Get height of TTY.
-   *
-   * @returns {Number}
-   */
-  getTTYHeight() {
-    return +this._stream.rows;
-  }
-
-  /**
    * Reset all terminal settings to default.
    *
    * @returns {Cursor}
