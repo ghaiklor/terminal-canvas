@@ -11,6 +11,8 @@ export * from './eraseRegions';
  *
  * @see http://www.termsys.demon.co.uk/vtansi.htm
  * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
+ * @see http://man7.org/linux/man-pages/man4/console_codes.4.html
+ * @see http://www.x.org/docs/xterm/ctlseqs.pdf
  * @since 1.0.0
  */
 export class Cursor {
