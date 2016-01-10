@@ -157,10 +157,12 @@ export class Cursor {
    * This color is used when text is rendering.
    * Color can be in range 0...255 (256-bit palette).
    *
-   * @param {Number} color Value from {@link COLORS}
+   * @param {Number|String} color Value from {@link COLORS} or key name
    * @returns {Cursor}
    */
   foreground(color) {
+    if (typeof color === 'string') color = COLORS[color.toUpperCase()];
+
     return this.write(Cursor.encodeToVT100(`[38;5;${color}m`));
   }
 
@@ -169,10 +171,12 @@ export class Cursor {
    * This color is used for filling the whole cell in the TTY.
    * Color can be in range 0...255 (256-bit palette).
    *
-   * @param {Number} color Value from {@link COLORS}
+   * @param {Number|String} color Value from {@link COLORS} or key name
    * @returns {Cursor}
    */
   background(color) {
+    if (typeof color === 'string') color = COLORS[color.toUpperCase()];
+
     return this.write(Cursor.encodeToVT100(`[48;5;${color}m`));
   }
 
