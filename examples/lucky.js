@@ -1,6 +1,6 @@
 var Cursor = require('../lib/Cursor').Cursor;
 var cursor = new Cursor().resetTTY();
-var colors = [cursor.COLORS.RED, cursor.COLORS.CYAN_1, cursor.COLORS.YELLOW, cursor.COLORS.GREEN, cursor.COLORS.BLUE];
+var colors = ['RED', 'CYAN_1', 'YELLOW', 'GREEN', 'BLUE'];
 var text = 'Always after me lucky charms.';
 var offset = 0;
 

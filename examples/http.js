@@ -8,7 +8,7 @@ http.createServer(function (req, res) {
   res.setHeader('content-type', 'text/plain; charset=us-ascii');
 
   var cursor = new Cursor(res).resetTTY();
-  var colors = [cursor.COLORS.RED, cursor.COLORS.YELLOW, cursor.COLORS.GREEN, cursor.COLORS.DARK_CYAN, cursor.COLORS.BLUE, cursor.COLORS.MAGENTA];
+  var colors = ['red', 'yellow', 'green', 'dark_cyan', 'blue', 'magenta'];
 
   setInterval(function () {
     var x = 2 + (radius + Math.cos(theta) * radius) * 2;

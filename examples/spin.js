@@ -3,7 +3,7 @@ var cursor = new Cursor().resetTTY().flush();
 var radius = 10;
 var theta = 0;
 var points = [];
-var colors = [cursor.COLORS.RED, cursor.COLORS.YELLOW, cursor.COLORS.GREEN, cursor.COLORS.DARK_CYAN, cursor.COLORS.BLUE, cursor.COLORS.MAGENTA];
+var colors = ['RED', 'YELLOW', 'GREEN', 'DARK_CYAN', 'BLUE', 'MAGENTA'];
 
 setInterval(function () {
   var x = 2 + (radius + Math.cos(theta) * radius) * 2;
