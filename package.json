@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf ./coverage ./docs ./lib",
+    "clean": "rm -rf ./docs ./lib",
     "compile": "npm run clean; npm run docs; babel src --out-dir lib",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "jsdox --output docs src",
@@ -22,7 +22,6 @@
   "devDependencies": {
     "babel-cli": "6.4.0",
     "babel-preset-es2015-node4": "2.0.2",
-    "babel-preset-stage-0": "6.3.13",
     "chai": "3.4.1",
     "coveralls": "2.11.6",
     "cz-conventional-changelog": "1.1.5",
