@@ -1,15 +1,8 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
-import { Cursor, COLORS, DISPLAY_MODES, ERASE_REGIONS } from '../../src/Cursor';
+import { Cursor } from '../../src/Cursor';
 
 describe('Cursor', () => {
-  it('Should properly export colors, display modes and erase regions', () => {
-    let cursor = new Cursor();
-    assert.isObject(cursor.COLORS);
-    assert.isObject(cursor.DISPLAY_MODES);
-    assert.isObject(cursor.ERASE_REGIONS);
-  });
-
   it('Should properly initialize with default arguments', () => {
     let cursor = new Cursor();
     assert.instanceOf(cursor, Cursor);
@@ -174,7 +167,7 @@ describe('Cursor', () => {
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[38;5;11m'));
 
-    cursor.foreground(COLORS.YELLOW);
+    cursor.foreground(11);
 
     mock.verify();
   });
@@ -196,7 +189,7 @@ describe('Cursor', () => {
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[48;5;0m'));
 
-    cursor.background(COLORS.BLACK);
+    cursor.background(0);
 
     mock.verify();
   });
@@ -218,7 +211,7 @@ describe('Cursor', () => {
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[5m'));
 
-    cursor.display(DISPLAY_MODES.BLINK);
+    cursor.display(5);
 
     mock.verify();
   });
@@ -354,7 +347,7 @@ describe('Cursor', () => {
     mock.expects('write').once().withArgs(new Buffer('\u001b[2J')).returns(cursor);
     mock.expects('restoreCursor').once().returns(cursor);
 
-    cursor.erase(ERASE_REGIONS.ENTIRE_SCREEN);
+    cursor.erase('[2J');
 
     mock.verify();
   });
