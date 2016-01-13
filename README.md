@@ -27,10 +27,6 @@ Include in your project:
 import { Cursor } from 'kittik-cursor';
 ```
 
-## API
-
-For API documentation, take a look into [Cursor.md](docs/Cursor.md).
-
 ## License
 
 The MIT License (MIT)
