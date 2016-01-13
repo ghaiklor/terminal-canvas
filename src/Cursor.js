@@ -2,10 +2,6 @@ import { COLORS } from './colors';
 import { DISPLAY_MODES } from './displayModes';
 import { ERASE_REGIONS } from './eraseRegions';
 
-export * from './colors';
-export * from './displayModes';
-export * from './eraseRegions';
-
 /**
  * Cursor implements low-level API to terminal control codes.
  *
@@ -24,10 +20,6 @@ export class Cursor {
    * @param {Stream|Array<Stream>} [stream=process.stdout] Streams that will be used as target for cursor
    */
   constructor(stream = process.stdout) {
-    this.COLORS = COLORS;
-    this.DISPLAY_MODES = DISPLAY_MODES;
-    this.ERASE_REGIONS = ERASE_REGIONS;
-
     this._buffer = '';
     this._streams = Array.isArray(stream) ? stream : [stream];
   }
