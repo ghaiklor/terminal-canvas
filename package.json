@@ -10,10 +10,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf ./docs ./lib",
-    "compile": "npm run clean; npm run docs; babel src --out-dir lib",
+    "clean": "rm -rf ./lib",
+    "compile": "npm run clean; babel src --out-dir lib",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "docs": "jsdox --output docs src",
     "prepublish": "npm run compile",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "test": "babel-node ./node_modules/.bin/isparta cover _mocha"
@@ -26,7 +25,6 @@
     "coveralls": "2.11.6",
     "cz-conventional-changelog": "1.1.5",
     "isparta": "4.0.0",
-    "jsdox": "0.4.9",
     "mocha": "2.3.4",
     "semantic-release": "4.3.5",
     "sinon": "1.17.2"
