@@ -167,34 +167,12 @@ describe('Cursor', () => {
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[38;5;11m'));
 
-    cursor.foreground(11);
-
-    mock.verify();
-  });
-
-  it('Should properly change foreground color via string parameter', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b[38;5;11m'));
-
     cursor.foreground('yellow');
 
     mock.verify();
   });
 
   it('Should properly change background color', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b[48;5;0m'));
-
-    cursor.background(0);
-
-    mock.verify();
-  });
-
-  it('Should properly change background color via string parameter', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
 
