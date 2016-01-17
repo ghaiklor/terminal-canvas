@@ -15,14 +15,20 @@ export default class Cursor {
   /**
    * By default, creates simple cursor that writes direct to `stdout`.
    * If you want to work with other streams, you can pass custom `stdout` stream in or an array of streams.
+   * Cursor support viewport mode.
+   * You are able to set viewport sizes and cursor will print only if payload fits the sizes\bounding box.
    *
    * @constructor
    * @param {Stream|Array<Stream>} [stream=process.stdout] Streams that will be used as target for cursor
+   * @param {Number} [columns=stream.columns] Columns count which used as viewport sizes
+   * @param {Number} [rows=stream.rows] Rows count which used as viewport sizes
    */
-  constructor(stream = process.stdout) {
+  constructor(stream = process.stdout, columns = stream.columns, rows = stream.rows) {
     this._buffer = '';
     this._streams = Array.isArray(stream) ? stream : [stream];
     this._currentPointer = {x: 1, y: 1};
+    this._columns = columns;
+    this._rows = rows;
   }
 
   /**
@@ -40,7 +46,7 @@ export default class Cursor {
       data.split('').forEach(char => {
         const x = this._currentPointer.x;
         const y = this._currentPointer.y;
-        if (1 <= x && x <= process.stdout.columns && 1 <= y && y <= process.stdout.rows) this._buffer += char;
+        if (1 <= x && x <= this._columns && 1 <= y && y <= this._rows) this._buffer += char;
         this._currentPointer.x++;
       });
     }
