@@ -11,7 +11,7 @@ import { ERASE_REGIONS } from './eraseRegions';
  * @see http://www.x.org/docs/xterm/ctlseqs.pdf
  * @since 1.0.0
  */
-export class Cursor {
+export default class Cursor {
   /**
    * By default, creates simple cursor that writes direct to `stdout`.
    * If you want to work with other streams, you can pass custom `stdout` stream in or an array of streams.
