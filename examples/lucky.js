@@ -1,4 +1,4 @@
-var Cursor = require('../lib/Cursor').Cursor;
+var Cursor = require('../lib/Cursor').default;
 var cursor = new Cursor().resetTTY();
 var colors = ['RED', 'CYAN_1', 'YELLOW', 'GREEN', 'BLUE'];
 var text = 'Always after me lucky charms.';

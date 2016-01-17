@@ -1,5 +1,5 @@
 var http = require('http');
-var Cursor = require('../lib/Cursor').Cursor;
+var Cursor = require('../lib/Cursor').default;
 var radius = 10;
 var theta = 0;
 var points = [];
