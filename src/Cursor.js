@@ -25,7 +25,8 @@ export default class Cursor {
    */
   constructor(stream = process.stdout, columns = stream.columns, rows = stream.rows) {
     this._buffer = '';
-    this._streams = Array.isArray(stream) ? stream : [stream];
+    this._streams = new Set(Array.isArray(stream) ? stream : [stream]);
+
     this._pointer = {x: 1, y: 1};
     this._columns = columns;
     this._rows = rows;
@@ -44,9 +45,10 @@ export default class Cursor {
       this._buffer += data.toString();
     } else {
       data.split('').forEach(char => {
-        const x = this._pointer.x;
-        const y = this._pointer.y;
+        const {x, y} = this._pointer;
+
         if (1 <= x && x <= this._columns && 1 <= y && y <= this._rows) this._buffer += char;
+
         this._pointer.x++;
       });
     }
@@ -74,7 +76,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   pipe(stream) {
-    this._streams.push(stream);
+    this._streams.add(stream);
     return this;
   }
 
