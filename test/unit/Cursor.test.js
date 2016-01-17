@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
-import { Cursor } from '../../src/Cursor';
+import Cursor  from '../../src/Cursor';
 
 describe('Cursor', () => {
   it('Should properly initialize with default arguments', () => {
