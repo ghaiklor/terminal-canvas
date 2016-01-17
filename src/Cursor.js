@@ -26,7 +26,7 @@ export default class Cursor {
   constructor(stream = process.stdout, columns = stream.columns, rows = stream.rows) {
     this._buffer = '';
     this._streams = Array.isArray(stream) ? stream : [stream];
-    this._currentPointer = {x: 1, y: 1};
+    this._pointer = {x: 1, y: 1};
     this._columns = columns;
     this._rows = rows;
   }
@@ -44,10 +44,10 @@ export default class Cursor {
       this._buffer += data.toString();
     } else {
       data.split('').forEach(char => {
-        const x = this._currentPointer.x;
-        const y = this._currentPointer.y;
+        const x = this._pointer.x;
+        const y = this._pointer.y;
         if (1 <= x && x <= this._columns && 1 <= y && y <= this._rows) this._buffer += char;
-        this._currentPointer.x++;
+        this._pointer.x++;
       });
     }
 
@@ -100,7 +100,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   up(y = 1) {
-    this._currentPointer.y = this._currentPointer.y - y;
+    this._pointer.y -= y;
+
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}A`));
   }
 
@@ -111,7 +112,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   down(y = 1) {
-    this._currentPointer.y = this._currentPointer.y + y;
+    this._pointer.y += y;
+
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}B`));
   }
 
@@ -122,7 +124,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   right(x = 1) {
-    this._currentPointer.x = this._currentPointer.x + x;
+    this._pointer.x += x;
+
     return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}C`));
   }
 
@@ -133,7 +136,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   left(x = 1) {
-    this._currentPointer.x = this._currentPointer.x - x;
+    this._pointer.x -= x;
+
     return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}D`));
   }
 
@@ -162,8 +166,9 @@ export default class Cursor {
    * @returns {Cursor}
    */
   moveTo(x, y) {
-    this._currentPointer.x = x;
-    this._currentPointer.y = y;
+    this._pointer.x = x;
+    this._pointer.y = y;
+
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y)};${Math.floor(x < 1 ? 1 : x)}f`));
   }
 
