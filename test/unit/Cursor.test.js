@@ -27,6 +27,18 @@ describe('Cursor', () => {
     assert.equal(cursor._buffer, 'testanother');
   });
 
+  it('Should properly ignore write if out of the bounding box', () => {
+    let cursor = new Cursor();
+
+    assert.equal(cursor._buffer, '');
+    cursor.write('test');
+    assert.equal(cursor._buffer, 'test');
+    cursor.write(new Buffer('another'));
+    assert.equal(cursor._buffer, 'testanother');
+    cursor.moveTo(-5, -5).write('do not print');
+    assert.equal(cursor._buffer, 'testanother\u001b[1;1f');
+  });
+
   it('Should properly flush the buffer into the stream', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(Array.from(cursor._streams.values())[0]);
