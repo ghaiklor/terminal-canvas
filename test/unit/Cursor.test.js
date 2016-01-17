@@ -6,14 +6,15 @@ describe('Cursor', () => {
   it('Should properly initialize with default arguments', () => {
     let cursor = new Cursor();
     assert.instanceOf(cursor, Cursor);
-    assert.deepEqual(cursor._streams, [process.stdout]);
+    assert.ok(cursor._streams.has(process.stdout));
     assert.equal(cursor._buffer, '');
   });
 
   it('Should properly initialize with custom stdout', () => {
     let cursor = new Cursor(['test', 'another']);
     assert.instanceOf(cursor, Cursor);
-    assert.deepEqual(cursor._streams, ['test', 'another']);
+    assert.ok(cursor._streams.has('test'));
+    assert.ok(cursor._streams.has('another'));
   });
 
   it('Should properly write to the cursor', () => {
@@ -28,7 +29,7 @@ describe('Cursor', () => {
 
   it('Should properly flush the buffer into the stream', () => {
     let cursor = new Cursor();
-    let mock = sinon.mock(cursor._streams[0]);
+    let mock = sinon.mock(Array.from(cursor._streams.values())[0]);
 
     mock.expects('write').once().withArgs('testanother');
 
@@ -42,9 +43,10 @@ describe('Cursor', () => {
 
   it('Should properly pipe into another stream', () => {
     let cursor = new Cursor();
-    assert.deepEqual(cursor._streams, [process.stdout]);
+    assert.ok(cursor._streams.has(process.stdout));
     assert.instanceOf(cursor.pipe('ANOTHER_STREAM'), Cursor);
-    assert.deepEqual(cursor._streams, [process.stdout, 'ANOTHER_STREAM']);
+    assert.ok(cursor._streams.has(process.stdout));
+    assert.ok(cursor._streams.has('ANOTHER_STREAM'));
   });
 
   it('Should properly move cursor up with default arguments', () => {
@@ -534,9 +536,9 @@ describe('Cursor', () => {
   });
 
   it('Should properly create new instance from static create()', () => {
-    let cursor = Cursor.create(process.stdout);
+    let cursor = Cursor.create(process.stdout, 10, 10);
     assert.instanceOf(cursor, Cursor);
     assert.equal(cursor._buffer, '');
-    assert.deepEqual(cursor._streams, [process.stdout]);
+    assert.ok(cursor._streams.has(process.stdout));
   });
 });
