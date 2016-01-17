@@ -22,6 +22,7 @@ export class Cursor {
   constructor(stream = process.stdout) {
     this._buffer = '';
     this._streams = Array.isArray(stream) ? stream : [stream];
+    this._currentPointer = {x: 1, y: 1};
   }
 
   /**
@@ -33,7 +34,17 @@ export class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    this._buffer += Buffer.isBuffer(data) ? data.toString() : data;
+    if (Buffer.isBuffer(data)) {
+      this._buffer += data.toString();
+    } else {
+      data.split('').forEach(char => {
+        const x = this._currentPointer.x;
+        const y = this._currentPointer.y;
+        if (1 <= x && x <= process.stdout.columns && 1 <= y && y <= process.stdout.rows) this._buffer += char;
+        this._currentPointer.x++;
+      });
+    }
+
     return this;
   }
 
@@ -83,6 +94,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   up(y = 1) {
+    this._currentPointer.y = this._currentPointer.y - y;
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}A`));
   }
 
@@ -93,6 +105,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   down(y = 1) {
+    this._currentPointer.y = this._currentPointer.y + y;
     return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}B`));
   }
 
@@ -103,6 +116,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   right(x = 1) {
+    this._currentPointer.x = this._currentPointer.x + x;
     return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}C`));
   }
 
@@ -113,6 +127,7 @@ export class Cursor {
    * @returns {Cursor}
    */
   left(x = 1) {
+    this._currentPointer.x = this._currentPointer.x - x;
     return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}D`));
   }
 
@@ -141,7 +156,9 @@ export class Cursor {
    * @returns {Cursor}
    */
   moveTo(x, y) {
-    return this.write(Cursor.encodeToVT100(`[${Math.floor(y)};${Math.floor(x)}f`));
+    this._currentPointer.x = x;
+    this._currentPointer.y = y;
+    return this.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y)};${Math.floor(x < 1 ? 1 : x)}f`));
   }
 
   /**
