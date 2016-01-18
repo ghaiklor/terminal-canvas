@@ -1,20 +1,27 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
-import Cursor  from '../../src/Cursor';
+import Cursor from '../../src/Cursor';
 
 describe('Cursor', () => {
   it('Should properly initialize with default arguments', () => {
     let cursor = new Cursor();
     assert.instanceOf(cursor, Cursor);
-    assert.ok(cursor._streams.has(process.stdout));
     assert.equal(cursor._buffer, '');
+    assert.ok(cursor._streams.has(process.stdout));
+    assert.deepEqual(cursor._pointer, {x: 1, y: 1});
+    assert.equal(cursor._columns, process.stdout.columns);
+    assert.equal(cursor._rows, process.stdout.rows);
   });
 
   it('Should properly initialize with custom stdout', () => {
-    let cursor = new Cursor(['test', 'another']);
+    let cursor = new Cursor(['test', 'another'], 10, 10);
     assert.instanceOf(cursor, Cursor);
+    assert.equal(cursor._buffer, '');
     assert.ok(cursor._streams.has('test'));
     assert.ok(cursor._streams.has('another'));
+    assert.deepEqual(cursor._pointer, {x: 1, y: 1});
+    assert.equal(cursor._columns, 10);
+    assert.equal(cursor._rows, 10);
   });
 
   it('Should properly write to the cursor', () => {
@@ -59,6 +66,33 @@ describe('Cursor', () => {
     assert.instanceOf(cursor.pipe('ANOTHER_STREAM'), Cursor);
     assert.ok(cursor._streams.has(process.stdout));
     assert.ok(cursor._streams.has('ANOTHER_STREAM'));
+  });
+
+  it('Should properly render image with default options', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=auto;height=auto;preserveAspectRatio=1;inline=1:base64Image^G'));
+
+    cursor.image({image: 'base64Image'});
+
+    mock.verify();
+  });
+
+  it('Should properly render image with custom options', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=200px;height=200px;preserveAspectRatio=0;inline=1:base64Image^G'));
+
+    cursor.image({
+      image: 'base64Image',
+      width: '200px',
+      height: '200px',
+      preserveAspectRatio: false
+    });
+
+    mock.verify();
   });
 
   it('Should properly move cursor up with default arguments', () => {
@@ -197,17 +231,6 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly change display mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b[5m'));
-
-    cursor.display(5);
-
-    mock.verify();
-  });
-
   it('Should properly ignore display() call if wrong parameter', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
@@ -215,6 +238,17 @@ describe('Cursor', () => {
     mock.expects('write').never();
 
     cursor.display('It is a wrong display mode');
+
+    mock.verify();
+  });
+
+  it('Should properly change display mode', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').once().withArgs(new Buffer('\u001b[5m'));
+
+    cursor.display(5);
 
     mock.verify();
   });
@@ -435,33 +469,6 @@ describe('Cursor', () => {
     mock.expects('restoreCursor').once().returns(cursor);
 
     cursor.eraseScreen();
-
-    mock.verify();
-  });
-
-  it('Should properly render image with default options', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=auto;height=auto;preserveAspectRatio=1;inline=1:base64Image^G'));
-
-    cursor.image({image: 'base64Image'});
-
-    mock.verify();
-  });
-
-  it('Should properly render image with custom options', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
-
-    mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=200px;height=200px;preserveAspectRatio=0;inline=1:base64Image^G'));
-
-    cursor.image({
-      image: 'base64Image',
-      width: '200px',
-      height: '200px',
-      preserveAspectRatio: false
-    });
 
     mock.verify();
   });
