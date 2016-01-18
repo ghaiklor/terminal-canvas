@@ -204,6 +204,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   display(mode) {
+    if (Object.keys(DISPLAY_MODES).every(key => mode !== DISPLAY_MODES[key])) return this;
     return this.write(Cursor.encodeToVT100(`[${mode}m`));
   }
 
