@@ -103,6 +103,7 @@ describe('Cursor', () => {
 
     cursor.up();
 
+    assert.equal(cursor._pointer.y, 0);
     mock.verify();
   });
 
@@ -114,6 +115,7 @@ describe('Cursor', () => {
 
     cursor.up(5);
 
+    assert.equal(cursor._pointer.y, -4);
     mock.verify();
   });
 
@@ -125,6 +127,7 @@ describe('Cursor', () => {
 
     cursor.down();
 
+    assert.equal(cursor._pointer.y, 2);
     mock.verify();
   });
 
@@ -136,6 +139,7 @@ describe('Cursor', () => {
 
     cursor.down(5);
 
+    assert.equal(cursor._pointer.y, 6);
     mock.verify();
   });
 
@@ -147,6 +151,7 @@ describe('Cursor', () => {
 
     cursor.right();
 
+    assert.equal(cursor._pointer.x, 2);
     mock.verify();
   });
 
@@ -158,6 +163,7 @@ describe('Cursor', () => {
 
     cursor.right(5);
 
+    assert.equal(cursor._pointer.x, 6);
     mock.verify();
   });
 
@@ -169,6 +175,7 @@ describe('Cursor', () => {
 
     cursor.left();
 
+    assert.equal(cursor._pointer.x, 0);
     mock.verify();
   });
 
@@ -180,6 +187,7 @@ describe('Cursor', () => {
 
     cursor.left(5);
 
+    assert.equal(cursor._pointer.x, -4);
     mock.verify();
   });
 
@@ -195,6 +203,8 @@ describe('Cursor', () => {
     cursor.moveBy(5, 10);
     cursor.moveBy(-5, -10);
 
+    assert.equal(cursor._pointer.x, 1);
+    assert.equal(cursor._pointer.y, 1);
     mock.verify();
   });
 
@@ -206,6 +216,8 @@ describe('Cursor', () => {
 
     cursor.moveTo(5, 10);
 
+    assert.equal(cursor._pointer.x, 5);
+    assert.equal(cursor._pointer.y, 10);
     mock.verify();
   });
 
