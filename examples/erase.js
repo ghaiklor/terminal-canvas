@@ -1,27 +1,18 @@
-var Cursor = require('../lib/Cursor').default;
-var cursor = new Cursor().resetTTY();
+"use strict";
 
-cursor
-  .write('HELLO '.repeat(300))
-  .moveTo(20, 5)
-  .flush();
+const Cursor = require('../lib/Cursor').default;
+const cursor = new Cursor().resetTTY();
 
-setTimeout(() => {
-  cursor.eraseToStart().flush();
-}, 1000);
+for (let y = 1; y < process.stdout.rows; y++) {
+  for (let x = 1; x < process.stdout.columns; x++) {
+    cursor.moveTo(x, y).write('E');
+  }
+}
 
-setTimeout(() => {
-  cursor.eraseToEnd().flush();
-}, 2000);
+cursor.moveTo(process.stdout.columns / 2, process.stdout.rows / 2).flush();
 
-setTimeout(() => {
-  cursor.eraseToUp().flush();
-}, 3000);
-
-setTimeout(() => {
-  cursor.eraseToDown().flush();
-}, 4000);
-
-setTimeout(() => {
-  cursor.eraseScreen().flush();
-}, 5000);
+setTimeout(() => cursor.eraseToStart().flush(), 1000);
+setTimeout(() => cursor.eraseToEnd().flush(), 2000);
+setTimeout(() => cursor.eraseToUp().flush(), 3000);
+setTimeout(() => cursor.eraseToDown().flush(), 4000);
+setTimeout(() => cursor.eraseScreen().flush(), 5000);

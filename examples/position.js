@@ -1,5 +1,7 @@
-var Cursor = require('../lib/Cursor').default;
-var cursor = new Cursor().resetTTY();
+"use strict";
+
+const Cursor = require('../lib/Cursor').default;
+const cursor = new Cursor().resetTTY();
 
 cursor
   .moveTo(15, 5)

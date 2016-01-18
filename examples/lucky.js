@@ -1,20 +1,20 @@
-var Cursor = require('../lib/Cursor').default;
-var cursor = new Cursor().resetTTY();
-var colors = ['RED', 'CYAN_1', 'YELLOW', 'GREEN', 'BLUE'];
-var text = 'Always after me lucky charms.';
-var offset = 0;
+"use strict";
 
-setInterval(function () {
-  var y = 0, dy = 1;
+const Cursor = require('../lib/Cursor').default;
+const cursor = new Cursor().resetTTY();
+const colors = ['RED', 'CYAN_1', 'YELLOW', 'GREEN', 'BLUE'];
+const text = 'Always after me lucky charms.';
 
-  for (var i = 0; i < 40; i++) {
-    var color = colors[(i + offset) % colors.length];
-    var c = text[(i + offset) % text.length];
+let offset = 0;
 
-    cursor
-      .moveBy(1, dy)
-      .foreground(color)
-      .write(c);
+setInterval(() => {
+  let y = 0, dy = 1;
+
+  for (let i = 0; i < 40; i++) {
+    const color = colors[(i + offset) % colors.length];
+    const c = text[(i + offset) % text.length];
+
+    cursor.moveBy(1, dy).foreground(color).write(c);
 
     y += dy;
 

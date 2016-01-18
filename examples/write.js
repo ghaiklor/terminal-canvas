@@ -1,4 +1,6 @@
-var Cursor = require('../lib/Cursor').default;
-var cursor = new Cursor();
+"use strict";
+
+const Cursor = require('../lib/Cursor').default;
+const cursor = new Cursor();
 
 cursor.write('HELLO').flush();
