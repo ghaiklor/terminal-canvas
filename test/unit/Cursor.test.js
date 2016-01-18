@@ -208,6 +208,17 @@ describe('Cursor', () => {
     mock.verify();
   });
 
+  it('Should properly ignore display() call if wrong parameter', () => {
+    let cursor = new Cursor();
+    let mock = sinon.mock(cursor);
+
+    mock.expects('write').never();
+
+    cursor.display('It is a wrong display mode');
+
+    mock.verify();
+  });
+
   it('Should properly enable bold mode', () => {
     let cursor = new Cursor();
     let mock = sinon.mock(cursor);
