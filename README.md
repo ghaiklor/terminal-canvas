@@ -24,7 +24,7 @@ npm install kittik-cursor
 Include in your project:
 
 ```javascript
-import { Cursor } from 'kittik-cursor';
+import Cursor from 'kittik-cursor';
 ```
 
 ## License
