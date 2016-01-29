@@ -21,7 +21,7 @@
   "devDependencies": {
     "babel-cli": "6.4.5",
     "babel-preset-es2015-node4": "2.0.3",
-    "chai": "3.4.1",
+    "chai": "3.5.0",
     "coveralls": "2.11.6",
     "cz-conventional-changelog": "1.1.5",
     "isparta": "4.0.0",
