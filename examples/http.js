@@ -2,7 +2,7 @@
 
 const http = require('http');
 const url = require('url');
-const Cursor = require('../lib/Cursor').default;
+const Cursor = require('../lib/Cursor');
 const radius = 10;
 
 let theta = 0;

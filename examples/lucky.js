@@ -1,6 +1,6 @@
 "use strict";
 
-const Cursor = require('../lib/Cursor').default;
+const Cursor = require('../lib/Cursor');
 const cursor = new Cursor().resetTTY();
 const colors = ['RED', 'CYAN_1', 'YELLOW', 'GREEN', 'BLUE'];
 const text = 'Always after me lucky charms.';

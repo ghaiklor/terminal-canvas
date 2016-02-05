@@ -1,6 +1,6 @@
 "use strict";
 
-const Cursor = require('../lib/Cursor').default;
+const Cursor = require('../lib/Cursor');
 const cursor = new Cursor().resetTTY().flush();
 const radius = 10;
 const colors = ['RED', 'YELLOW', 'GREEN', 'DARK_CYAN', 'BLUE', 'MAGENTA'];

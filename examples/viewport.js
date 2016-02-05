@@ -1,7 +1,7 @@
 "use strict";
 
-const Cursor = require('../lib/Cursor').default;
-const cursor = new Cursor(process.stdout, 4, 4).resetTTY();
+const Cursor = require('../lib/Cursor');
+const cursor = new Cursor().resetTTY();
 
-// It will print only 4567 because you have negative X coordinate and cropped viewport
+// It will print only 4567890 because you have negative X coordinate
 cursor.moveTo(-2, 1).write('1234567890').flush();
