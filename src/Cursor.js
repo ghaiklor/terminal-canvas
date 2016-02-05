@@ -387,7 +387,7 @@ export default class Cursor {
    * @static
    * @returns {Cursor}
    */
-  static create(...args) {
-    return new this(...args);
+  static create() {
+    return new this();
   }
 }
