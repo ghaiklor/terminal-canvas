@@ -4,28 +4,23 @@ import Cursor from '../../src/Cursor';
 
 describe('Cursor', () => {
   it('Should properly initialize with default arguments', () => {
-    let cursor = new Cursor();
+    const cursor = new Cursor();
+
     assert.instanceOf(cursor, Cursor);
     assert.equal(cursor._buffer, '');
-    assert.ok(cursor._streams.has(process.stdout));
     assert.deepEqual(cursor._pointer, {x: 1, y: 1});
-    assert.equal(cursor._columns, process.stdout.columns);
-    assert.equal(cursor._rows, process.stdout.rows);
   });
 
   it('Should properly initialize with custom stdout', () => {
-    let cursor = new Cursor(['test', 'another'], 10, 10);
+    const cursor = new Cursor();
+
     assert.instanceOf(cursor, Cursor);
     assert.equal(cursor._buffer, '');
-    assert.ok(cursor._streams.has('test'));
-    assert.ok(cursor._streams.has('another'));
     assert.deepEqual(cursor._pointer, {x: 1, y: 1});
-    assert.equal(cursor._columns, 10);
-    assert.equal(cursor._rows, 10);
   });
 
   it('Should properly write to the cursor', () => {
-    let cursor = new Cursor();
+    const cursor = new Cursor();
 
     assert.equal(cursor._buffer, '');
     cursor.write('test');
@@ -35,7 +30,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly ignore write if out of the bounding box', () => {
-    let cursor = new Cursor();
+    const cursor = new Cursor();
 
     assert.equal(cursor._buffer, '');
     cursor.write('test');
@@ -47,8 +42,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly flush the buffer into the stream', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(Array.from(cursor._streams.values())[0]);
+    const cursor = new Cursor();
+    const mock = sinon.mock(process.stdout);
 
     mock.expects('write').once().withArgs('testanother');
 
@@ -60,17 +55,9 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly pipe into another stream', () => {
-    let cursor = new Cursor();
-    assert.ok(cursor._streams.has(process.stdout));
-    assert.instanceOf(cursor.pipe('ANOTHER_STREAM'), Cursor);
-    assert.ok(cursor._streams.has(process.stdout));
-    assert.ok(cursor._streams.has('ANOTHER_STREAM'));
-  });
-
   it('Should properly render image with default options', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=auto;height=auto;preserveAspectRatio=1;inline=1:base64Image^G'));
 
@@ -80,8 +67,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly render image with custom options', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b]1337;File=width=200px;height=200px;preserveAspectRatio=0;inline=1:base64Image^G'));
 
@@ -96,8 +83,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor up with default arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[1A'));
 
@@ -108,8 +95,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor up with custom arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[5A'));
 
@@ -120,8 +107,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor down with default arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[1B'));
 
@@ -132,8 +119,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor down with custom arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[5B'));
 
@@ -144,8 +131,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor right with default arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[1C'));
 
@@ -156,8 +143,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor right with custom arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[5C'));
 
@@ -168,8 +155,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor left with default arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[1D'));
 
@@ -180,8 +167,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor left with custom arguments', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[5D'));
 
@@ -192,8 +179,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly set relative position of cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('right').once().withArgs(5);
     mock.expects('down').once().withArgs(10);
@@ -209,8 +196,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly set absolute position of cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[10;5f'));
 
@@ -222,8 +209,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly change foreground color', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[38;5;11m'));
 
@@ -233,8 +220,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly change background color', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[48;5;0m'));
 
@@ -244,8 +231,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly ignore display() call if wrong parameter', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').never();
 
@@ -255,8 +242,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly change display mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[5m'));
 
@@ -266,8 +253,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly enable bold mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[1m'));
     cursor.bold();
@@ -275,8 +262,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly disable bold mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[21m'));
     cursor.bold(false);
@@ -284,8 +271,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly enable dim mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[2m'));
     cursor.dim();
@@ -293,8 +280,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly disable dim mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[22m'));
     cursor.dim(false);
@@ -302,8 +289,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly enable underlined mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[4m'));
     cursor.underlined();
@@ -311,8 +298,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly disable underlined mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[24m'));
     cursor.underlined(false);
@@ -320,8 +307,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly enable blink mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[5m'));
     cursor.blink();
@@ -329,8 +316,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly disable blink mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[25m'));
     cursor.blink(false);
@@ -338,8 +325,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly enable reverse mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[7m'));
     cursor.reverse();
@@ -347,8 +334,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly disable reverse mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[27m'));
     cursor.reverse(false);
@@ -356,8 +343,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly enable hidden mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[8m'));
     cursor.hidden();
@@ -365,8 +352,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly disable hidden mode', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[28m'));
     cursor.hidden(false);
@@ -374,8 +361,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly ignore wrong erase region', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').never().returns(cursor);
     mock.expects('resetCursor').never().returns(cursor);
@@ -388,8 +375,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase the specified region', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').once().returns(cursor);
     mock.expects('resetCursor').once().returns(cursor);
@@ -402,8 +389,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase from current position to the end of line', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').once().returns(cursor);
     mock.expects('resetCursor').once().returns(cursor);
@@ -416,8 +403,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase from current position to the start of line', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').once().returns(cursor);
     mock.expects('resetCursor').once().returns(cursor);
@@ -430,8 +417,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase from current line to down', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').once().returns(cursor);
     mock.expects('resetCursor').once().returns(cursor);
@@ -444,8 +431,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase from current line to up', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').once().returns(cursor);
     mock.expects('resetCursor').once().returns(cursor);
@@ -458,8 +445,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase the current line', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').once().returns(cursor);
     mock.expects('resetCursor').once().returns(cursor);
@@ -472,8 +459,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase the entire screen', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('saveCursor').once().returns(cursor);
     mock.expects('resetCursor').once().returns(cursor);
@@ -486,8 +473,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly hide the cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[?25l'));
 
@@ -497,8 +484,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly show the cursor', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[?25h'));
 
@@ -508,8 +495,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly save the cursor state with attributes', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b7'));
 
@@ -519,8 +506,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly save the cursor state without attributes', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[s'));
 
@@ -530,8 +517,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly restore the cursor state with attributes', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b8'));
 
@@ -541,8 +528,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly restore the cursor state without attributes', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[u'));
 
@@ -552,8 +539,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly reset all display modes/attributes', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[0m'));
     cursor.resetCursor();
@@ -561,8 +548,8 @@ describe('Cursor', () => {
   });
 
   it('Should properly reset the TTY state', () => {
-    let cursor = new Cursor();
-    let mock = sinon.mock(cursor);
+    const cursor = new Cursor();
+    const mock = sinon.mock(cursor);
 
     mock.expects('resetCursor').once().returns(cursor);
     mock.expects('eraseScreen').once().returns(cursor);
@@ -578,9 +565,10 @@ describe('Cursor', () => {
   });
 
   it('Should properly create new instance from static create()', () => {
-    let cursor = Cursor.create(process.stdout, 10, 10);
+    const cursor = Cursor.create();
+
     assert.instanceOf(cursor, Cursor);
     assert.equal(cursor._buffer, '');
-    assert.ok(cursor._streams.has(process.stdout));
+    assert.deepEqual(cursor._pointer, {x: 1, y: 1});
   });
 });
