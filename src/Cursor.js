@@ -13,23 +13,13 @@ import { ERASE_REGIONS } from './eraseRegions';
  */
 export default class Cursor {
   /**
-   * By default, creates simple cursor that writes direct to `stdout`.
-   * If you want to work with other streams, you can pass custom `stdout` stream in or an array of streams.
-   * Cursor support viewport mode.
-   * You are able to set viewport sizes and cursor will print only if payload fits the sizes\bounding box.
+   * Creates cursor that writes direct to `stdout`.
    *
    * @constructor
-   * @param {Stream|Array<Stream>} [stream=process.stdout] Streams that will be used as target for cursor
-   * @param {Number} [columns=stream.columns] Columns count which used as viewport sizes
-   * @param {Number} [rows=stream.rows] Rows count which used as viewport sizes
    */
-  constructor(stream = process.stdout, columns = stream.columns, rows = stream.rows) {
+  constructor() {
     this._buffer = '';
-    this._streams = new Set(Array.isArray(stream) ? stream : [stream]);
-
     this._pointer = {x: 1, y: 1};
-    this._columns = columns;
-    this._rows = rows;
   }
 
   /**
@@ -47,7 +37,7 @@ export default class Cursor {
       data.split('').forEach(char => {
         const {x, y} = this._pointer;
 
-        if (1 <= x && x <= this._columns && 1 <= y && y <= this._rows) this._buffer += char;
+        if (1 <= x && x <= process.stdout.columns && 1 <= y && y <= process.stdout.rows) this._buffer += char;
 
         this._pointer.x++;
       });
@@ -62,21 +52,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    this._streams.forEach(stream => stream.write(this._buffer));
+    process.stdout.write(this._buffer);
     this._buffer = '';
-    return this;
-  }
-
-  /**
-   * Pipe cursor to another stream.
-   * Useful when you want to attach cursor to another stream, response stream, for instance.
-   * It doesn't clear previous streams, just pushes the new one to them.
-   *
-   * @param {Stream} stream
-   * @returns {Cursor}
-   */
-  pipe(stream) {
-    this._streams.add(stream);
     return this;
   }
 
