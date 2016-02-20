@@ -42,7 +42,9 @@ export default class Cursor {
       data.split('').forEach(char => {
         const {x, y} = this._pointer;
 
-        if (0 <= x && x <= this._viewport.width && 0 <= y && y <= this._viewport.height) this._buffer[y * this._viewport.width + x] = currentValue + char;
+        if (0 <= x && x <= this._viewport.width && 0 <= y && y <= this._viewport.height) {
+          this._buffer[y * this._viewport.width + x] = Cursor.decodeFromVT100(currentValue).join('') + char;
+        }
 
         this._pointer.x++;
       });
@@ -419,6 +421,30 @@ export default class Cursor {
    */
   static encodeToVT100(string) {
     return new Buffer([0x1b].concat(string.split('').map(item => item.charCodeAt(0))));
+  }
+
+  /**
+   * Parse ASCII control codes and return array with them.
+   *
+   * @param {String} _string
+   * @returns {Array}
+   */
+  static decodeFromVT100(_string) {
+    const string = new Buffer(_string, 'utf-8');
+    const codes = [];
+
+    let start = -1;
+
+    for (let i = 0; i < string.length; i++) {
+      if (string[i] === 27) {
+        if (start >= 0) codes.push(string.slice(start, i));
+        start = i;
+      } else if (start >= 0 && i === string.length - 1) {
+        codes.push(string.slice(start));
+      }
+    }
+
+    return codes;
   }
 
   /**
