@@ -18,8 +18,10 @@ export default class Cursor {
    * @constructor
    */
   constructor() {
-    this._buffer = '';
+    this._viewport = {width: process.stdout.columns, height: process.stdout.rows};
     this._pointer = {x: 1, y: 1};
+
+    this._buffer = Array.from({length: this._viewport.width * this._viewport.height}).fill('');
   }
 
   /**
@@ -31,13 +33,16 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
+    const currentIndex = (this._pointer.y - 1) * this._viewport.width + this._pointer.x - 1;
+    const currentValue = this._buffer[currentIndex];
+
     if (Buffer.isBuffer(data)) {
-      this._buffer += data.toString();
+      this._buffer[currentIndex] = currentValue + data.toString();
     } else {
       data.split('').forEach(char => {
         const {x, y} = this._pointer;
 
-        if (1 <= x && x <= process.stdout.columns && 1 <= y && y <= process.stdout.rows) this._buffer += char;
+        if (1 <= x && x <= this._viewport.width && 1 <= y && y <= this._viewport.height) this._buffer[(y - 1) * this._viewport.width + (x - 1)] = currentValue + char;
 
         this._pointer.x++;
       });
@@ -52,8 +57,12 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    process.stdout.write(this._buffer);
-    this._buffer = '';
+    this._buffer.forEach((code, i) => {
+      const [x, y] = [(i - (Math.floor(i / this._viewport.width) * this._viewport.width)) + 1, (Math.floor(i / this._viewport.width)) + 1];
+      process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y)};${Math.floor(x < 1 ? 1 : x)}f`));
+      process.stdout.write(code);
+    });
+
     return this;
   }
 
@@ -81,7 +90,7 @@ export default class Cursor {
   up(y = 1) {
     this._pointer.y -= y;
 
-    return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}A`));
+    return this;
   }
 
   /**
@@ -93,7 +102,7 @@ export default class Cursor {
   down(y = 1) {
     this._pointer.y += y;
 
-    return this.write(Cursor.encodeToVT100(`[${Math.floor(y)}B`));
+    return this;
   }
 
   /**
@@ -105,7 +114,7 @@ export default class Cursor {
   right(x = 1) {
     this._pointer.x += x;
 
-    return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}C`));
+    return this;
   }
 
   /**
@@ -117,7 +126,7 @@ export default class Cursor {
   left(x = 1) {
     this._pointer.x -= x;
 
-    return this.write(Cursor.encodeToVT100(`[${Math.floor(x)}D`));
+    return this;
   }
 
   /**
@@ -148,7 +157,7 @@ export default class Cursor {
     this._pointer.x = x;
     this._pointer.y = y;
 
-    return this.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y)};${Math.floor(x < 1 ? 1 : x)}f`));
+    return this;
   }
 
   /**
@@ -264,7 +273,11 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToEnd() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_END);
+    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i <= this._pointer.y * this._viewport.width + this._viewport.width; i++) {
+      this._buffer[i] = '';
+    }
+
+    return this;
   }
 
   /**
@@ -273,7 +286,11 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToStart() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_START);
+    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i >= this._pointer.y * this._viewport.width; i--) {
+      this._buffer[i] = '';
+    }
+
+    return this;
   }
 
   /**
@@ -282,7 +299,11 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToDown() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_DOWN);
+    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i >= this._buffer.length; i++) {
+      this._buffer[i] = '';
+    }
+
+    return this;
   }
 
   /**
@@ -291,7 +312,11 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToUp() {
-    return this.erase(ERASE_REGIONS.FROM_CURSOR_TO_UP);
+    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i >= 0; i--) {
+      this._buffer[i] = '';
+    }
+
+    return this;
   }
 
   /**
@@ -300,7 +325,13 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    return this.erase(ERASE_REGIONS.CURRENT_LINE);
+    const y = this._pointer.y;
+
+    for (let i = y * this._viewport.width; i <= y * this._viewport.width + this._viewport.width; i++) {
+      this._buffer[i] = '';
+    }
+
+    return this;
   }
 
   /**
@@ -309,7 +340,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseScreen() {
-    return this.erase(ERASE_REGIONS.ENTIRE_SCREEN);
+    this._buffer.fill('');
+    return this;
   }
 
   /**
