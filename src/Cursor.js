@@ -19,9 +19,9 @@ export default class Cursor {
    */
   constructor() {
     this._viewport = {width: process.stdout.columns, height: process.stdout.rows};
-    this._pointer = {x: 1, y: 1};
+    this._pointer = {x: 0, y: 0};
 
-    this._buffer = Array.from({length: this._viewport.width * this._viewport.height}).fill('');
+    this._buffer = Array.from({length: this._viewport.width * this._viewport.height}).fill(' ');
   }
 
   /**
@@ -33,7 +33,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    const currentIndex = (this._pointer.y - 1) * this._viewport.width + this._pointer.x - 1;
+    const currentIndex = this._pointer.y * this._viewport.width + this._pointer.x;
     const currentValue = this._buffer[currentIndex];
 
     if (Buffer.isBuffer(data)) {
@@ -42,7 +42,7 @@ export default class Cursor {
       data.split('').forEach(char => {
         const {x, y} = this._pointer;
 
-        if (1 <= x && x <= this._viewport.width && 1 <= y && y <= this._viewport.height) this._buffer[(y - 1) * this._viewport.width + (x - 1)] = currentValue + char;
+        if (0 <= x && x <= this._viewport.width && 0 <= y && y <= this._viewport.height) this._buffer[y * this._viewport.width + x] = currentValue + char;
 
         this._pointer.x++;
       });
@@ -58,8 +58,8 @@ export default class Cursor {
    */
   flush() {
     this._buffer.forEach((code, i) => {
-      const [x, y] = [(i - (Math.floor(i / this._viewport.width) * this._viewport.width)) + 1, (Math.floor(i / this._viewport.width)) + 1];
-      process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y)};${Math.floor(x < 1 ? 1 : x)}f`));
+      const [x, y] = [i - (Math.floor(i / this._viewport.width) * this._viewport.width), Math.floor(i / this._viewport.width)];
+      process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y + 1)};${Math.floor(x < 1 ? 1 : x + 1)}f`));
       process.stdout.write(code);
     });
 
@@ -273,8 +273,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToEnd() {
-    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i <= this._pointer.y * this._viewport.width + this._viewport.width; i++) {
-      this._buffer[i] = '';
+    const y = this._pointer.y * this._viewport.width;
+
+    for (let i = y + this._pointer.x; i <= y + this._viewport.width; i++) {
+      this._buffer[i] = ' ';
     }
 
     return this;
@@ -286,8 +288,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToStart() {
-    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i >= this._pointer.y * this._viewport.width; i--) {
-      this._buffer[i] = '';
+    const y = this._pointer.y * this._viewport.width;
+
+    for (let i = y + this._pointer.x; i >= y; i--) {
+      this._buffer[i] = ' ';
     }
 
     return this;
@@ -299,8 +303,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToDown() {
-    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i >= this._buffer.length; i++) {
-      this._buffer[i] = '';
+    const y = this._pointer.y * this._viewport.width;
+
+    for (let i = y + this._pointer.x; i >= this._buffer.length; i++) {
+      this._buffer[i] = ' ';
     }
 
     return this;
@@ -312,8 +318,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToUp() {
-    for (let i = this._pointer.y * this._viewport.width + this._pointer.x; i >= 0; i--) {
-      this._buffer[i] = '';
+    const y = this._pointer.y * this._viewport.width;
+
+    for (let i = y + this._pointer.x; i >= 0; i--) {
+      this._buffer[i] = ' ';
     }
 
     return this;
@@ -325,10 +333,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    const y = this._pointer.y;
+    const y = this._pointer.y * this._viewport.width;
 
-    for (let i = y * this._viewport.width; i <= y * this._viewport.width + this._viewport.width; i++) {
-      this._buffer[i] = '';
+    for (let i = y; i <= y + this._viewport.width; i++) {
+      this._buffer[i] = ' ';
     }
 
     return this;
@@ -340,7 +348,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseScreen() {
-    this._buffer.fill('');
+    this._buffer.fill(' ');
     return this;
   }
 
