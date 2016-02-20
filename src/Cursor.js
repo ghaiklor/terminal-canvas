@@ -1,6 +1,5 @@
 import { COLORS } from './colors';
 import { DISPLAY_MODES } from './displayModes';
-import { ERASE_REGIONS } from './eraseRegions';
 
 /**
  * Cursor implements low-level API to terminal control codes.
@@ -22,6 +21,15 @@ export default class Cursor {
     this._pointer = {x: 0, y: 0};
 
     this._buffer = Array.from({length: this._viewport.width * this._viewport.height}).fill(' ');
+  }
+
+  /**
+   * Get index of the buffer from (x, y) coordinates of from current pointer.
+   *
+   * @returns {Number}
+   */
+  getBufferPointer(x = this._pointer.x, y = this._pointer.y) {
+    return y * this._viewport.width + x;
   }
 
   /**
@@ -257,27 +265,14 @@ export default class Cursor {
   }
 
   /**
-   * Erase a defined region.
-   * Before erase the region it saves cursor attributes to stack and erases the region with default attributes.
-   * Afterwards it restores the cursor attributes as it was before.
-   *
-   * @param {String} region Value from {@link ERASE_REGIONS}
-   * @returns {Cursor}
-   */
-  erase(region) {
-    if (Object.keys(ERASE_REGIONS).every(key => region !== ERASE_REGIONS[key])) return this;
-    return this.saveCursor().resetCursor().write(Cursor.encodeToVT100(region)).restoreCursor();
-  }
-
-  /**
    * Erase from current position to end of the line.
    *
    * @returns {Cursor}
    */
   eraseToEnd() {
-    const y = this._pointer.y * this._viewport.width;
+    const index = this.getBufferPointer();
 
-    for (let i = y + this._pointer.x; i <= y + this._viewport.width; i++) {
+    for (let i = index; i <= this._viewport.width; i++) {
       this._buffer[i] = ' ';
     }
 
@@ -292,7 +287,7 @@ export default class Cursor {
   eraseToStart() {
     const y = this._pointer.y * this._viewport.width;
 
-    for (let i = y + this._pointer.x; i >= y; i--) {
+    for (let i = y * this._viewport.width + this._pointer.x; i >= y * this._viewport.width; i--) {
       this._buffer[i] = ' ';
     }
 
@@ -351,6 +346,7 @@ export default class Cursor {
    */
   eraseScreen() {
     this._buffer.fill(' ');
+
     return this;
   }
 
@@ -430,6 +426,7 @@ export default class Cursor {
    * @returns {Array}
    */
   static decodeFromVT100(_string) {
+    // TODO: refactor here
     const string = new Buffer(_string, 'utf-8');
     const codes = [];
 
