@@ -17,19 +17,34 @@ export default class Cursor {
    * @constructor
    */
   constructor() {
-    this._viewport = {width: process.stdout.columns, height: process.stdout.rows};
-    this._pointer = {x: 0, y: 0};
+    this._width = process.stdout.columns;
+    this._height = process.stdout.rows;
 
-    this._buffer = Array.from({length: this._viewport.width * this._viewport.height}).fill(' ');
+    this._x = 0;
+    this._y = 0;
+
+    this._buffer = Array.from({length: this._width * this._height}).fill(' ');
   }
 
   /**
    * Get index of the buffer from (x, y) coordinates of from current pointer.
    *
-   * @returns {Number}
+   * @param {Number} [x] X coordinate on the terminal
+   * @param {Number} [y] Y coordinate on the terminal
+   * @returns {Number} Returns index in the buffer array
    */
-  getBufferPointer(x = this._pointer.x, y = this._pointer.y) {
-    return y * this._viewport.width + x;
+  getBufferPointer(x = this._x, y = this._y) {
+    return y * this._width + x;
+  }
+
+  /**
+   * Get (x, y) coordinate from the buffer pointer.
+   *
+   * @param {Number} index Index in the buffer
+   * @returns {Array} Returns an array [x, y]
+   */
+  getXYFromPointer(index) {
+    return [index - (Math.floor(index / this._width) * this._width), Math.floor(index / this._width)];
   }
 
   /**
@@ -41,20 +56,24 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    const currentIndex = this._pointer.y * this._viewport.width + this._pointer.x;
-    const currentValue = this._buffer[currentIndex];
-
     if (Buffer.isBuffer(data)) {
-      this._buffer[currentIndex] = currentValue + data.toString();
-    } else {
-      data.split('').forEach(char => {
-        const {x, y} = this._pointer;
+      // We need to write buffer anyway
+      const pointer = this.getBufferPointer();
+      const value = this._buffer[pointer];
 
-        if (0 <= x && x <= this._viewport.width && 0 <= y && y <= this._viewport.height) {
-          this._buffer[y * this._viewport.width + x] = Cursor.decodeFromVT100(currentValue).join('') + char;
+      this._buffer[pointer] = value + data.toString();
+    } else {
+      // Otherwise, we need to check if we can write this char
+      data.split('').forEach(char => {
+        const [x, y] = [this._x, this._y];
+        const pointer = this.getBufferPointer(x, y);
+        const value = this._buffer[pointer];
+
+        if (0 <= x && x < this._width && 0 <= y && y < this._height) {
+          this._buffer[pointer] = Cursor.decodeFromVT100(value).join('') + char;
         }
 
-        this._pointer.x++;
+        this._x++;
       });
     }
 
@@ -68,7 +87,8 @@ export default class Cursor {
    */
   flush() {
     this._buffer.forEach((code, i) => {
-      const [x, y] = [i - (Math.floor(i / this._viewport.width) * this._viewport.width), Math.floor(i / this._viewport.width)];
+      const [x, y] = this.getXYFromPointer(i);
+
       process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y + 1)};${Math.floor(x < 1 ? 1 : x + 1)}f`));
       process.stdout.write(code);
     });
@@ -98,8 +118,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   up(y = 1) {
-    this._pointer.y -= y;
-
+    this._y -= y;
     return this;
   }
 
@@ -110,8 +129,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   down(y = 1) {
-    this._pointer.y += y;
-
+    this._y += y;
     return this;
   }
 
@@ -122,8 +140,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   right(x = 1) {
-    this._pointer.x += x;
-
+    this._x += x;
     return this;
   }
 
@@ -134,8 +151,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   left(x = 1) {
-    this._pointer.x -= x;
-
+    this._x -= x;
     return this;
   }
 
@@ -164,8 +180,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   moveTo(x, y) {
-    this._pointer.x = x;
-    this._pointer.y = y;
+    this._x = x;
+    this._y = y;
 
     return this;
   }
@@ -272,9 +288,7 @@ export default class Cursor {
   eraseToEnd() {
     const index = this.getBufferPointer();
 
-    for (let i = index; i <= this._viewport.width; i++) {
-      this._buffer[i] = ' ';
-    }
+    for (let i = index; i <= this._viewport.width; i++) this._buffer[i] = ' ';
 
     return this;
   }
@@ -285,11 +299,9 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToStart() {
-    const y = this._pointer.y * this._viewport.width;
+    const y = this._y * this._viewport.width;
 
-    for (let i = y * this._viewport.width + this._pointer.x; i >= y * this._viewport.width; i--) {
-      this._buffer[i] = ' ';
-    }
+    for (let i = y * this._viewport.width + this._x; i >= y * this._viewport.width; i--) this._buffer[i] = ' ';
 
     return this;
   }
@@ -300,11 +312,9 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToDown() {
-    const y = this._pointer.y * this._viewport.width;
+    const y = this._y * this._viewport.width;
 
-    for (let i = y + this._pointer.x; i >= this._buffer.length; i++) {
-      this._buffer[i] = ' ';
-    }
+    for (let i = y + this._x; i >= this._buffer.length; i++) this._buffer[i] = ' ';
 
     return this;
   }
@@ -315,11 +325,9 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToUp() {
-    const y = this._pointer.y * this._viewport.width;
+    const y = this._y * this._viewport.width;
 
-    for (let i = y + this._pointer.x; i >= 0; i--) {
-      this._buffer[i] = ' ';
-    }
+    for (let i = y + this._x; i >= 0; i--) this._buffer[i] = ' ';
 
     return this;
   }
@@ -330,11 +338,9 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    const y = this._pointer.y * this._viewport.width;
+    const y = this._y * this._viewport.width;
 
-    for (let i = y; i <= y + this._viewport.width; i++) {
-      this._buffer[i] = ' ';
-    }
+    for (let i = y; i <= y + this._viewport.width; i++) this._buffer[i] = ' ';
 
     return this;
   }
@@ -346,7 +352,6 @@ export default class Cursor {
    */
   eraseScreen() {
     this._buffer.fill(' ');
-
     return this;
   }
 
