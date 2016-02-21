@@ -57,13 +57,8 @@ export default class Cursor {
    */
   write(data) {
     if (Buffer.isBuffer(data)) {
-      // We need to write buffer anyway
-      const pointer = this.getBufferPointer();
-      const value = this._buffer[pointer];
-
-      this._buffer[pointer] = value + data.toString();
+      this._buffer[this.getBufferPointer()] += data.toString();
     } else {
-      // Otherwise, we need to check if we can write this char
       data.split('').forEach(char => {
         const [x, y] = [this._x, this._y];
         const pointer = this.getBufferPointer(x, y);
