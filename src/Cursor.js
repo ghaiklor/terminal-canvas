@@ -89,7 +89,7 @@ export default class Cursor {
     this._buffer.forEach((code, i) => {
       const [x, y] = this.getXYFromPointer(i);
 
-      process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(y < 1 ? 1 : y + 1)};${Math.floor(x < 1 ? 1 : x + 1)}f`));
+      process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`));
       process.stdout.write(code);
     });
 
