@@ -7,51 +7,79 @@ describe('Cursor', () => {
     const cursor = new Cursor();
 
     assert.instanceOf(cursor, Cursor);
-    assert.equal(cursor._buffer, '');
-    assert.deepEqual(cursor._pointer, {x: 1, y: 1});
+    assert.equal(cursor._width, process.stdout.columns);
+    assert.equal(cursor._height, process.stdout.rows);
+    assert.equal(cursor._x, 0);
+    assert.equal(cursor._y, 0);
+    assert.equal(cursor._buffer.length, cursor._width * cursor._height);
   });
 
-  it('Should properly initialize with custom stdout', () => {
+  it('Should properly calculate buffer pointer', () => {
     const cursor = new Cursor();
 
-    assert.instanceOf(cursor, Cursor);
-    assert.equal(cursor._buffer, '');
-    assert.deepEqual(cursor._pointer, {x: 1, y: 1});
+    assert.equal(cursor.getBufferPointer(), 0);
+    assert.instanceOf(cursor.moveTo(10, 10), Cursor);
+    assert.equal(cursor.getBufferPointer(), 10 * process.stdout.columns + 10);
+    assert.equal(cursor.getBufferPointer(20, 20), 20 * process.stdout.columns + 20);
+  });
+
+  it('Should properly calculate coordinates from buffer pointer', () => {
+    const cursor = new Cursor();
+
+    assert.deepEqual(cursor.getXYFromPointer(0), [0, 0]);
+    assert.deepEqual(cursor.getXYFromPointer(1), [1, 0]);
+    assert.deepEqual(cursor.getXYFromPointer(200), [200 - (Math.floor(200 / cursor._width) * cursor._width), Math.floor(200 / cursor._width)]);
   });
 
   it('Should properly write to the cursor', () => {
     const cursor = new Cursor();
 
-    assert.equal(cursor._buffer, '');
+    assert.equal(cursor._buffer[0], ' ');
+
     cursor.write('test');
-    assert.equal(cursor._buffer, 'test');
+    assert.equal(cursor._buffer[0], 't');
+    assert.equal(cursor._buffer[1], 'e');
+    assert.equal(cursor._buffer[2], 's');
+    assert.equal(cursor._buffer[3], 't');
+
     cursor.write(new Buffer('another'));
-    assert.equal(cursor._buffer, 'testanother');
+    assert.equal(cursor._buffer[4], ' a');
+    assert.equal(cursor._buffer[5], ' n');
+    assert.equal(cursor._buffer[6], ' o');
+    assert.equal(cursor._buffer[7], ' t');
+    assert.equal(cursor._buffer[8], ' h');
+    assert.equal(cursor._buffer[9], ' e');
+    assert.equal(cursor._buffer[10], ' r');
   });
 
   it('Should properly ignore write if out of the bounding box', () => {
     const cursor = new Cursor();
 
-    assert.equal(cursor._buffer, '');
+    assert.equal(cursor._buffer[0], ' ');
+
     cursor.write('test');
-    assert.equal(cursor._buffer, 'test');
-    cursor.write(new Buffer('another'));
-    assert.equal(cursor._buffer, 'testanother');
+    assert.equal(cursor._buffer[0], 't');
+    assert.equal(cursor._buffer[1], 'e');
+    assert.equal(cursor._buffer[2], 's');
+    assert.equal(cursor._buffer[3], 't');
+
     cursor.moveTo(-5, -5).write('do not print');
-    assert.equal(cursor._buffer, 'testanother\u001b[1;1f');
+    assert.equal(cursor._buffer[0], 't');
+    assert.equal(cursor._buffer[1], 'e');
+    assert.equal(cursor._buffer[2], 's');
+    assert.equal(cursor._buffer[3], 't');
+    assert.equal(cursor._buffer[4], ' ');
   });
 
   it('Should properly flush the buffer into the stream', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(process.stdout);
 
-    mock.expects('write').once().withArgs('testanother');
+    mock.expects('write').twice();
 
     cursor.write('test');
-    cursor.write('another');
     cursor.flush();
 
-    assert.equal(cursor._buffer, '');
     mock.verify();
   });
 
@@ -84,14 +112,10 @@ describe('Cursor', () => {
 
   it('Should properly move cursor up with default arguments', () => {
     const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
 
-    mock.expects('write').once().withArgs(new Buffer('\u001b[1A'));
-
-    cursor.up();
-
-    assert.equal(cursor._pointer.y, 0);
-    mock.verify();
+    assert.equal(cursor._y, 0);
+    assert.instanceOf(cursor.up(), Cursor);
+    assert.equal(cursor._y, -1);
   });
 
   it('Should properly move cursor up with custom arguments', () => {
