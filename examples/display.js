@@ -1,25 +1,30 @@
 "use strict";
 
 const Cursor = require('../lib/Cursor');
-const cursor = new Cursor();
+const cursor = new Cursor().resetTTY();
 
 cursor
   .bold()
-  .write('BOLD\n')
+  .write('BOLD')
   .bold(false)
+  .moveBy(-4, 1)
   .dim()
-  .write('DIM\n')
+  .write('DIM')
   .dim(false)
+  .moveBy(-3, 1)
   .underlined()
-  .write('UNDERLINED\n')
+  .write('UNDERLINED')
   .underlined(false)
+  .moveBy(-10, 1)
   .blink()
-  .write('BLINK\n')
+  .write('BLINK')
   .blink(false)
+  .moveBy(-5, 1)
   .reverse()
-  .write('REVERSE\n')
+  .write('REVERSE')
   .reverse(false)
+  .moveBy(-7, 1)
   .hidden()
-  .write('HIDDEN\n')
+  .write('HIDDEN')
   .hidden(false)
   .flush();

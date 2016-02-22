@@ -3,8 +3,8 @@
 const Cursor = require('../lib/Cursor');
 const cursor = new Cursor().resetTTY();
 
-for (let y = 1; y < process.stdout.rows; y++) {
-  for (let x = 1; x < process.stdout.columns; x++) {
+for (let y = 0; y < process.stdout.rows; y++) {
+  for (let x = 0; x < process.stdout.columns; x++) {
     cursor.moveTo(x, y).write('E');
   }
 }
