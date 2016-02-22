@@ -281,10 +281,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToEnd() {
-    const index = this.getBufferPointer();
-
-    for (let i = index; i <= this._viewport.width; i++) this._buffer[i] = ' ';
-
+    for (let x = this._x; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = ' ';
     return this;
   }
 
@@ -294,10 +291,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToStart() {
-    const y = this._y * this._viewport.width;
-
-    for (let i = y * this._viewport.width + this._x; i >= y * this._viewport.width; i--) this._buffer[i] = ' ';
-
+    for (let x = this._x; x >= 0; x--) this._buffer[this.getBufferPointer(x, this._y)] = ' ';
     return this;
   }
 
@@ -307,9 +301,11 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToDown() {
-    const y = this._y * this._viewport.width;
-
-    for (let i = y + this._x; i >= this._buffer.length; i++) this._buffer[i] = ' ';
+    for (let y = this._y; y < this._height; y++) {
+      for (let x = 0; x < this._width; x++) {
+        this._buffer[this.getBufferPointer(x, y)] = ' ';
+      }
+    }
 
     return this;
   }
@@ -320,9 +316,11 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToUp() {
-    const y = this._y * this._viewport.width;
-
-    for (let i = y + this._x; i >= 0; i--) this._buffer[i] = ' ';
+    for (let y = this._y; y >= 0; y--) {
+      for (let x = 0; x < this._width; x++) {
+        this._buffer[this.getBufferPointer(x, y)] = ' ';
+      }
+    }
 
     return this;
   }
@@ -333,10 +331,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    const y = this._y * this._viewport.width;
-
-    for (let i = y; i <= y + this._viewport.width; i++) this._buffer[i] = ' ';
-
+    for (let x = 0; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = '';
     return this;
   }
 
