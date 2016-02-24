@@ -25,7 +25,7 @@ export default class Cursor {
 
     this._background = 'black';
     this._foreground = 'white';
-    this._display = DISPLAY_MODES.RESET_ALL;
+    this._display = false;
 
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
   }
@@ -64,13 +64,14 @@ export default class Cursor {
     data.split('').forEach(char => {
       const [x, y] = [this._x, this._y];
       const pointer = this.getBufferPointer(x, y);
+      const position = Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`);
+      const foreground = Cursor.encodeToVT100(`[38;5;${COLORS[this._foreground.toUpperCase()]}m`);
+      const background = Cursor.encodeToVT100(`[48;5;${COLORS[this._background.toUpperCase()]}m`);
+      const display = this._display ? Cursor.encodeToVT100(`[${this._display}m`) : '';
+      const reset = Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-        this._buffer[pointer] = Cursor.encodeToVT100(`[38;5;${COLORS[this._foreground.toUpperCase()]}m`)
-          + Cursor.encodeToVT100(`[48;5;${COLORS[this._background.toUpperCase()]}m`)
-            //+ Cursor.encodeToVT100(`[${this._display}m`)
-          + char
-          + Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`);
+        this._buffer[pointer] = position + foreground + background + display + char + reset;
       }
 
       this._x++;
@@ -85,14 +86,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    console.log(this._buffer);
-    this._buffer.forEach((code, i) => {
-      const [x, y] = this.getXYFromPointer(i);
-
-      process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`));
-      process.stdout.write(code);
-    });
-
+    // TODO: make diff and write only diff
+    process.stdout.write(this._buffer.join(''));
     return this;
   }
 
@@ -358,7 +353,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   hideCursor() {
-    return this.write(Cursor.encodeToVT100('[?25l'));
+    process.stdout.write(Cursor.encodeToVT100('[?25l'));
+    return this;
   }
 
   /**
@@ -367,16 +363,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   showCursor() {
-    return this.write(Cursor.encodeToVT100('[?25h'));
-  }
-
-  /**
-   * Reset all display modes and cursor attributes to default.
-   *
-   * @returns {Cursor}
-   */
-  resetCursor() {
-    return this.display(DISPLAY_MODES.RESET_ALL);
+    process.stdout.write(Cursor.encodeToVT100('[?25h'));
+    return this;
   }
 
   /**
