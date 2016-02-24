@@ -23,6 +23,10 @@ export default class Cursor {
     this._x = 0;
     this._y = 0;
 
+    this._background = 'black';
+    this._foreground = 'white';
+    this._display = DISPLAY_MODES.RESET_ALL;
+
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
   }
 
@@ -57,21 +61,20 @@ export default class Cursor {
    */
   write(data) {
     // TODO: refactor here
-    if (Buffer.isBuffer(data)) {
-      this._buffer[this.getBufferPointer()] += data.toString();
-    } else {
-      data.split('').forEach(char => {
-        const [x, y] = [this._x, this._y];
-        const pointer = this.getBufferPointer(x, y);
-        const value = this._buffer[pointer];
+    data.split('').forEach(char => {
+      const [x, y] = [this._x, this._y];
+      const pointer = this.getBufferPointer(x, y);
 
-        if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-          this._buffer[pointer] = Cursor.decodeFromVT100(value).join('') + char;
-        }
+      if (0 <= x && x < this._width && 0 <= y && y < this._height) {
+        this._buffer[pointer] = Cursor.encodeToVT100(`[38;5;${COLORS[this._foreground.toUpperCase()]}m`)
+          + Cursor.encodeToVT100(`[48;5;${COLORS[this._background.toUpperCase()]}m`)
+            //+ Cursor.encodeToVT100(`[${this._display}m`)
+          + char
+          + Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`);
+      }
 
-        this._x++;
-      });
-    }
+      this._x++;
+    });
 
     return this;
   }
@@ -82,6 +85,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
+    console.log(this._buffer);
     this._buffer.forEach((code, i) => {
       const [x, y] = this.getXYFromPointer(i);
 
@@ -190,7 +194,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   foreground(color) {
-    return this.write(Cursor.encodeToVT100(`[38;5;${COLORS[color.toUpperCase()]}m`));
+    this._foreground = color;
+    return this;
   }
 
   /**
@@ -201,7 +206,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   background(color) {
-    return this.write(Cursor.encodeToVT100(`[48;5;${COLORS[color.toUpperCase()]}m`));
+    this._background = color;
+    return this;
   }
 
   /**
@@ -212,8 +218,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   display(mode) {
-    if (Object.keys(DISPLAY_MODES).every(key => mode !== DISPLAY_MODES[key])) return this;
-    return this.write(Cursor.encodeToVT100(`[${mode}m`));
+    this._display = mode;
+    return this;
   }
 
   /**
@@ -379,7 +385,9 @@ export default class Cursor {
    * @returns {Cursor}
    */
   resetTTY() {
-    return this.resetCursor().eraseScreen().write(Cursor.encodeToVT100('c'));
+    this.eraseScreen();
+    process.stdout.write(Cursor.encodeToVT100('c'));
+    return this;
   }
 
   /**
