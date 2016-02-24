@@ -56,6 +56,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
+    // TODO: refactor here
     if (Buffer.isBuffer(data)) {
       this._buffer[this.getBufferPointer()] += data.toString();
     } else {
@@ -361,28 +362,6 @@ export default class Cursor {
    */
   showCursor() {
     return this.write(Cursor.encodeToVT100('[?25h'));
-  }
-
-  /**
-   * Save current cursor position and attributes in stack.
-   * Doesn't return any information about stack.
-   * You can restore saved information with {@link restoreCursor}
-   *
-   * @param {Boolean} [withAttributes=true] If true, save it with attributes settings too
-   * @returns {Cursor}
-   */
-  saveCursor(withAttributes = true) {
-    return this.write(Cursor.encodeToVT100(withAttributes ? '7' : '[s'));
-  }
-
-  /**
-   * Restore cursor position and attributes from stack.
-   *
-   * @param {Boolean} [withAttributes=true] If true, restore it with attributes settings too
-   * @returns {Cursor}
-   */
-  restoreCursor(withAttributes = true) {
-    return this.write(Cursor.encodeToVT100(withAttributes ? '8' : '[u'));
   }
 
   /**
