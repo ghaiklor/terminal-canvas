@@ -119,25 +119,9 @@ export default class Cursor {
   }
 
   /**
-   * Draw an image in terminal.
-   * Supports only by few terminals, as I know only in iTerm 2 (v2.9).
-   *
-   * @param {String} image Base64 encoded image content
-   * @param {Number|String} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Number|String} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Boolean} [preserveAspectRatio=true] If set to false, the image's aspect ratio will not be respected
-   * @returns {Cursor}
-   */
-  image({image, width='auto', height='auto', preserveAspectRatio = true}) {
-    const args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
-    process.stdout.write(Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
-    return this;
-  }
-
-  /**
    * Move the cursor up.
    *
-   * @param {Number} [y=1] Rows count must be positive number otherwise it just wouldn't work
+   * @param {Number} [y=1]
    * @returns {Cursor}
    */
   up(y = 1) {
@@ -148,7 +132,7 @@ export default class Cursor {
   /**
    * Move the cursor down.
    *
-   * @param {Number} [y=1] Rows count must be positive number otherwise it just wouldn't work
+   * @param {Number} [y=1]
    * @returns {Cursor}
    */
   down(y = 1) {
@@ -159,7 +143,7 @@ export default class Cursor {
   /**
    * Move the cursor right.
    *
-   * @param {Number} [x=1] Columns count must be positive number otherwise it just wouldn't work
+   * @param {Number} [x=1]
    * @returns {Cursor}
    */
   right(x = 1) {
@@ -170,7 +154,7 @@ export default class Cursor {
   /**
    * Move the cursor left.
    *
-   * @param {Number} [x=1] Columns count must be positive number otherwise it just wouldn't work
+   * @param {Number} [x=1]
    * @returns {Cursor}
    */
   left(x = 1) {
@@ -377,6 +361,22 @@ export default class Cursor {
    */
   eraseScreen() {
     return this.erase(0, 0, this._width - 1, this._height - 1);
+  }
+
+  /**
+   * Draw an image in terminal.
+   * Supports only by few terminals, as I know only in iTerm 3.
+   *
+   * @param {String} image Base64 encoded image content
+   * @param {Number|String} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Number|String} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
+   * @param {Boolean} [preserveAspectRatio=true] If set to false, the image's aspect ratio will not be respected
+   * @returns {Cursor}
+   */
+  image({image, width='auto', height='auto', preserveAspectRatio = true}) {
+    const args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
+    process.stdout.write(Cursor.encodeToVT100(`[${this._y + 1};${this._x + 1}f`) + Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
+    return this;
   }
 
   /**
