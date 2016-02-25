@@ -382,7 +382,7 @@ describe('Cursor', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns, 0).returns(cursor);
+    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns - 1, 0).returns(cursor);
 
     cursor.eraseToEnd();
 
@@ -404,7 +404,7 @@ describe('Cursor', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns, process.stdout.rows).returns(cursor);
+    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns - 1, process.stdout.rows - 1).returns(cursor);
 
     cursor.eraseToDown();
 
@@ -415,7 +415,7 @@ describe('Cursor', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns, 0).returns(cursor);
+    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns - 1, 0).returns(cursor);
 
     cursor.eraseToUp();
 
@@ -426,7 +426,7 @@ describe('Cursor', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns, 0).returns(cursor);
+    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns - 1, 0).returns(cursor);
 
     cursor.eraseLine();
 
@@ -437,7 +437,7 @@ describe('Cursor', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns, process.stdout.rows).returns(cursor);
+    mock.expects('erase').once().withArgs(0, 0, process.stdout.columns - 1, process.stdout.rows - 1).returns(cursor);
 
     cursor.eraseScreen();
 

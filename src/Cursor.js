@@ -307,6 +307,7 @@ export default class Cursor {
 
   /**
    * Erase the specified region.
+   * The region describes the rectangle shape which need to erase.
    *
    * @param {Number} x1
    * @param {Number} y1
@@ -330,7 +331,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToEnd() {
-    return this.erase(this._x, this._y, this._width, this._y);
+    return this.erase(this._x, this._y, this._width - 1, this._y);
   }
 
   /**
@@ -348,7 +349,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToDown() {
-    return this.erase(0, this._y, this._width, this._height);
+    return this.erase(0, this._y, this._width - 1, this._height - 1);
   }
 
   /**
@@ -357,7 +358,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToUp() {
-    return this.erase(0, 0, this._width, this._y);
+    return this.erase(0, 0, this._width - 1, this._y);
   }
 
   /**
@@ -366,7 +367,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    return this.erase(0, this._y, this._width, this._y);
+    return this.erase(0, this._y, this._width - 1, this._y);
   }
 
   /**
@@ -375,7 +376,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseScreen() {
-    return this.erase(0, 0, this._width, this._height);
+    return this.erase(0, 0, this._width - 1, this._height - 1);
   }
 
   /**
