@@ -28,6 +28,7 @@ export default class Cursor {
     this._display = false;
 
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
+    this._previousBuffer = [].concat(this._buffer);
   }
 
   /**
@@ -100,7 +101,12 @@ export default class Cursor {
    */
   flush() {
     // TODO: make diff and write only diff
-    process.stdout.write(this._buffer.join(''));
+    const prev = new Set(this._previousBuffer);
+
+    process.stdout.write(this._buffer.filter(item => !prev.has(item)).join(''));
+
+    this._previousBuffer = [].concat(this._buffer);
+
     return this;
   }
 
