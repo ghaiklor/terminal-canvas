@@ -23,11 +23,31 @@ export default class Cursor {
     this._x = 0;
     this._y = 0;
 
-    this._background = 'black';
-    this._foreground = 'white';
+    this._background = false;
+    this._foreground = false;
     this._display = false;
 
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
+  }
+
+  /**
+   * Wrap char with all control codes needed for rendering the cell.
+   *
+   * @param {String} char
+   * @param {Object} options
+   * @returns {String} Returns ready to flush string with ASCII control codes
+   */
+  wrap(char, options = {}) {
+    const {x = this._x, y = this._y, background = this._background, foreground = this._foreground, display = this._display} = options;
+
+    return (
+      Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
+      (background ? Cursor.encodeToVT100(`[48;5;${COLORS[background.toUpperCase()]}m`) : '') +
+      (foreground ? Cursor.encodeToVT100(`[38;5;${COLORS[foreground.toUpperCase()]}m`) : '') +
+      (display ? Cursor.encodeToVT100(`[${display}m`) : '') +
+      char +
+      Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
+    );
   }
 
   /**
@@ -64,15 +84,8 @@ export default class Cursor {
     data.split('').forEach(char => {
       const [x, y] = [this._x, this._y];
       const pointer = this.getBufferPointer(x, y);
-      const position = Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`);
-      const foreground = Cursor.encodeToVT100(`[38;5;${COLORS[this._foreground.toUpperCase()]}m`);
-      const background = Cursor.encodeToVT100(`[48;5;${COLORS[this._background.toUpperCase()]}m`);
-      const display = this._display ? Cursor.encodeToVT100(`[${this._display}m`) : '';
-      const reset = Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`);
 
-      if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-        this._buffer[pointer] = position + foreground + background + display + char + reset;
-      }
+      if (0 <= x && x < this._width && 0 <= y && y < this._height) this._buffer[pointer] = this.wrap(char);
 
       this._x++;
     });
@@ -373,7 +386,6 @@ export default class Cursor {
    * @returns {Cursor}
    */
   resetTTY() {
-    this.eraseScreen();
     process.stdout.write(Cursor.encodeToVT100('c'));
     return this;
   }
@@ -387,31 +399,6 @@ export default class Cursor {
    */
   static encodeToVT100(string) {
     return new Buffer([0x1b].concat(string.split('').map(item => item.charCodeAt(0))));
-  }
-
-  /**
-   * Parse ASCII control codes and return array with them.
-   *
-   * @param {String} _string
-   * @returns {Array}
-   */
-  static decodeFromVT100(_string) {
-    // TODO: refactor here
-    const string = new Buffer(_string, 'utf-8');
-    const codes = [];
-
-    let start = -1;
-
-    for (let i = 0; i < string.length; i++) {
-      if (string[i] === 27) {
-        if (start >= 0) codes.push(string.slice(start, i));
-        start = i;
-      } else if (start >= 0 && i === string.length - 1) {
-        codes.push(string.slice(start));
-      }
-    }
-
-    return codes;
   }
 
   /**
