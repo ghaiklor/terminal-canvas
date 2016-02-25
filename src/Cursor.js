@@ -203,8 +203,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   moveTo(x, y) {
-    this._x = x;
-    this._y = y;
+    this._x = Math.floor(x);
+    this._y = Math.floor(y);
 
     return this;
   }
