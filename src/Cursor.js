@@ -39,7 +39,7 @@ export default class Cursor {
    * @returns {String} Returns ready to flush string with ASCII control codes
    */
   wrap(char, options = {}) {
-    const {x = this._x, y = this._y, background = this._background, foreground = this._foreground, display = this._display} = options;
+    const {x, y, background, foreground, display} = options;
 
     return (
       Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
@@ -86,7 +86,15 @@ export default class Cursor {
       const [x, y] = [this._x, this._y];
       const pointer = this.getBufferPointer(x, y);
 
-      if (0 <= x && x < this._width && 0 <= y && y < this._height) this._buffer[pointer] = this.wrap(char);
+      if (0 <= x && x < this._width && 0 <= y && y < this._height) {
+        this._buffer[pointer] = this.wrap(char, {
+          x,
+          y,
+          background: this._background,
+          foreground: this._foreground,
+          display: this._display
+        });
+      }
 
       this._x++;
     });
@@ -122,7 +130,8 @@ export default class Cursor {
    */
   image({image, width='auto', height='auto', preserveAspectRatio = true}) {
     const args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
-    return this.write(Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
+    process.stdout.write(Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
+    return this;
   }
 
   /**
@@ -302,7 +311,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToEnd() {
-    for (let x = this._x; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = ' ';
+    for (let x = this._x; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = this.wrap(' ', {
+      x: x,
+      y: this._y
+    });
     return this;
   }
 
@@ -312,7 +324,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToStart() {
-    for (let x = this._x; x >= 0; x--) this._buffer[this.getBufferPointer(x, this._y)] = ' ';
+    for (let x = this._x; x >= 0; x--) this._buffer[this.getBufferPointer(x, this._y)] = this.wrap(' ', {
+      x: x,
+      y: this._y
+    });
     return this;
   }
 
@@ -324,7 +339,7 @@ export default class Cursor {
   eraseToDown() {
     for (let y = this._y; y < this._height; y++) {
       for (let x = 0; x < this._width; x++) {
-        this._buffer[this.getBufferPointer(x, y)] = ' ';
+        this._buffer[this.getBufferPointer(x, y)] = this.wrap(' ', {x, y});
       }
     }
 
@@ -339,7 +354,7 @@ export default class Cursor {
   eraseToUp() {
     for (let y = this._y; y >= 0; y--) {
       for (let x = 0; x < this._width; x++) {
-        this._buffer[this.getBufferPointer(x, y)] = ' ';
+        this._buffer[this.getBufferPointer(x, y)] = this.wrap(' ', {x, y});
       }
     }
 
@@ -352,7 +367,10 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    for (let x = 0; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = '';
+    for (let x = 0; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = this.wrap(' ', {
+      x: x,
+      y: this._y
+    });
     return this;
   }
 
@@ -362,7 +380,12 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseScreen() {
-    this._buffer.fill(' ');
+    for (let y = 0; y < this._height; y++) {
+      for (let x = 0; x < this._width; x++) {
+        this._buffer[this.getBufferPointer(x, y)] = this.wrap(' ', {x, y});
+      }
+    }
+
     return this;
   }
 
@@ -397,10 +420,10 @@ export default class Cursor {
   }
 
   /**
-   * Bytes to encode to VT100 standard.
+   * Bytes to encode to VT100 control sequence.
    *
    * @static
-   * @param {String} string
+   * @param {String} string Control code that you want to encode
    * @returns {Buffer} Returns encoded bytes
    */
   static encodeToVT100(string) {
