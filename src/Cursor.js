@@ -28,7 +28,7 @@ export default class Cursor {
     this._display = false;
 
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
-    this._previousBuffer = [].concat(this._buffer);
+    this._renderedBuffer = [].concat(this._buffer);
   }
 
   /**
@@ -58,7 +58,7 @@ export default class Cursor {
    * @param {Number} [y] Y coordinate on the terminal
    * @returns {Number} Returns index in the buffer array
    */
-  getBufferPointer(x = this._x, y = this._y) {
+  getPointer(x = this._x, y = this._y) {
     return y * this._width + x;
   }
 
@@ -84,7 +84,7 @@ export default class Cursor {
     // TODO: refactor here
     data.split('').forEach(char => {
       const [x, y] = [this._x, this._y];
-      const pointer = this.getBufferPointer(x, y);
+      const pointer = this.getPointer(x, y);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
         this._buffer[pointer] = this.wrap(char, {
@@ -109,11 +109,11 @@ export default class Cursor {
    */
   flush() {
     // TODO: make diff and write only diff
-    const prev = new Set(this._previousBuffer);
+    const prev = new Set(this._renderedBuffer);
 
     process.stdout.write(this._buffer.filter(item => !prev.has(item)).join(''));
 
-    this._previousBuffer = [].concat(this._buffer);
+    this._renderedBuffer = [].concat(this._buffer);
 
     return this;
   }
@@ -306,16 +306,31 @@ export default class Cursor {
   }
 
   /**
+   * Erase the specified region.
+   *
+   * @param {Number} x1
+   * @param {Number} y1
+   * @param {Number} x2
+   * @param {Number} y2
+   * @returns {Cursor}
+   */
+  erase(x1, y1, x2, y2) {
+    for (let y = y1; y <= y2; y++) {
+      for (let x = x1; x <= x2; x++) {
+        this._buffer[this.getPointer(x, y)] = this.wrap(' ', {x, y});
+      }
+    }
+
+    return this;
+  }
+
+  /**
    * Erase from current position to end of the line.
    *
    * @returns {Cursor}
    */
   eraseToEnd() {
-    for (let x = this._x; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = this.wrap(' ', {
-      x: x,
-      y: this._y
-    });
-    return this;
+    return this.erase(this._x, this._y, this._width, this._y);
   }
 
   /**
@@ -324,11 +339,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToStart() {
-    for (let x = this._x; x >= 0; x--) this._buffer[this.getBufferPointer(x, this._y)] = this.wrap(' ', {
-      x: x,
-      y: this._y
-    });
-    return this;
+    return this.erase(0, this._y, this._x, this._y);
   }
 
   /**
@@ -337,13 +348,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToDown() {
-    for (let y = this._y; y < this._height; y++) {
-      for (let x = 0; x < this._width; x++) {
-        this._buffer[this.getBufferPointer(x, y)] = this.wrap(' ', {x, y});
-      }
-    }
-
-    return this;
+    return this.erase(0, this._y, this._width, this._height);
   }
 
   /**
@@ -352,13 +357,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseToUp() {
-    for (let y = this._y; y >= 0; y--) {
-      for (let x = 0; x < this._width; x++) {
-        this._buffer[this.getBufferPointer(x, y)] = this.wrap(' ', {x, y});
-      }
-    }
-
-    return this;
+    return this.erase(0, 0, this._width, this._y);
   }
 
   /**
@@ -367,11 +366,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseLine() {
-    for (let x = 0; x < this._width; x++) this._buffer[this.getBufferPointer(x, this._y)] = this.wrap(' ', {
-      x: x,
-      y: this._y
-    });
-    return this;
+    return this.erase(0, this._y, this._width, this._y);
   }
 
   /**
@@ -380,17 +375,12 @@ export default class Cursor {
    * @returns {Cursor}
    */
   eraseScreen() {
-    for (let y = 0; y < this._height; y++) {
-      for (let x = 0; x < this._width; x++) {
-        this._buffer[this.getBufferPointer(x, y)] = this.wrap(' ', {x, y});
-      }
-    }
-
-    return this;
+    return this.erase(0, 0, this._width, this._height);
   }
 
   /**
-   * Set the cursor invisible.
+   * Set the terminal cursor invisible.
+   * Applies immediately without calling {@link flush}.
    *
    * @returns {Cursor}
    */
@@ -400,7 +390,8 @@ export default class Cursor {
   }
 
   /**
-   * Set the cursor visible.
+   * Set the terminal cursor visible.
+   * Applies immediately without calling {@link flush}.
    *
    * @returns {Cursor}
    */
@@ -410,7 +401,8 @@ export default class Cursor {
   }
 
   /**
-   * Reset all terminal settings to default.
+   * Reset all terminal settings.
+   * Applies immediately without calling {@link flush}.
    *
    * @returns {Cursor}
    */
@@ -427,7 +419,7 @@ export default class Cursor {
    * @returns {Buffer} Returns encoded bytes
    */
   static encodeToVT100(string) {
-    return new Buffer([0x1b].concat(string.split('').map(item => item.charCodeAt(0))));
+    return new Buffer([0x1b].concat(string.split('').map(char => char.charCodeAt(0))));
   }
 
   /**
