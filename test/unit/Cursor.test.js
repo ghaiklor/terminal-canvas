@@ -443,7 +443,7 @@ describe('Cursor', () => {
 
     mock.expects('write').once().withArgs(new Buffer('\u001b[?25l'));
 
-    assert.instanceOf(cursor.hideCursor(), cursor);
+    assert.instanceOf(cursor.hideCursor(), Cursor);
     mock.verify();
   });
 
