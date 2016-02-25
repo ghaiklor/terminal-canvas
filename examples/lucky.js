@@ -21,6 +21,6 @@ setInterval(() => {
     if (y <= 0 || y >= 5) dy *= -1;
   }
 
-  cursor.moveTo(0, 1).flush();
+  cursor.moveTo(0, 0).flush();
   offset++;
-}, 150);
+}, 1);
