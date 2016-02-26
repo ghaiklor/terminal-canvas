@@ -13,7 +13,12 @@ describe('Cursor', () => {
     assert.equal(cursor._y, 0);
     assert.notOk(cursor._background);
     assert.notOk(cursor._foreground);
-    assert.notOk(cursor._display);
+    assert.notOk(cursor._display.bold);
+    assert.notOk(cursor._display.dim);
+    assert.notOk(cursor._display.underlined);
+    assert.notOk(cursor._display.blink);
+    assert.notOk(cursor._display.reverse);
+    assert.notOk(cursor._display.hidden);
     assert.equal(cursor._buffer.length, process.stdout.columns * process.stdout.rows);
     assert.equal(cursor._renderedBuffer.size, 1);
   });
@@ -182,132 +187,58 @@ describe('Cursor', () => {
     assert.equal(cursor._background, 'black');
   });
 
-  it('Should properly change display mode', () => {
-    const cursor = new Cursor();
-
-    assert.equal(cursor._display, false);
-    assert.instanceOf(cursor.display(5), Cursor);
-    assert.equal(cursor._display, 5);
-  });
-
   it('Should properly enable bold mode', () => {
     const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(1).returns(cursor);
 
     assert.instanceOf(cursor.bold(), Cursor);
-    mock.verify();
-  });
-
-  it('Should properly disable bold mode', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(21).returns(cursor);
-
+    assert.ok(cursor._display.bold);
     assert.instanceOf(cursor.bold(false), Cursor);
-    mock.verify();
+    assert.notOk(cursor._display.bold);
   });
 
-  it('Should properly enable dim mode', () => {
+  it('Should properly toggle dim mode', () => {
     const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(2).returns(cursor);
 
     assert.instanceOf(cursor.dim(), Cursor);
-    mock.verify();
-  });
-
-  it('Should properly disable dim mode', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(22).returns(cursor);
-
+    assert.ok(cursor._display.dim);
     assert.instanceOf(cursor.dim(false), Cursor);
-    mock.verify();
+    assert.notOk(cursor._display.dim);
   });
 
-  it('Should properly enable underlined mode', () => {
+  it('Should properly toggle underlined mode', () => {
     const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(4).returns(cursor);
 
     assert.instanceOf(cursor.underlined(), Cursor);
-    mock.verify();
-  });
-
-  it('Should properly disable underlined mode', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(24).returns(cursor);
-
+    assert.ok(cursor._display.underlined);
     assert.instanceOf(cursor.underlined(false), Cursor);
-    mock.verify();
+    assert.notOk(cursor._display.underlined);
   });
 
-  it('Should properly enable blink mode', () => {
+  it('Should properly toggle blink mode', () => {
     const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(5).returns(cursor);
 
     assert.instanceOf(cursor.blink(), Cursor);
-    mock.verify();
-  });
-
-  it('Should properly disable blink mode', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(25).returns(cursor);
-
+    assert.ok(cursor._display.blink);
     assert.instanceOf(cursor.blink(false), Cursor);
-    mock.verify();
+    assert.notOk(cursor._display.blink);
   });
 
-  it('Should properly enable reverse mode', () => {
+  it('Should properly toggle reverse mode', () => {
     const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(7).returns(cursor);
 
     assert.instanceOf(cursor.reverse(), Cursor);
-    mock.verify();
-  });
-
-  it('Should properly disable reverse mode', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(27).returns(cursor);
-
+    assert.ok(cursor._display.reverse);
     assert.instanceOf(cursor.reverse(false), Cursor);
-    mock.verify();
+    assert.notOk(cursor._display.reverse);
   });
 
-  it('Should properly enable hidden mode', () => {
+  it('Should properly toggle hidden mode', () => {
     const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(8).returns(cursor);
 
     assert.instanceOf(cursor.hidden(), Cursor);
-    mock.verify();
-  });
-
-  it('Should properly disable hidden mode', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(cursor);
-
-    mock.expects('display').once().withExactArgs(28).returns(cursor);
-
+    assert.ok(cursor._display.hidden);
     assert.instanceOf(cursor.hidden(false), Cursor);
-    mock.verify();
+    assert.notOk(cursor._display.hidden);
   });
 
   it('Should properly erase the specified region', () => {
@@ -415,12 +346,12 @@ describe('Cursor', () => {
     const y = 0;
     const background = 'black';
     const foreground = 'white';
-    const display = 8;
+    const display = {bold: true, underlined: true};
 
     assert.equal(Cursor.wrap(' ', {x, y}), '\u001b[1;1f \u001b[0m');
     assert.equal(Cursor.wrap(' ', {x, y, background}), '\u001b[1;1f\u001b[48;5;0m \u001b[0m');
     assert.equal(Cursor.wrap(' ', {x, y, foreground}), '\u001b[1;1f\u001b[38;5;15m \u001b[0m');
-    assert.equal(Cursor.wrap(' ', {x, y, display}), '\u001b[1;1f\u001b[8m \u001b[0m');
+    assert.equal(Cursor.wrap(' ', {x, y, display}), '\u001b[1;1f\u001b[1m\u001b[4m \u001b[0m');
   });
 
   it('Should properly encode to VT100 compatible symbol', () => {
@@ -437,7 +368,12 @@ describe('Cursor', () => {
     assert.equal(cursor._y, 0);
     assert.notOk(cursor._background);
     assert.notOk(cursor._foreground);
-    assert.notOk(cursor._display);
+    assert.notOk(cursor._display.bold);
+    assert.notOk(cursor._display.dim);
+    assert.notOk(cursor._display.underlined);
+    assert.notOk(cursor._display.blink);
+    assert.notOk(cursor._display.reverse);
+    assert.notOk(cursor._display.hidden);
     assert.equal(cursor._buffer.length, process.stdout.columns * process.stdout.rows);
     assert.equal(cursor._renderedBuffer.size, 1);
   });
