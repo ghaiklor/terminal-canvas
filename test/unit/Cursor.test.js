@@ -60,20 +60,6 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly wrap the char with control sequence', () => {
-    const cursor = new Cursor();
-    const x = 0;
-    const y = 0;
-    const background = 'black';
-    const foreground = 'white';
-    const display = 8;
-
-    assert.equal(cursor.wrap(' ', {x, y}), '\u001b[1;1f \u001b[0m');
-    assert.equal(cursor.wrap(' ', {x, y, background}), '\u001b[1;1f\u001b[48;5;0m \u001b[0m');
-    assert.equal(cursor.wrap(' ', {x, y, foreground}), '\u001b[1;1f\u001b[38;5;15m \u001b[0m');
-    assert.equal(cursor.wrap(' ', {x, y, display}), '\u001b[1;1f\u001b[8m \u001b[0m');
-  });
-
   it('Should properly calculate buffer pointer', () => {
     const cursor = new Cursor();
 
@@ -329,7 +315,6 @@ describe('Cursor', () => {
     const mock = sinon.mock(cursor);
 
     mock.expects('getPointerFromXY').exactly(36).returns(cursor);
-    mock.expects('wrap').exactly(36).returns(cursor);
 
     assert.instanceOf(cursor.moveTo(5, 5).erase(0, 0, 5, 5), Cursor);
     mock.verify();
@@ -423,6 +408,19 @@ describe('Cursor', () => {
 
     assert.instanceOf(cursor.resetTTY(), Cursor);
     mock.verify();
+  });
+
+  it('Should properly wrap the char with control sequence', () => {
+    const x = 0;
+    const y = 0;
+    const background = 'black';
+    const foreground = 'white';
+    const display = 8;
+
+    assert.equal(Cursor.wrap(' ', {x, y}), '\u001b[1;1f \u001b[0m');
+    assert.equal(Cursor.wrap(' ', {x, y, background}), '\u001b[1;1f\u001b[48;5;0m \u001b[0m');
+    assert.equal(Cursor.wrap(' ', {x, y, foreground}), '\u001b[1;1f\u001b[38;5;15m \u001b[0m');
+    assert.equal(Cursor.wrap(' ', {x, y, display}), '\u001b[1;1f\u001b[8m \u001b[0m');
   });
 
   it('Should properly encode to VT100 compatible symbol', () => {

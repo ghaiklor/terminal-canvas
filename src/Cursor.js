@@ -49,7 +49,7 @@ export default class Cursor {
       const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-        this._buffer[pointer] = this.wrap(char, {x, y, background, foreground, display});
+        this._buffer[pointer] = Cursor.wrap(char, {x, y, background, foreground, display});
       }
 
       this._x++;
@@ -68,31 +68,6 @@ export default class Cursor {
     this._renderedBuffer = new Set(this._buffer);
 
     return this;
-  }
-
-  /**
-   * Wrap char with all control codes needed for rendering the cell.
-   *
-   * @param {String} char
-   * @param {Object} options Options object where you can set additional style to char
-   * @param {Number} options.x X coordinate
-   * @param {Number} options.y Y coordinate
-   * @param {String} [options.background] Background color
-   * @param {String} [options.foreground] Foreground color
-   * @param {Number} [options.display] Display mode from {@link DISPLAY_MODES}
-   * @returns {String} Returns ready to flush string with ASCII control codes
-   */
-  wrap(char, options) {
-    const {x, y, background, foreground, display} = options;
-
-    return (
-      Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
-      (background ? Cursor.encodeToVT100(`[48;5;${COLORS[background.toUpperCase()]}m`) : '') +
-      (foreground ? Cursor.encodeToVT100(`[38;5;${COLORS[foreground.toUpperCase()]}m`) : '') +
-      (display ? Cursor.encodeToVT100(`[${display}m`) : '') +
-      char +
-      Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
-    );
   }
 
   /**
@@ -300,7 +275,7 @@ export default class Cursor {
   erase(x1, y1, x2, y2) {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
-        this._buffer[this.getPointerFromXY(x, y)] = this.wrap(' ', {x, y});
+        this._buffer[this.getPointerFromXY(x, y)] = Cursor.wrap(' ', {x, y});
       }
     }
 
@@ -392,6 +367,32 @@ export default class Cursor {
   resetTTY() {
     process.stdout.write(Cursor.encodeToVT100('c'));
     return this;
+  }
+
+  /**
+   * Wrap char with all control codes needed for rendering the cell.
+   *
+   * @static
+   * @param {String} char
+   * @param {Object} options Options object where you can set additional style to char
+   * @param {Number} options.x X coordinate
+   * @param {Number} options.y Y coordinate
+   * @param {String} [options.background] Background color
+   * @param {String} [options.foreground] Foreground color
+   * @param {Number} [options.display] Display mode from {@link DISPLAY_MODES}
+   * @returns {String} Returns ready to flush string with ASCII control codes
+   */
+  static wrap(char, options) {
+    const {x, y, background, foreground, display} = options;
+
+    return (
+      Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
+      (background ? Cursor.encodeToVT100(`[48;5;${COLORS[background.toUpperCase()]}m`) : '') +
+      (foreground ? Cursor.encodeToVT100(`[38;5;${COLORS[foreground.toUpperCase()]}m`) : '') +
+      (display ? Cursor.encodeToVT100(`[${display}m`) : '') +
+      char +
+      Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
+    );
   }
 
   /**
