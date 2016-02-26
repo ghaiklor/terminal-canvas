@@ -1,7 +1,7 @@
 "use strict";
 
 const Cursor = require('../lib/Cursor');
-const cursor = new Cursor().resetTTY().flush();
+const cursor = new Cursor().resetTTY();
 const radius = 10;
 const colors = ['RED', 'YELLOW', 'GREEN', 'DARK_CYAN', 'BLUE', 'MAGENTA'];
 
@@ -21,4 +21,4 @@ setInterval(function () {
   points = points.slice(0, 12 * colors.length - 1);
 
   theta += Math.PI / 40;
-}, 50);
+}, 1);

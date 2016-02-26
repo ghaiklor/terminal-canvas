@@ -23,4 +23,4 @@ setInterval(() => {
 
   cursor.moveTo(0, 0).flush();
   offset++;
-}, 1);
+}, 150);
