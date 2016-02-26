@@ -15,7 +15,7 @@ describe('Cursor', () => {
     assert.notOk(cursor._foreground);
     assert.notOk(cursor._display);
     assert.equal(cursor._buffer.length, process.stdout.columns * process.stdout.rows);
-    assert.equal(cursor._renderedBuffer.length, cursor._buffer.length);
+    assert.equal(cursor._renderedBuffer.size, 1);
   });
 
   it('Should properly write to the cursor', () => {
@@ -461,6 +461,6 @@ describe('Cursor', () => {
     assert.notOk(cursor._foreground);
     assert.notOk(cursor._display);
     assert.equal(cursor._buffer.length, process.stdout.columns * process.stdout.rows);
-    assert.equal(cursor._renderedBuffer.length, cursor._buffer.length);
+    assert.equal(cursor._renderedBuffer.size, 1);
   });
 });
