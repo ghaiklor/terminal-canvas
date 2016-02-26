@@ -28,7 +28,7 @@ export default class Cursor {
     this._display = false;
 
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
-    this._renderedBuffer = [].concat(this._buffer);
+    this._renderedBuffer = new Set(this._buffer);
   }
 
   /**
@@ -64,12 +64,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    // TODO: make diff and write only diff
-    const prev = new Set(this._renderedBuffer);
-
-    process.stdout.write(this._buffer.filter(item => !prev.has(item)).join(''));
-
-    this._renderedBuffer = [].concat(this._buffer);
+    process.stdout.write(this._buffer.filter(item => !this._renderedBuffer.has(item)).join(''));
+    this._renderedBuffer = new Set(this._buffer);
 
     return this;
   }
