@@ -32,47 +32,6 @@ export default class Cursor {
   }
 
   /**
-   * Wrap char with all control codes needed for rendering the cell.
-   *
-   * @param {String} char
-   * @param {Object} options
-   * @returns {String} Returns ready to flush string with ASCII control codes
-   */
-  wrap(char, options = {}) {
-    const {x, y, background, foreground, display} = options;
-
-    return (
-      Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
-      (background ? Cursor.encodeToVT100(`[48;5;${COLORS[background.toUpperCase()]}m`) : '') +
-      (foreground ? Cursor.encodeToVT100(`[38;5;${COLORS[foreground.toUpperCase()]}m`) : '') +
-      (display ? Cursor.encodeToVT100(`[${display}m`) : '') +
-      char +
-      Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
-    );
-  }
-
-  /**
-   * Get index of the buffer from (x, y) coordinates of from current pointer.
-   *
-   * @param {Number} [x] X coordinate on the terminal
-   * @param {Number} [y] Y coordinate on the terminal
-   * @returns {Number} Returns index in the buffer array
-   */
-  getPointer(x = this._x, y = this._y) {
-    return y * this._width + x;
-  }
-
-  /**
-   * Get (x, y) coordinate from the buffer pointer.
-   *
-   * @param {Number} index Index in the buffer
-   * @returns {Array} Returns an array [x, y]
-   */
-  getXYFromPointer(index) {
-    return [index - (Math.floor(index / this._width) * this._width), Math.floor(index / this._width)];
-  }
-
-  /**
    * Write to the buffer.
    * Usually it's just a text that you want to print out but also can be a Buffer with control codes.
    * Cursor has a feature to buffering data, so when you will be ready to push to the stream, call {@link flush} method.
@@ -84,7 +43,7 @@ export default class Cursor {
     // TODO: refactor here
     data.split('').forEach(char => {
       const [x, y] = [this._x, this._y];
-      const pointer = this.getPointer(x, y);
+      const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
         this._buffer[pointer] = this.wrap(char, {
@@ -119,13 +78,59 @@ export default class Cursor {
   }
 
   /**
+   * Wrap char with all control codes needed for rendering the cell.
+   *
+   * @param {String} char
+   * @param {Object} options Options object where you can set additional style to char
+   * @param {Number} options.x X coordinate
+   * @param {Number} options.y Y coordinate
+   * @param {String} [options.background] Background color
+   * @param {String} [options.foreground] Foreground color
+   * @param {Number} [options.display] Display mode from {@link DISPLAY_MODES}
+   * @returns {String} Returns ready to flush string with ASCII control codes
+   */
+  wrap(char, options = {}) {
+    const {x, y, background, foreground, display} = options;
+
+    return (
+      Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
+      (background ? Cursor.encodeToVT100(`[48;5;${COLORS[background.toUpperCase()]}m`) : '') +
+      (foreground ? Cursor.encodeToVT100(`[38;5;${COLORS[foreground.toUpperCase()]}m`) : '') +
+      (display ? Cursor.encodeToVT100(`[${display}m`) : '') +
+      char +
+      Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
+    );
+  }
+
+  /**
+   * Get index of the buffer from (x, y) coordinates.
+   *
+   * @param {Number} [x] X coordinate on the terminal
+   * @param {Number} [y] Y coordinate on the terminal
+   * @returns {Number} Returns index in the buffer array
+   */
+  getPointerFromXY(x = this._x, y = this._y) {
+    return y * this._width + x;
+  }
+
+  /**
+   * Get (x, y) coordinate from the buffer pointer.
+   *
+   * @param {Number} index Index in the buffer
+   * @returns {Array} Returns an array [x, y]
+   */
+  getXYFromPointer(index) {
+    return [index - (Math.floor(index / this._width) * this._width), Math.floor(index / this._width)];
+  }
+
+  /**
    * Move the cursor up.
    *
    * @param {Number} [y=1]
    * @returns {Cursor}
    */
   up(y = 1) {
-    this._y -= y;
+    this._y -= Math.floor(y);
     return this;
   }
 
@@ -136,7 +141,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   down(y = 1) {
-    this._y += y;
+    this._y += Math.floor(y);
     return this;
   }
 
@@ -147,7 +152,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   right(x = 1) {
-    this._x += x;
+    this._x += Math.floor(x);
     return this;
   }
 
@@ -158,7 +163,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   left(x = 1) {
-    this._x -= x;
+    this._x -= Math.floor(x);
     return this;
   }
 
@@ -302,7 +307,7 @@ export default class Cursor {
   erase(x1, y1, x2, y2) {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
-        this._buffer[this.getPointer(x, y)] = this.wrap(' ', {x, y});
+        this._buffer[this.getPointerFromXY(x, y)] = this.wrap(' ', {x, y});
       }
     }
 
@@ -375,8 +380,9 @@ export default class Cursor {
    * @returns {Cursor}
    */
   image({image, width='auto', height='auto', preserveAspectRatio = true}) {
+    // TODO: refactor here
     const args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
-    process.stdout.write(Cursor.encodeToVT100(`[${this._y + 1};${this._x + 1}f`) + Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
+    process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(this._y + 1)};${Math.floor(this._x + 1)}f`) + Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
     return this;
   }
 

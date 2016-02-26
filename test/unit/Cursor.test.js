@@ -18,37 +18,6 @@ describe('Cursor', () => {
     assert.equal(cursor._renderedBuffer.length, cursor._buffer.length);
   });
 
-  it('Should properly wrap the char with control sequence', () => {
-    const cursor = new Cursor();
-    const x = 0;
-    const y = 0;
-    const background = 'black';
-    const foreground = 'white';
-    const display = 8;
-
-    assert.equal(cursor.wrap(' ', {x, y}), '\u001b[1;1f \u001b[0m');
-    assert.equal(cursor.wrap(' ', {x, y, background}), '\u001b[1;1f\u001b[48;5;0m \u001b[0m');
-    assert.equal(cursor.wrap(' ', {x, y, foreground}), '\u001b[1;1f\u001b[38;5;15m \u001b[0m');
-    assert.equal(cursor.wrap(' ', {x, y, display}), '\u001b[1;1f\u001b[8m \u001b[0m');
-  });
-
-  it('Should properly calculate buffer pointer', () => {
-    const cursor = new Cursor();
-
-    assert.equal(cursor.getPointer(), 0);
-    assert.instanceOf(cursor.moveTo(10, 10), Cursor);
-    assert.equal(cursor.getPointer(), 10 * process.stdout.columns + 10);
-    assert.equal(cursor.getPointer(20, 20), 20 * process.stdout.columns + 20);
-  });
-
-  it('Should properly calculate coordinates from buffer pointer', () => {
-    const cursor = new Cursor();
-
-    assert.deepEqual(cursor.getXYFromPointer(0), [0, 0]);
-    assert.deepEqual(cursor.getXYFromPointer(1), [1, 0]);
-    assert.deepEqual(cursor.getXYFromPointer(200), [200 - (Math.floor(200 / cursor._width) * cursor._width), Math.floor(200 / cursor._width)]);
-  });
-
   it('Should properly write to the cursor', () => {
     const cursor = new Cursor();
 
@@ -90,6 +59,38 @@ describe('Cursor', () => {
     cursor.flush();
 
     mock.verify();
+  });
+
+  it('Should properly wrap the char with control sequence', () => {
+    const cursor = new Cursor();
+    const x = 0;
+    const y = 0;
+    const background = 'black';
+    const foreground = 'white';
+    const display = 8;
+
+    assert.equal(cursor.wrap(' ', {x, y}), '\u001b[1;1f \u001b[0m');
+    assert.equal(cursor.wrap(' ', {x, y, background}), '\u001b[1;1f\u001b[48;5;0m \u001b[0m');
+    assert.equal(cursor.wrap(' ', {x, y, foreground}), '\u001b[1;1f\u001b[38;5;15m \u001b[0m');
+    assert.equal(cursor.wrap(' ', {x, y, display}), '\u001b[1;1f\u001b[8m \u001b[0m');
+  });
+
+  it('Should properly calculate buffer pointer', () => {
+    const cursor = new Cursor();
+
+    assert.equal(cursor.getPointerFromXY(), 0);
+    assert.instanceOf(cursor.moveTo(10, 10), Cursor);
+    assert.equal(cursor.getPointerFromXY(), 10 * process.stdout.columns + 10);
+    assert.equal(cursor.getPointerFromXY(20, 20), 20 * process.stdout.columns + 20);
+  });
+
+  it('Should properly calculate coordinates from buffer pointer', () => {
+    const cursor = new Cursor();
+
+    assert.deepEqual(cursor.getXYFromPointer(0), [0, 0]);
+    assert.deepEqual(cursor.getXYFromPointer(1), [1, 0]);
+    assert.deepEqual(cursor.getXYFromPointer(10), [10, 0]);
+    assert.deepEqual(cursor.getXYFromPointer(200), [200 - (Math.floor(200 / cursor._width) * cursor._width), Math.floor(200 / cursor._width)]);
   });
 
   it('Should properly move cursor up with default arguments', () => {
@@ -328,7 +329,7 @@ describe('Cursor', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(cursor);
 
-    mock.expects('getPointer').exactly(36).returns(cursor);
+    mock.expects('getPointerFromXY').exactly(36).returns(cursor);
     mock.expects('wrap').exactly(36).returns(cursor);
 
     assert.instanceOf(cursor.moveTo(5, 5).erase(0, 0, 5, 5), Cursor);
