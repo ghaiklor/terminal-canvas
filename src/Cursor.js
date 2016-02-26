@@ -362,24 +362,6 @@ export default class Cursor {
   }
 
   /**
-   * Draw an image in terminal.
-   * Supports only by few terminals, as I know only in iTerm 3.
-   * Applies immediately without calling {@link flush}.
-   *
-   * @param {String} image Base64 encoded image content
-   * @param {Number|String} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Number|String} [height='auto'] Height to render, can be 100 (cells), 100px, 100% or auto
-   * @param {Boolean} [preserveAspectRatio=true] If set to false, the image's aspect ratio will not be respected
-   * @returns {Cursor}
-   */
-  image({image, width='auto', height='auto', preserveAspectRatio = true}) {
-    // TODO: refactor here
-    const args = `width=${width};height=${height};preserveAspectRatio=${preserveAspectRatio ? 1 : 0};inline=1`;
-    process.stdout.write(Cursor.encodeToVT100(`[${Math.floor(this._y + 1)};${Math.floor(this._x + 1)}f`) + Cursor.encodeToVT100(`]1337;File=${args}:${image}^G`));
-    return this;
-  }
-
-  /**
    * Set the terminal cursor invisible.
    * Applies immediately without calling {@link flush}.
    *

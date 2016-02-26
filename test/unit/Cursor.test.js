@@ -395,26 +395,6 @@ describe('Cursor', () => {
     mock.verify();
   });
 
-  it('Should properly render image with default options', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(process.stdout);
-
-    mock.expects('write').once().withExactArgs(new Buffer('\u001b[1;1f') + new Buffer('\u001b]1337;File=width=auto;height=auto;preserveAspectRatio=1;inline=1:base64Image^G'));
-
-    assert.instanceOf(cursor.image({image: 'base64Image'}), Cursor);
-    mock.verify();
-  });
-
-  it('Should properly render image with custom options', () => {
-    const cursor = new Cursor();
-    const mock = sinon.mock(process.stdout);
-
-    mock.expects('write').once().withExactArgs(new Buffer('\u001b[1;1f') + new Buffer('\u001b]1337;File=width=200px;height=200px;preserveAspectRatio=1;inline=1:base64Image^G'));
-
-    assert.instanceOf(cursor.image({image: 'base64Image', width: '200px', height: '200px'}), Cursor);
-    mock.verify();
-  });
-
   it('Should properly hide the cursor', () => {
     const cursor = new Cursor();
     const mock = sinon.mock(process.stdout);
