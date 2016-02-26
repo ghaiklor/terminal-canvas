@@ -27,7 +27,7 @@ export default class Cursor {
     this._foreground = false;
     this._display = false;
 
-    this._buffer = Array.from({length: this._width * this._height});
+    this._buffer = Array.from({length: this._width * this._height}).fill(' ');
     this._renderedBuffer = new Set(this._buffer);
   }
 
