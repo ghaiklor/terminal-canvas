@@ -379,7 +379,7 @@ export default class Cursor {
    * @returns {String} Returns ready to flush string with ASCII control codes
    */
   static wrap(char, options) {
-    const {x, y, background, foreground, display} = options;
+    const {x, y, background, foreground, display = {}} = options;
 
     return (
       Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
