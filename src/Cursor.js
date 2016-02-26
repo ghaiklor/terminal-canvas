@@ -61,7 +61,7 @@ export default class Cursor {
   /**
    * Take current buffer and rendered buffer at last flush.
    * Build difference between them.
-   * Difference contains new control codes only, optimizing the rendering perfomance.
+   * Difference contains new control codes only, optimizing the rendering performance.
    *
    * @returns {Cursor}
    */
