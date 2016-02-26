@@ -366,6 +366,7 @@ export default class Cursor {
   /**
    * Draw an image in terminal.
    * Supports only by few terminals, as I know only in iTerm 3.
+   * Applies immediately without calling {@link flush}.
    *
    * @param {String} image Base64 encoded image content
    * @param {Number|String} [width='auto'] Width to render, can be 100 (cells), 100px, 100% or auto
