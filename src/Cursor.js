@@ -27,16 +27,16 @@ export default class Cursor {
     this._foreground = false;
     this._display = false;
 
-    this._buffer = Array.from({length: this._width * this._height}).fill(' ');
+    this._buffer = Array.from({length: this._width * this._height});
     this._renderedBuffer = new Set(this._buffer);
   }
 
   /**
    * Write to the buffer.
-   * Usually it's just a text that you want to print out but also can be a Buffer with control codes.
-   * Cursor has a feature to buffering data, so when you will be ready to push to the stream, call {@link flush} method.
+   * Build control sequence for each cell (char) in data and store into the buffer.
+   * It allows to render each unique cell separately and build difference between two frames.
    *
-   * @param {Buffer|String} data Data to write to the stream
+   * @param {String} data Data to write to the buffer
    * @returns {Cursor}
    */
   write(data) {
@@ -59,7 +59,9 @@ export default class Cursor {
   }
 
   /**
-   * Write from the buffer to stream and clear it up.
+   * Take current buffer and rendered buffer at last flush.
+   * Build difference between them.
+   * Difference contains new control codes only, optimizing the rendering perfomance.
    *
    * @returns {Cursor}
    */
@@ -373,7 +375,7 @@ export default class Cursor {
    * Wrap char with all control codes needed for rendering the cell.
    *
    * @static
-   * @param {String} char
+   * @param {String} char Char that you want to wrap with control sequence
    * @param {Object} options Options object where you can set additional style to char
    * @param {Number} options.x X coordinate
    * @param {Number} options.y Y coordinate
