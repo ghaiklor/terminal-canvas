@@ -55,9 +55,8 @@ describe('Cursor', () => {
 
     mock.expects('write').once();
 
-    cursor.write('test');
-    cursor.flush();
-
+    assert.instanceOf(cursor.write('test'), Cursor);
+    assert.instanceOf(cursor.flush(), Cursor);
     mock.verify();
   });
 

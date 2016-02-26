@@ -40,19 +40,16 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    // TODO: refactor here
+    const background = this._background;
+    const foreground = this._foreground;
+    const display = this._display;
+
     data.split('').forEach(char => {
       const [x, y] = [this._x, this._y];
       const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-        this._buffer[pointer] = this.wrap(char, {
-          x,
-          y,
-          background: this._background,
-          foreground: this._foreground,
-          display: this._display
-        });
+        this._buffer[pointer] = this.wrap(char, {x, y, background, foreground, display});
       }
 
       this._x++;
@@ -89,7 +86,7 @@ export default class Cursor {
    * @param {Number} [options.display] Display mode from {@link DISPLAY_MODES}
    * @returns {String} Returns ready to flush string with ASCII control codes
    */
-  wrap(char, options = {}) {
+  wrap(char, options) {
     const {x, y, background, foreground, display} = options;
 
     return (
