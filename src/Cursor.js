@@ -25,7 +25,7 @@ export default class Cursor {
 
     this._background = false;
     this._foreground = false;
-    this._display = false;
+    this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
     this._renderedBuffer = new Set(this._buffer);
@@ -193,25 +193,14 @@ export default class Cursor {
   }
 
   /**
-   * Change display mode (format of text).
-   * You can also use helper methods like {@link bold} or {@link blink}, etc...
-   *
-   * @param {Number} mode Mode identifier from {@link DISPLAY_MODES}
-   * @returns {Cursor}
-   */
-  display(mode) {
-    this._display = mode;
-    return this;
-  }
-
-  /**
    * Toggle bold display mode.
    *
    * @param {Boolean} [isBold=true] If false, disables bold mode
    * @returns {Cursor}
    */
   bold(isBold = true) {
-    return this.display(isBold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD);
+    this._display.bold = isBold;
+    return this;
   }
 
   /**
@@ -221,7 +210,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   dim(isDim = true) {
-    return this.display(isDim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM);
+    this._display.dim = isDim;
+    return this;
   }
 
   /**
@@ -231,7 +221,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   underlined(isUnderlined = true) {
-    return this.display(isUnderlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED);
+    this._display.underlined = isUnderlined;
+    return this;
   }
 
   /**
@@ -241,7 +232,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   blink(isBlink = true) {
-    return this.display(isBlink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK);
+    this._display.blink = isBlink;
+    return this;
   }
 
   /**
@@ -251,7 +243,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   reverse(isReverse = true) {
-    return this.display(isReverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE);
+    this._display.reverse = isReverse;
+    return this;
   }
 
   /**
@@ -261,7 +254,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   hidden(isHidden = true) {
-    return this.display(isHidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN);
+    this._display.hidden = isHidden;
+    return this;
   }
 
   /**
@@ -381,7 +375,7 @@ export default class Cursor {
    * @param {Number} options.y Y coordinate
    * @param {String} [options.background] Background color
    * @param {String} [options.foreground] Foreground color
-   * @param {Number} [options.display] Display mode from {@link DISPLAY_MODES}
+   * @param {Object} [options.display] Object with display modes
    * @returns {String} Returns ready to flush string with ASCII control codes
    */
   static wrap(char, options) {
@@ -391,7 +385,7 @@ export default class Cursor {
       Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
       (background ? Cursor.encodeToVT100(`[48;5;${COLORS[background.toUpperCase()]}m`) : '') +
       (foreground ? Cursor.encodeToVT100(`[38;5;${COLORS[foreground.toUpperCase()]}m`) : '') +
-      (display ? Cursor.encodeToVT100(`[${display}m`) : '') +
+      (Object.keys(display).filter(i => display[i]).map(i => Cursor.encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('')) +
       char +
       Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
     );
