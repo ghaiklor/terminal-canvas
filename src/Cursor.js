@@ -8,6 +8,7 @@ import { DISPLAY_MODES } from './displayModes';
  * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
  * @see http://man7.org/linux/man-pages/man4/console_codes.4.html
  * @see http://www.x.org/docs/xterm/ctlseqs.pdf
+ * @see http://wiki.bash-hackers.org/scripting/terminalcodes
  * @since 1.0.0
  */
 export default class Cursor {
@@ -330,6 +331,28 @@ export default class Cursor {
    */
   eraseScreen() {
     return this.erase(0, 0, this._width - 1, this._height - 1);
+  }
+
+  /**
+   * Save current terminal contents into the buffer.
+   * Applies immediately without calling {@link flush}.
+   *
+   * @returns {Cursor}
+   */
+  saveScreen() {
+    process.stdout.write(Cursor.encodeToVT100('[?47h'));
+    return this;
+  }
+
+  /**
+   * Restore terminal contents to previously saved via {@link saveScreen}.
+   * Applies immediately without calling {@link flush}.
+   *
+   * @returns {Cursor}
+   */
+  restoreScreen() {
+    process.stdout.write(Cursor.encodeToVT100('[?47l'));
+    return this;
   }
 
   /**
