@@ -1,5 +1,6 @@
-import { COLORS } from './colors';
 import { DISPLAY_MODES } from './displayModes';
+
+import Color from './Color';
 
 /**
  * Cursor implements low-level API to terminal control codes.
@@ -24,8 +25,8 @@ export default class Cursor {
     this._x = 0;
     this._y = 0;
 
-    this._background = false;
-    this._foreground = false;
+    this._background = Color.create('black');
+    this._foreground = Color.create('white');
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
     this._buffer = Array.from({length: this._width * this._height}).fill(' ');
@@ -41,8 +42,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    const background = this._background;
-    const foreground = this._foreground;
+    const background = this._background.toRgb();
+    const foreground = this._foreground.toRgb();
     const display = this._display;
 
     data.split('').forEach(char => {
@@ -177,7 +178,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   foreground(color) {
-    this._foreground = color;
+    this._foreground = Color.create(color);
     return this;
   }
 
@@ -189,7 +190,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   background(color) {
-    this._background = color;
+    this._background = Color.create(color);
     return this;
   }
 
@@ -406,8 +407,8 @@ export default class Cursor {
 
     return (
       Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
-      (background ? Cursor.encodeToVT100(`[48;5;${COLORS[background.toUpperCase()]}m`) : '') +
-      (foreground ? Cursor.encodeToVT100(`[38;5;${COLORS[foreground.toUpperCase()]}m`) : '') +
+      (background ? Cursor.encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) : '') +
+      (foreground ? Cursor.encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) : '') +
       (Object.keys(display).filter(i => display[i]).map(i => Cursor.encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('')) +
       char +
       Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
