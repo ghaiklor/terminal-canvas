@@ -41,7 +41,7 @@ export default class Color {
    * Color.create({r: 0, g: 10, b: 20});
    */
   constructor(color) {
-    if (COLORS[color.toUpperCase && color.toUpperCase()]) return Color.fromHex(COLORS[color.toUpperCase()]);
+    if (Color.isNamed(color)) return Color.fromHex(COLORS[color.toUpperCase()]);
     if (Color.isRgb(color)) return Color.fromRgb(color);
     if (Color.isHex(color)) return Color.fromHex(color);
     if (!(color.hasOwnProperty('r') || color.hasOwnProperty('g') || color.hasOwnProperty('b'))) throw new Error(`Color ${color} can't be parsed`);
@@ -128,6 +128,16 @@ export default class Color {
   toHex() {
     const pad2 = c => c.length === 1 ? '0' + c : c;
     return '#' + [pad2(this.getR().toString(16)), pad2(this.getG().toString(16)), pad2(this.getB().toString(16))].join('');
+  }
+
+  /**
+   * Check if provided color is named color.
+   *
+   * @param {String} color
+   * @returns {Boolean}
+   */
+  static isNamed(color) {
+    return (typeof color === 'string' && COLORS[color.toUpperCase()]);
   }
 
   /**
