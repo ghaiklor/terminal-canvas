@@ -1,6 +1,7 @@
-import { DISPLAY_MODES } from './util/displayModes';
-
+import Cell from './Cell';
 import Color from './Color';
+import { DISPLAY_MODES } from './util/displayModes';
+import { encodeToVT100 } from './util/encodeToVT100';
 
 /**
  * Cursor implements low-level API to terminal control codes.
@@ -51,7 +52,7 @@ export default class Cursor {
       const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-        this._buffer[pointer] = Cursor.wrap(char, {x, y, background, foreground, display});
+        this._buffer[pointer] = Cell.create(char, {x, y, background, foreground, display}).toString();
       }
 
       this._x++;
@@ -273,7 +274,7 @@ export default class Cursor {
   erase(x1, y1, x2, y2) {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
-        this._buffer[this.getPointerFromXY(x, y)] = Cursor.wrap(' ', {x, y});
+        this._buffer[this.getPointerFromXY(x, y)] = Cell.create(' ', {x, y}).toString();
       }
     }
 
@@ -341,7 +342,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   saveScreen() {
-    process.stdout.write(Cursor.encodeToVT100('[?47h'));
+    process.stdout.write(encodeToVT100('[?47h'));
     return this;
   }
 
@@ -352,7 +353,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   restoreScreen() {
-    process.stdout.write(Cursor.encodeToVT100('[?47l'));
+    process.stdout.write(encodeToVT100('[?47l'));
     return this;
   }
 
@@ -363,7 +364,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   hideCursor() {
-    process.stdout.write(Cursor.encodeToVT100('[?25l'));
+    process.stdout.write(encodeToVT100('[?25l'));
     return this;
   }
 
@@ -374,7 +375,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   showCursor() {
-    process.stdout.write(Cursor.encodeToVT100('[?25h'));
+    process.stdout.write(encodeToVT100('[?25h'));
     return this;
   }
 
@@ -385,45 +386,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   resetTTY() {
-    process.stdout.write(Cursor.encodeToVT100('c'));
+    process.stdout.write(encodeToVT100('c'));
     return this;
-  }
-
-  /**
-   * Wrap char with all control codes needed for rendering the cell.
-   *
-   * @static
-   * @param {String} char Char that you want to wrap with control sequence
-   * @param {Object} options Options object where you can set additional style to char
-   * @param {Number} options.x X coordinate
-   * @param {Number} options.y Y coordinate
-   * @param {String} [options.background] Background color
-   * @param {String} [options.foreground] Foreground color
-   * @param {Object} [options.display] Object with display modes
-   * @returns {String} Returns ready to flush string with ASCII control codes
-   */
-  static wrap(char, options) {
-    const {x, y, background, foreground, display = {}} = options;
-
-    return (
-      Cursor.encodeToVT100(`[${Math.floor(y + 1)};${Math.floor(x + 1)}f`) +
-      (background ? Cursor.encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) : '') +
-      (foreground ? Cursor.encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) : '') +
-      (Object.keys(display).filter(i => display[i]).map(i => Cursor.encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('')) +
-      char +
-      Cursor.encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
-    );
-  }
-
-  /**
-   * Bytes to encode to VT100 control sequence.
-   *
-   * @static
-   * @param {String} string Control code that you want to encode
-   * @returns {Buffer} Returns encoded bytes
-   */
-  static encodeToVT100(string) {
-    return new Buffer([0x1b].concat(string.split('').map(char => char.charCodeAt(0))));
   }
 
   /**
