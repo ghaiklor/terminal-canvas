@@ -1,4 +1,4 @@
-import { DISPLAY_MODES } from './displayModes';
+import { DISPLAY_MODES } from './util/displayModes';
 
 import Color from './Color';
 
