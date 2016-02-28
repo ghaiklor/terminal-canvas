@@ -1,6 +1,5 @@
 import Cell from './Cell';
 import Color from './Color';
-import { DISPLAY_MODES } from './util/displayModes';
 import { encodeToVT100 } from './util/encodeToVT100';
 
 /**
@@ -26,12 +25,15 @@ export default class Cursor {
     this._x = 0;
     this._y = 0;
 
-    this._background = Color.create('black');
-    this._foreground = Color.create('white');
+    this._background = false;
+    this._foreground = false;
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
-    this._buffer = Array.from({length: this._width * this._height}).fill(' ');
-    this._renderedBuffer = new Set(this._buffer);
+    this._terminal = Array.from({length: this._width * this._height}).map((_, i) => new Cell(' ', {
+      x: this.getXYFromPointer(i)[0],
+      y: this.getXYFromPointer(i)[1]
+    }));
+    this._lastFrame = new Set(this._terminal);
   }
 
   /**
@@ -43,8 +45,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    const background = this._background.toRgb();
-    const foreground = this._foreground.toRgb();
+    const background = this._background;
+    const foreground = this._foreground;
     const display = this._display;
 
     data.split('').forEach(char => {
@@ -52,7 +54,7 @@ export default class Cursor {
       const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-        this._buffer[pointer] = Cell.create(char, {x, y, background, foreground, display}).toString();
+        this._terminal[pointer] = new Cell(char, {x, y, background, foreground, display}).toString();
       }
 
       this._x++;
@@ -69,8 +71,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    process.stdout.write(this._buffer.filter(item => !this._renderedBuffer.has(item)).join(''));
-    this._renderedBuffer = new Set(this._buffer);
+    process.stdout.write(this._terminal.filter(item => !this._lastFrame.has(item)).join(''));
+    this._lastFrame = new Set(this._terminal);
 
     return this;
   }
@@ -179,7 +181,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   foreground(color) {
-    this._foreground = Color.create(color);
+    this._foreground = Color.create(color).toRgb();
     return this;
   }
 
@@ -191,7 +193,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   background(color) {
-    this._background = Color.create(color);
+    this._background = Color.create(color).toRgb();
     return this;
   }
 
@@ -274,7 +276,7 @@ export default class Cursor {
   erase(x1, y1, x2, y2) {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
-        this._buffer[this.getPointerFromXY(x, y)] = Cell.create(' ', {x, y}).toString();
+        this._terminal[this.getPointerFromXY(x, y)].setChar(' ');
       }
     }
 
