@@ -3,7 +3,7 @@ import { encodeToVT100 } from './util/encodeToVT100';
 
 /**
  * Wrapper around one cell in the terminal.
- * Used for filling buffer in the cursor.
+ * Used for filling terminal wrapper in the cursor.
  *
  * @since 3.1.0
  */
