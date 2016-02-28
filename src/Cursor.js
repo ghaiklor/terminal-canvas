@@ -29,7 +29,7 @@ export default class Cursor {
     this._foreground = false;
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
-    this._terminal = Array.from({length: this._width * this._height}).map((_, i) => new Cell(' ', {
+    this._terminal = Array.from({length: this._width * this._height}).fill(' ').map((_, i) => new Cell(' ', {
       x: this.getXYFromPointer(i)[0],
       y: this.getXYFromPointer(i)[1]
     }));
@@ -54,7 +54,7 @@ export default class Cursor {
       const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < this._width && 0 <= y && y < this._height) {
-        this._terminal[pointer] = new Cell(char, {x, y, background, foreground, display}).toString();
+        this._terminal[pointer] = new Cell(char, {x, y, background, foreground, display});
       }
 
       this._x++;
@@ -71,8 +71,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    process.stdout.write(this._terminal.filter(item => !this._lastFrame.has(item)).join(''));
-    this._lastFrame = new Set(this._terminal);
+    process.stdout.write(this._terminal.filter(item => !this._lastFrame.has(item.toString())).join(''));
+    this._lastFrame = new Set(this._terminal.map(i => i.toString()));
 
     return this;
   }
