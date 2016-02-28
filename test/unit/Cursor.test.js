@@ -19,39 +19,39 @@ describe('Cursor', () => {
     assert.notOk(cursor._display.blink);
     assert.notOk(cursor._display.reverse);
     assert.notOk(cursor._display.hidden);
-    assert.equal(cursor._buffer.length, process.stdout.columns * process.stdout.rows);
-    assert.equal(cursor._renderedBuffer.size, 1);
+    assert.equal(cursor._terminal.length, process.stdout.columns * process.stdout.rows);
+    assert.equal(cursor._lastFrame.size, 1);
   });
 
   it('Should properly write to the cursor', () => {
     const cursor = new Cursor();
 
-    assert.equal(cursor._buffer[0], ' ');
+    assert.equal(cursor._terminal[0], ' ');
 
     cursor.write('test');
-    assert.equal(cursor._buffer[0], '\u001b[1;1ft\u001b[0m');
-    assert.equal(cursor._buffer[1], '\u001b[1;2fe\u001b[0m');
-    assert.equal(cursor._buffer[2], '\u001b[1;3fs\u001b[0m');
-    assert.equal(cursor._buffer[3], '\u001b[1;4ft\u001b[0m');
+    assert.equal(cursor._terminal[0], '\u001b[1;1ft\u001b[0m');
+    assert.equal(cursor._terminal[1], '\u001b[1;2fe\u001b[0m');
+    assert.equal(cursor._terminal[2], '\u001b[1;3fs\u001b[0m');
+    assert.equal(cursor._terminal[3], '\u001b[1;4ft\u001b[0m');
   });
 
   it('Should properly ignore write if out of the bounding box', () => {
     const cursor = new Cursor();
 
-    assert.equal(cursor._buffer[0], ' ');
+    assert.equal(cursor._terminal[0], ' ');
 
     cursor.write('test');
-    assert.equal(cursor._buffer[0], '\u001b[1;1ft\u001b[0m');
-    assert.equal(cursor._buffer[1], '\u001b[1;2fe\u001b[0m');
-    assert.equal(cursor._buffer[2], '\u001b[1;3fs\u001b[0m');
-    assert.equal(cursor._buffer[3], '\u001b[1;4ft\u001b[0m');
+    assert.equal(cursor._terminal[0], '\u001b[1;1ft\u001b[0m');
+    assert.equal(cursor._terminal[1], '\u001b[1;2fe\u001b[0m');
+    assert.equal(cursor._terminal[2], '\u001b[1;3fs\u001b[0m');
+    assert.equal(cursor._terminal[3], '\u001b[1;4ft\u001b[0m');
 
     cursor.moveTo(-5, -5).write('do not print');
-    assert.equal(cursor._buffer[0], '\u001b[1;1ft\u001b[0m');
-    assert.equal(cursor._buffer[1], '\u001b[1;2fe\u001b[0m');
-    assert.equal(cursor._buffer[2], '\u001b[1;3fs\u001b[0m');
-    assert.equal(cursor._buffer[3], '\u001b[1;4ft\u001b[0m');
-    assert.equal(cursor._buffer[4], ' ');
+    assert.equal(cursor._terminal[0], '\u001b[1;1ft\u001b[0m');
+    assert.equal(cursor._terminal[1], '\u001b[1;2fe\u001b[0m');
+    assert.equal(cursor._terminal[2], '\u001b[1;3fs\u001b[0m');
+    assert.equal(cursor._terminal[3], '\u001b[1;4ft\u001b[0m');
+    assert.equal(cursor._terminal[4], ' ');
   });
 
   it('Should properly flush the buffer into the stream', () => {
@@ -374,7 +374,7 @@ describe('Cursor', () => {
     assert.notOk(cursor._display.blink);
     assert.notOk(cursor._display.reverse);
     assert.notOk(cursor._display.hidden);
-    assert.equal(cursor._buffer.length, process.stdout.columns * process.stdout.rows);
-    assert.equal(cursor._renderedBuffer.size, 1);
+    assert.equal(cursor._terminal.length, process.stdout.columns * process.stdout.rows);
+    assert.equal(cursor._lastFrame.size, 1);
   });
 });
