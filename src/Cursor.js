@@ -17,13 +17,68 @@ export default class Cursor {
    * Creates cursor that writes direct to `stdout`.
    *
    * @constructor
+   * @param {Terminal} terminal Terminal instance to which cursor will be assigned
    */
-  constructor() {
-    this._x = 0;
-    this._y = 0;
-    this._background = false;
-    this._foreground = false;
-    this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
+  constructor(terminal) {
+    this.setTerminal(terminal);
+    this.setX(0);
+    this.setY(0);
+    this.setBackground(false);
+    this.setForeground(false);
+    this.setDisplay(false);
+  }
+
+  getTerminal() {
+    return this._terminal;
+  }
+
+  setTerminal(terminal) {
+    this._terminal = terminal;
+    return this;
+  }
+
+  getX() {
+    return this._x;
+  }
+
+  setX(x) {
+    this._x = Math.floor(x);
+    return this;
+  }
+
+  getY() {
+    return this._y;
+  }
+
+  setY(y) {
+    this._y = Math.floor(y);
+  }
+
+  getBackground() {
+    return this._background;
+  }
+
+  setBackground(background) {
+    this._background = Color.create(background).toRgb();
+    return this;
+  }
+
+  getForeground() {
+    return this._foreground;
+  }
+
+  setForeground(foreground) {
+    this._foreground = Color.create(foreground).toRgb();
+    return this;
+  }
+
+  getDisplay() {
+    return this._display;
+  }
+
+  setDisplay(display) {
+    this._display = display;
+    return this;
   }
 
   /**
