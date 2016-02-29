@@ -19,21 +19,11 @@ export default class Cursor {
    * @constructor
    */
   constructor() {
-    this._width = process.stdout.columns;
-    this._height = process.stdout.rows;
-
     this._x = 0;
     this._y = 0;
-
     this._background = false;
     this._foreground = false;
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
-
-    this._terminal = Array.from({length: this._width * this._height}).fill(' ').map((_, i) => new Cell(' ', {
-      x: this.getXYFromPointer(i)[0],
-      y: this.getXYFromPointer(i)[1]
-    }));
-    this._lastFrame = new Set(this._terminal);
   }
 
   /**
@@ -335,61 +325,6 @@ export default class Cursor {
    */
   eraseScreen() {
     return this.erase(0, 0, this._width - 1, this._height - 1);
-  }
-
-  /**
-   * Save current terminal contents into the buffer.
-   * Applies immediately without calling {@link flush}.
-   *
-   * @returns {Cursor}
-   */
-  saveScreen() {
-    process.stdout.write(encodeToVT100('[?47h'));
-    return this;
-  }
-
-  /**
-   * Restore terminal contents to previously saved via {@link saveScreen}.
-   * Applies immediately without calling {@link flush}.
-   *
-   * @returns {Cursor}
-   */
-  restoreScreen() {
-    process.stdout.write(encodeToVT100('[?47l'));
-    return this;
-  }
-
-  /**
-   * Set the terminal cursor invisible.
-   * Applies immediately without calling {@link flush}.
-   *
-   * @returns {Cursor}
-   */
-  hideCursor() {
-    process.stdout.write(encodeToVT100('[?25l'));
-    return this;
-  }
-
-  /**
-   * Set the terminal cursor visible.
-   * Applies immediately without calling {@link flush}.
-   *
-   * @returns {Cursor}
-   */
-  showCursor() {
-    process.stdout.write(encodeToVT100('[?25h'));
-    return this;
-  }
-
-  /**
-   * Reset all terminal settings.
-   * Applies immediately without calling {@link flush}.
-   *
-   * @returns {Cursor}
-   */
-  resetTTY() {
-    process.stdout.write(encodeToVT100('c'));
-    return this;
   }
 
   /**
