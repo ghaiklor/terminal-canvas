@@ -8,6 +8,22 @@ export default class Terminal {
     this.setStream(stream);
     this.setWidth(width);
     this.setHeight(height);
+
+    this._cells = Array.from({length: this.getWidth() * this.getHeight}).map(_ => Cell.create(' ', {x: 0, y: 0}));
+  }
+
+  getCell(x, y) {
+    return this._cells[y * this._width + x];
+  }
+
+  updateCell(x, y) {
+    const cell = this.getCell(x, y);
+  }
+
+  resetCell(x, y) {
+    const cell = this.getCell(x, y);
+    cell.setChar(' ').setBackground(false).setForeground(false).setDisplay(false);
+    return this;
   }
 
   getCursor() {
