@@ -55,10 +55,10 @@ export default class Cell {
   /**
    * Set new char to cell.
    *
-   * @param {String} char
+   * @param {String} [char]
    * @returns {Cell}
    */
-  setChar(char) {
+  setChar(char = ' ') {
     this._char = char.slice(0, 1);
     return this;
   }
@@ -75,10 +75,10 @@ export default class Cell {
   /**
    * Set new X coordinate for cell.
    *
-   * @param {Number} x
+   * @param {Number} [x]
    * @returns {Cell}
    */
-  setX(x) {
+  setX(x = 0) {
     this._x = Math.floor(x);
     return this;
   }
@@ -95,10 +95,10 @@ export default class Cell {
   /**
    * Set new Y coordinate for cell.
    *
-   * @param {Number} y
+   * @param {Number} [y]
    * @returns {Cell}
    */
-  setY(y) {
+  setY(y = 0) {
     this._y = Math.floor(y);
     return this;
   }
@@ -115,13 +115,13 @@ export default class Cell {
   /**
    * Set new background color.
    *
-   * @param {Object|Boolean} background False if you don't want use background
+   * @param {Object|Boolean} [background] False if you don't want use background
    * @param {Number} [background.r] Red channel
    * @param {Number} [background.g] Green channel
    * @param {Number} [background.b] Blue channel
    * @returns {Cell}
    */
-  setBackground(background) {
+  setBackground(background = false) {
     this._background = background;
     return this;
   }
@@ -138,13 +138,13 @@ export default class Cell {
   /**
    * Set new foreground color.
    *
-   * @param {Object|Boolean} foreground False if you don't want use foreground
+   * @param {Object|Boolean} [foreground] False if you don't want use foreground
    * @param {Number} [foreground.r] Red channel
    * @param {Number} [foreground.g] Green channel
    * @param {Number} [foreground.b] Blue channel
    * @returns {Cell}
    */
-  setForeground(foreground) {
+  setForeground(foreground = false) {
     this._foreground = foreground;
     return this;
   }
@@ -170,7 +170,7 @@ export default class Cell {
    * @param {Boolean} [display.hidden] Hidden style
    * @returns {Cell}
    */
-  setDisplay(display) {
+  setDisplay(display = false) {
     this._display = display;
     return this;
   }
