@@ -26,7 +26,6 @@ export default class Cursor {
     this._width = width;
     this._height = height;
     this._cells = Array.from({length: width * height}).map(_ => Cell.create(' ', {x: 0, y: 0}));
-    this._lastFrame = new Set(this._cells.map(i => i.toString()));
 
     this._x = 0;
     this._y = 0;
@@ -223,7 +222,7 @@ export default class Cursor {
       const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < width && 0 <= y && y < height) {
-        this._cells[pointer] = new Cell(char, {x, y, background, foreground, display});
+        this._cells[pointer].setChar(char).setX(x).setY(y).setBackground(background).setForeground(foreground).setDisplay(display);
       }
 
       this.setX(x + 1);
@@ -240,8 +239,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    this.getStream().write(this._cells.filter(item => !this._lastFrame.has(item.toString())).join(''));
-    this._lastFrame = new Set(this._cells.map(i => i.toString()));
+    this.getStream().write(this._cells.filter(cell => cell.isModified()).reduce((seq, cell) => seq + cell.toString(), ''));
 
     return this;
   }

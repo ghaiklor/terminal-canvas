@@ -41,6 +41,8 @@ export default class Cell {
     this.setBackground(background);
     this.setForeground(foreground);
     this.setDisplay(display);
+
+    this._isModified = true;
   }
 
   /**
@@ -60,6 +62,8 @@ export default class Cell {
    */
   setChar(char = ' ') {
     this._char = char.slice(0, 1);
+    this._isModified = true;
+
     return this;
   }
 
@@ -80,6 +84,8 @@ export default class Cell {
    */
   setX(x = 0) {
     this._x = Math.floor(x);
+    this._isModified = true;
+
     return this;
   }
 
@@ -100,6 +106,8 @@ export default class Cell {
    */
   setY(y = 0) {
     this._y = Math.floor(y);
+    this._isModified = true;
+
     return this;
   }
 
@@ -123,6 +131,8 @@ export default class Cell {
    */
   setBackground(background = false) {
     this._background = background;
+    this._isModified = true;
+
     return this;
   }
 
@@ -146,6 +156,8 @@ export default class Cell {
    */
   setForeground(foreground = false) {
     this._foreground = foreground;
+    this._isModified = true;
+
     return this;
   }
 
@@ -172,7 +184,18 @@ export default class Cell {
    */
   setDisplay(display = false) {
     this._display = display;
+    this._isModified = true;
+
     return this;
+  }
+
+  /**
+   * Check if cell has been modified.
+   *
+   * @returns {Boolean}
+   */
+  isModified() {
+    return this._isModified;
   }
 
   /**
