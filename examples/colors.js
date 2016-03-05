@@ -1,6 +1,6 @@
 "use strict";
 
-const cursor = require('../lib/Cursor').create().resetTTY();
+const cursor = require('../lib/Cursor').create().reset();
 const COLORS = Object.keys(require('../lib/util/colors').COLORS);
 
 for (let y = 0; y < process.stdout.rows; y++) {
