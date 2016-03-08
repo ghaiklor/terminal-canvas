@@ -443,7 +443,7 @@ export default class Cursor {
   erase(x1, y1, x2, y2) {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
-        this._terminal[this.getPointerFromXY(x, y)].setChar(' ');
+        this._cells[this.getPointerFromXY(x, y)].setChar(' ');
       }
     }
 
