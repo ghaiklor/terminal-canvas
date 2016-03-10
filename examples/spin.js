@@ -3,7 +3,7 @@
 const Cursor = require('../lib/Cursor');
 const cursor = Cursor.create().reset();
 const radius = 10;
-const colors = ['RED', 'YELLOW', 'GREEN', 'DARK_CYAN', 'BLUE', 'MAGENTA'];
+const colors = ['red', 'yellow', 'green', 'dark_cyan', 'blue', 'magenta'];
 
 let points = [];
 let theta = 0;
@@ -21,4 +21,4 @@ setInterval(function () {
   points = points.slice(0, 12 * colors.length - 1);
 
   theta += Math.PI / 40;
-}, 1);
+}, 150);

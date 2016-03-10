@@ -2,7 +2,7 @@
 
 const Cursor = require('../lib/Cursor');
 const cursor = Cursor.create().reset();
-const colors = ['RED', 'CYAN_1', 'YELLOW', 'GREEN', 'BLUE'];
+const colors = ['red', 'cyan', 'yellow', 'green', 'blue'];
 const text = 'Always after me lucky charms.';
 
 let offset = 0;
