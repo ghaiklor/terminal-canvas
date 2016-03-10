@@ -211,6 +211,16 @@ export default class Cell {
   }
 
   /**
+   * Reset display settings.
+   * It resets char, background, foreground and display mode.
+   *
+   * @returns {Cell}
+   */
+  reset() {
+    return this.setChar().setBackground().setForeground().setDisplay();
+  }
+
+  /**
    * Convert cell to ASCII control sequence.
    *
    * @returns {String}
