@@ -1,7 +1,7 @@
 "use strict";
 
 const Cursor = require('../lib/Cursor');
-const cursor = new Cursor().resetTTY().hideCursor();
+const cursor = Cursor.create().reset().hideCursor();
 
 for (let y = 0; y < process.stdout.rows; y++) {
   cursor.moveTo(0, y).write('E'.repeat(process.stdout.columns));
