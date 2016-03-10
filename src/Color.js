@@ -17,7 +17,7 @@ const RGB_REGEX = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/i;
 const HEX_REGEX = /#([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})/i;
 
 /**
- * Color class responsible for converting colors between rgb, hsl or hsv.
+ * Color class responsible for converting colors between rgb and hex.
  *
  * @since 3.1.0
  */
