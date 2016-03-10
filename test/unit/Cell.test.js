@@ -85,6 +85,19 @@ describe('Cell', () => {
     assert.ok(cell.isModified());
   });
 
+  it('Should properly reset the cell contents and display settings', () => {
+    const cell = new Cell(' ', {x: 0, y: 10});
+    const mock = sinon.mock(cell);
+
+    mock.expects('setChar').once().returns(cell);
+    mock.expects('setBackground').once().returns(cell);
+    mock.expects('setForeground').once().returns(cell);
+    mock.expects('setDisplay').once().returns(cell);
+
+    assert.instanceOf(cell.reset(), Cell);
+    mock.verify();
+  });
+
   it('Should properly convert Cell into ASCII sequence', () => {
     const cell = new Cell(' ', {x: 0, y: 10});
 
