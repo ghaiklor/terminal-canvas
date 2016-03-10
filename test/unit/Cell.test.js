@@ -7,6 +7,7 @@ describe('Cell', () => {
     const cell = new Cell(' ', {x: 0, y: 10});
 
     assert.instanceOf(cell, Cell);
+    assert.equal(cell._char, ' ');
     assert.equal(cell._x, 0);
     assert.equal(cell._y, 10);
     assert.notOk(cell._background);
@@ -74,6 +75,16 @@ describe('Cell', () => {
     assert.notOk(cell.getDisplay());
   });
 
+  it('Should properly mark cell as modified', () => {
+    const cell = new Cell(' ', {x: 0, y: 10});
+
+    assert.ok(cell.isModified());
+    assert.instanceOf(cell.setModified(false), Cell);
+    assert.notOk(cell.isModified());
+    assert.instanceOf(cell.setModified(), Cell);
+    assert.ok(cell.isModified());
+  });
+
   it('Should properly convert Cell into ASCII sequence', () => {
     const cell = new Cell(' ', {x: 0, y: 10});
 
@@ -90,6 +101,7 @@ describe('Cell', () => {
     const cell = Cell.create(' ', {x: 0, y: 10});
 
     assert.instanceOf(cell, Cell);
+    assert.equal(cell._char, ' ');
     assert.equal(cell._x, 0);
     assert.equal(cell._y, 10);
     assert.notOk(cell._background);
