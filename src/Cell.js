@@ -79,10 +79,10 @@ export default class Cell {
   /**
    * Set new X coordinate for cell.
    *
-   * @param {Number} [x]
+   * @param {Number} x
    * @returns {Cell}
    */
-  setX(x = 0) {
+  setX(x) {
     this._x = Math.floor(x);
     this.setModified();
 
@@ -101,10 +101,10 @@ export default class Cell {
   /**
    * Set new Y coordinate for cell.
    *
-   * @param {Number} [y]
+   * @param {Number} y
    * @returns {Cell}
    */
-  setY(y = 0) {
+  setY(y) {
     this._y = Math.floor(y);
     this.setModified();
 
