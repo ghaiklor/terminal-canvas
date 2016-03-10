@@ -15,237 +15,68 @@ import { encodeToVT100 } from './util/encodeToVT100';
 export default class Cursor {
   /**
    * Creates cursor that writes direct to `stdout`.
+   * You can override target stream with another one.
+   * Also, you can specify custom width and height of viewport where cursor will render the frame.
    *
    * @constructor
-   * @param {Stream} [stream=process.stdout]
-   * @param {Number} [width=stream.columns]
-   * @param {Number} [height=stream.rows]
+   * @param {Stream} [stream=process.stdout] Writable stream
+   * @param {Number} [width=stream.columns] Number of columns (width)
+   * @param {Number} [height=stream.rows] Number of rows (height)
    */
   constructor({stream = process.stdout, width = stream.columns, height = stream.rows} = {}) {
     this._stream = stream;
     this._width = width;
     this._height = height;
-    this._cells = Array.from({length: width * height}).map(_ => Cell.create(' ', {x: 0, y: 0}));
 
     this._x = 0;
     this._y = 0;
     this._background = false;
     this._foreground = false;
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
+
+    this._cells = Array.from({length: width * height}).map(() => new Cell(' ', {x: 0, y: 0}));
   }
 
   /**
-   * Get stream which attached to cursor.
-   * ASCII control sequences writes to this stream.
+   * Write to the stream.
+   * It doesn't applies immediately but stores in virtual terminal that represented as array of {@link Cell} instances.
+   * For applying changes you need to {@link flush} changes.
    *
-   * @returns {Writable}
-   */
-  getStream() {
-    return this._stream;
-  }
-
-  /**
-   * Set stream to the cursor.
-   *
-   * @param {Writable} stream
-   * @returns {Cursor}
-   */
-  setStream(stream) {
-    this._stream = stream;
-    return this;
-  }
-
-  /**
-   * Get current width of the cursor viewport.
-   * In case with process.stdout is columns.
-   *
-   * @returns {Number}
-   */
-  getWidth() {
-    return this._width;
-  }
-
-  /**
-   * Update width of the cursor viewport.
-   *
-   * @param {Number} width
-   * @returns {Cursor}
-   */
-  setWidth(width) {
-    this._width = Math.floor(width);
-    return this;
-  }
-
-  /**
-   * Get current height of the cursor viewport.
-   * In case with process.stdout is rows.
-   *
-   * @returns {Number}
-   */
-  getHeight() {
-    return this._height;
-  }
-
-  /**
-   * Update height of the cursor viewport.
-   *
-   * @param {Number} height
-   * @returns {Cursor}
-   */
-  setHeight(height) {
-    this._height = Math.floor(height);
-    return this;
-  }
-
-  /**
-   * Get current cursor position in X axis.
-   *
-   * @returns {Number}
-   */
-  getX() {
-    return this._x;
-  }
-
-  /**
-   * Set new cursor position in X axis.
-   *
-   * @param {Number} x
-   * @returns {Cursor}
-   */
-  setX(x) {
-    this._x = Math.floor(x);
-    return this;
-  }
-
-  /**
-   * Get current cursor position in Y axis.
-   *
-   * @returns {Number}
-   */
-  getY() {
-    return this._y;
-  }
-
-  /**
-   * Set new cursor position in Y axis.
-   *
-   * @param {Number} y
-   * @returns {Cursor}
-   */
-  setY(y) {
-    this._y = Math.floor(y);
-    return this;
-  }
-
-  /**
-   * Get current cursor background.
-   *
-   * @returns {{r: Number, g: Number, b: Number}|Boolean}
-   */
-  getBackground() {
-    return this._background;
-  }
-
-  /**
-   * Set new cursor background.
-   *
-   * @param {String|Boolean} background
-   * @returns {Cursor}
-   */
-  setBackground(background) {
-    this._background = background ? Color.create(background).toRgb() : false;
-    return this;
-  }
-
-  /**
-   * Get current cursor foreground.
-   *
-   * @returns {Cursor}
-   */
-  getForeground() {
-    return this._foreground;
-  }
-
-  /**
-   * Set new cursor foreground.
-   *
-   * @param {String|Boolean} foreground
-   * @returns {Cursor}
-   */
-  setForeground(foreground) {
-    this._foreground = foreground ? Color.create(foreground).toRgb() : false;
-    return this;
-  }
-
-  /**
-   * Get current cursor display settings.
-   *
-   * @returns {{bold: Boolean, dim: Boolean, underlined: Boolean, blink: Boolean, reverse: Boolean, hidden: Boolean}}
-   */
-  getDisplay() {
-    return this._display;
-  }
-
-  /**
-   * Set new cursor display settings.
-   *
-   * @param {Boolean} bold
-   * @param {Boolean} dim
-   * @param {Boolean} underlined
-   * @param {Boolean} blink
-   * @param {Boolean} reverse
-   * @param {Boolean} hidden
-   * @returns {Cursor}
-   */
-  setDisplay({bold = false, dim = false, underlined = false, blink = false, reverse = false, hidden = false}) {
-    this._display = {bold, dim, underlined, blink, reverse, hidden};
-    return this;
-  }
-
-  /**
-   * Write to the buffer.
-   * Build control sequence for each cell (char) in data and store into the buffer.
-   * It allows to render each unique cell separately and build difference between two frames.
-   *
-   * @param {String} data Data to write to the buffer
+   * @param {String} data Data to write to the terminal
    * @returns {Cursor}
    */
   write(data) {
-    const width = this.getWidth();
-    const height = this.getHeight();
-    const background = this.getBackground();
-    const foreground = this.getForeground();
-    const display = this.getDisplay();
-
     data.split('').forEach(char => {
-      const [x, y] = [this.getX(), this.getY()];
-      const pointer = this.getPointerFromXY(x, y);
-
-      if (0 <= x && x < width && 0 <= y && y < height) {
-        this._cells[pointer].setChar(char).setX(x).setY(y).setBackground(background).setForeground(foreground).setDisplay(display);
+      if (0 <= this._x && this._x < this._width && 0 <= this._y && this._y < this._height) {
+        this._cells[this.getPointerFromXY(this._x, this._y)]
+          .setChar(char)
+          .setX(this._x)
+          .setY(this._y)
+          .setBackground(this._background)
+          .setForeground(this._foreground)
+          .setDisplay(this._display);
       }
 
-      this.setX(x + 1);
+      this._x++;
     });
 
     return this;
   }
 
   /**
-   * Take current buffer and rendered buffer at last flush.
-   * Build difference between them.
-   * Difference contains new control codes only, optimizing the rendering performance.
+   * Takes only modified cells from virtual terminal and flush changes to the real terminal.
+   * There is no requirements to build diff or something, we have the markers for each cell that has been modified.
    *
    * @returns {Cursor}
    */
   flush() {
-    this.getStream().write(this._cells.filter(cell => cell.isModified()).reduce((seq, cell) => seq + cell.toString(), ''));
+    this._stream.write(this._cells.filter(cell => cell.isModified()).reduce((seq, cell) => seq + cell.toString(), ''));
 
     return this;
   }
 
   /**
-   * Get index of the buffer from (x, y) coordinates.
+   * Get index of the virtual terminal representation from (x, y) coordinates.
    *
    * @param {Number} [x] X coordinate on the terminal
    * @param {Number} [y] Y coordinate on the terminal
@@ -256,7 +87,7 @@ export default class Cursor {
   }
 
   /**
-   * Get (x, y) coordinate from the buffer pointer.
+   * Get (x, y) coordinate from the virtual terminal pointer.
    *
    * @param {Number} index Index in the buffer
    * @returns {Array} Returns an array [x, y]
@@ -348,7 +179,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   foreground(color) {
-    this._foreground = Color.create(color).toRgb();
+    this._foreground = color ? Color.create(color).toRgb() : false;
     return this;
   }
 
@@ -360,7 +191,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   background(color) {
-    this._background = Color.create(color).toRgb();
+    this._background = color ? Color.create(color).toRgb() : false;
     return this;
   }
 
@@ -443,7 +274,7 @@ export default class Cursor {
   erase(x1, y1, x2, y2) {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
-        this._cells[this.getPointerFromXY(x, y)].setChar(' ');
+        this._cells[this.getPointerFromXY(x, y)].reset();
       }
     }
 
@@ -511,7 +342,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   saveScreen() {
-    this.getStream().write(encodeToVT100('[?47h'));
+    this._stream.write(encodeToVT100('[?47h'));
     return this;
   }
 
@@ -522,7 +353,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   restoreScreen() {
-    this.getStream().write(encodeToVT100('[?47l'));
+    this._stream.write(encodeToVT100('[?47l'));
     return this;
   }
 
@@ -533,7 +364,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   hideCursor() {
-    this.getStream().write(encodeToVT100('[?25l'));
+    this._stream.write(encodeToVT100('[?25l'));
     return this;
   }
 
@@ -544,7 +375,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   showCursor() {
-    this.getStream().write(encodeToVT100('[?25h'));
+    this._stream.write(encodeToVT100('[?25h'));
     return this;
   }
 
@@ -555,7 +386,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   reset() {
-    this.getStream().write(encodeToVT100('c'));
+    this._stream.write(encodeToVT100('c'));
     return this;
   }
 
