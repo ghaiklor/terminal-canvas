@@ -33,7 +33,7 @@ export default class Cell {
    * @param {Boolean} [options.display.hidden] Hidden style
    */
   constructor(char, options) {
-    const {x, y, background = false, foreground = false, display = false} = options;
+    const {x, y, background, foreground, display} = options;
 
     this.setChar(char);
     this.setX(x);
@@ -41,8 +41,7 @@ export default class Cell {
     this.setBackground(background);
     this.setForeground(foreground);
     this.setDisplay(display);
-
-    this._isModified = true;
+    this.setModified(true);
   }
 
   /**
@@ -56,13 +55,14 @@ export default class Cell {
 
   /**
    * Set new char to cell.
+   * If char is longer than 1 char, it slices string to 1 char.
    *
    * @param {String} [char]
    * @returns {Cell}
    */
   setChar(char = ' ') {
     this._char = char.slice(0, 1);
-    this._isModified = true;
+    this.setModified();
 
     return this;
   }
@@ -84,7 +84,7 @@ export default class Cell {
    */
   setX(x = 0) {
     this._x = Math.floor(x);
-    this._isModified = true;
+    this.setModified();
 
     return this;
   }
@@ -106,7 +106,7 @@ export default class Cell {
    */
   setY(y = 0) {
     this._y = Math.floor(y);
-    this._isModified = true;
+    this.setModified();
 
     return this;
   }
@@ -131,7 +131,7 @@ export default class Cell {
    */
   setBackground(background = false) {
     this._background = background;
-    this._isModified = true;
+    this.setModified();
 
     return this;
   }
@@ -156,7 +156,7 @@ export default class Cell {
    */
   setForeground(foreground = false) {
     this._foreground = foreground;
-    this._isModified = true;
+    this.setModified();
 
     return this;
   }
@@ -184,8 +184,20 @@ export default class Cell {
    */
   setDisplay(display = false) {
     this._display = display;
-    this._isModified = true;
+    this.setModified();
 
+    return this;
+  }
+
+  /**
+   * Mark cell as modified or not.
+   * It useful when you need to filter out only modified cells without building the diff.
+   *
+   * @param {Boolean} [isModified=true] Flag shows if cell is modified
+   * @returns {Cell}
+   */
+  setModified(isModified = true) {
+    this._modified = isModified;
     return this;
   }
 
@@ -195,7 +207,7 @@ export default class Cell {
    * @returns {Boolean}
    */
   isModified() {
-    return this._isModified;
+    return !!this._modified;
   }
 
   /**
