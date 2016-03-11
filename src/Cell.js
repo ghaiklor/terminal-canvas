@@ -130,7 +130,7 @@ export default class Cell {
    * @returns {Cell}
    */
   setBackground(background = false) {
-    this._background = background;
+    this._background = background ? Object.assign({}, background) : false;
     this.setModified();
 
     return this;
@@ -155,7 +155,7 @@ export default class Cell {
    * @returns {Cell}
    */
   setForeground(foreground = false) {
-    this._foreground = foreground;
+    this._foreground = foreground ? Object.assign({}, foreground) : false;
     this.setModified();
 
     return this;
@@ -183,7 +183,7 @@ export default class Cell {
    * @returns {Cell}
    */
   setDisplay(display = false) {
-    this._display = display;
+    this._display = display ? Object.assign({}, display) : false;
     this.setModified();
 
     return this;
