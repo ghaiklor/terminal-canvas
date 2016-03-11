@@ -222,11 +222,14 @@ export default class Cell {
 
   /**
    * Convert cell to ASCII control sequence.
+   * Disables flag which marks cell as modified.
    *
    * @returns {String}
    */
   toString() {
     const [char, x, y, background, foreground, display] = [this.getChar(), this.getX(), this.getY(), this.getBackground(), this.getForeground(), this.getDisplay()];
+
+    this.setModified(false);
 
     return (
       encodeToVT100(`[${y + 1};${x + 1}f`) +

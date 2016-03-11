@@ -70,7 +70,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    this._stream.write(this._cells.filter(cell => cell.isModified()).reduce((seq, cell) => seq + cell.toString(), ''));
+    this._stream.write(this._cells.filter(cell => cell.isModified()).reduce((seq, cell) => seq + cell));
 
     return this;
   }
