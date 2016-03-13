@@ -2,6 +2,20 @@ import { DISPLAY_MODES } from './util/displayModes';
 import { encodeToVT100 } from './util/encodeToVT100';
 
 /**
+ * Uses for disabling background and foreground of the cell.
+ *
+ * @type {{r: number, g: number, b: number}}
+ */
+const DISABLED_COLOR = {r: -1, g: -1, b: -1};
+
+/**
+ * Uses for disabling display modes of the cell.
+ *
+ * @type {{bold: boolean, dim: boolean, underlined: boolean, blink: boolean, reverse: boolean, hidden: boolean}}
+ */
+const DISABLED_DISPLAY_MODE = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
+
+/**
  * Wrapper around one cell in the terminal.
  * Used for filling terminal wrapper in the cursor.
  *
@@ -16,15 +30,15 @@ export default class Cell {
    * @param {Object} options Options object where you can set additional style to char
    * @param {Number} options.x X coordinate
    * @param {Number} options.y Y coordinate
-   * @param {Object|Boolean} [options.background] Background color, false if you don't want to fill background
+   * @param {Object} [options.background] Background color, fill with -1 if you don't want to use background
    * @param {Number} [options.background.r] Red channel
    * @param {Number} [options.background.g] Green channel
    * @param {Number} [options.background.b] Blue channel
-   * @param {Object|Boolean} [options.foreground] Foreground color, false if you don't want to fill foreground
+   * @param {Object} [options.foreground] Foreground color, fill with -1 if you don't want to use foreground
    * @param {Number} [options.foreground.r] Red channel
    * @param {Number} [options.foreground.g] Green channel
    * @param {Number} [options.foreground.b] Blue channel
-   * @param {Object|Boolean} [options.display] Object with display modes, false if you don't want change display mode
+   * @param {Object} [options.display] Object with display modes
    * @param {Boolean} [options.display.bold] Bold style
    * @param {Boolean} [options.display.dim] Dim style
    * @param {Boolean} [options.display.underlined] Underlined style
@@ -114,7 +128,7 @@ export default class Cell {
   /**
    * Get current background color.
    *
-   * @returns {{r: Number, g: Number, b: Number}|Boolean}
+   * @returns {{r: Number, g: Number, b: Number}}
    */
   getBackground() {
     return this._background;
@@ -123,14 +137,17 @@ export default class Cell {
   /**
    * Set new background color.
    *
-   * @param {Object|Boolean} [background] False if you don't want use background
-   * @param {Number} [background.r] Red channel
-   * @param {Number} [background.g] Green channel
-   * @param {Number} [background.b] Blue channel
+   * @param {Number} [r] Red channel
+   * @param {Number} [g] Green channel
+   * @param {Number} [b] Blue channel
    * @returns {Cell}
    */
-  setBackground(background = false) {
-    this._background = background ? Object.assign({}, background) : false;
+  setBackground({r = -1, g = -1, b = -1} = {}) {
+    this._background = this._background || {};
+    this._background.r = r;
+    this._background.g = g;
+    this._background.b = b;
+
     this.setModified();
 
     return this;
@@ -139,7 +156,7 @@ export default class Cell {
   /**
    * Get current foreground color.
    *
-   * @returns {{r: Number, g: Number, b: Number}|Boolean}
+   * @returns {{r: Number, g: Number, b: Number}}
    */
   getForeground() {
     return this._foreground;
@@ -148,14 +165,17 @@ export default class Cell {
   /**
    * Set new foreground color.
    *
-   * @param {Object|Boolean} [foreground] False if you don't want use foreground
-   * @param {Number} [foreground.r] Red channel
-   * @param {Number} [foreground.g] Green channel
-   * @param {Number} [foreground.b] Blue channel
+   * @param {Number} [r] Red channel
+   * @param {Number} [g] Green channel
+   * @param {Number} [b] Blue channel
    * @returns {Cell}
    */
-  setForeground(foreground = false) {
-    this._foreground = foreground ? Object.assign({}, foreground) : false;
+  setForeground({r = -1, g = -1, b = -1} = {}) {
+    this._foreground = this._foreground || {};
+    this._foreground.r = r;
+    this._foreground.g = g;
+    this._foreground.b = b;
+
     this.setModified();
 
     return this;
@@ -173,17 +193,23 @@ export default class Cell {
   /**
    * Set new display modes to cell.
    *
-   * @param {Object|Boolean} display False, if you don't want to use display modes
-   * @param {Boolean} [display.bold] Bold style
-   * @param {Boolean} [display.dim] Dim style
-   * @param {Boolean} [display.underlined] Underlined style
-   * @param {Boolean} [display.blink] Blink style
-   * @param {Boolean} [display.reverse] Reverse style
-   * @param {Boolean} [display.hidden] Hidden style
+   * @param {Boolean} [bold] Bold style
+   * @param {Boolean} [dim] Dim style
+   * @param {Boolean} [underlined] Underlined style
+   * @param {Boolean} [blink] Blink style
+   * @param {Boolean} [reverse] Reverse style
+   * @param {Boolean} [hidden] Hidden style
    * @returns {Cell}
    */
-  setDisplay(display = false) {
-    this._display = display ? Object.assign({}, display) : false;
+  setDisplay({bold = false, dim = false, underlined = false, blink = false, reverse = false, hidden = false} = {}) {
+    this._display = this._display || {};
+    this._display.bold = bold;
+    this._display.dim = dim;
+    this._display.underlined = underlined;
+    this._display.blink = blink;
+    this._display.reverse = reverse;
+    this._display.hidden = hidden;
+
     this.setModified();
 
     return this;
@@ -217,7 +243,7 @@ export default class Cell {
    * @returns {Cell}
    */
   reset() {
-    return this.setChar().setBackground().setForeground().setDisplay();
+    return this.setChar(' ').setBackground(DISABLED_COLOR).setForeground(DISABLED_COLOR).setDisplay(DISABLED_DISPLAY_MODE);
   }
 
   /**
@@ -233,9 +259,9 @@ export default class Cell {
 
     return (
       encodeToVT100(`[${y + 1};${x + 1}f`) +
-      (background ? encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) : '') +
-      (foreground ? encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) : '') +
-      (display ? Object.keys(display).filter(i => display[i]).map(i => encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('') : '') +
+      encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) +
+      encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) +
+      (Object.keys(display).filter(i => display[i]).map(i => encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('')) +
       char +
       encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
     );
