@@ -4,14 +4,16 @@ import { encodeToVT100 } from './util/encodeToVT100';
 /**
  * Uses for disabling background and foreground of the cell.
  *
- * @type {{r: number, g: number, b: number}}
+ * @type {{r: Number, g: Number, b: Number}}
+ * @private
  */
 const DISABLED_COLOR = {r: -1, g: -1, b: -1};
 
 /**
  * Uses for disabling display modes of the cell.
  *
- * @type {{bold: boolean, dim: boolean, underlined: boolean, blink: boolean, reverse: boolean, hidden: boolean}}
+ * @type {{bold: Boolean, dim: Boolean, underlined: Boolean, blink: Boolean, reverse: Boolean, hidden: Boolean}}
+ * @private
  */
 const DISABLED_DISPLAY_MODE = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
@@ -26,10 +28,10 @@ export default class Cell {
    * Create Cell instance which are able to convert itself to ASCII control sequence.
    *
    * @constructor
-   * @param {String} char Char that you want to wrap with control sequence
-   * @param {Object} options Options object where you can set additional style to char
-   * @param {Number} options.x X coordinate
-   * @param {Number} options.y Y coordinate
+   * @param {String} [char] Char that you want to wrap with control sequence
+   * @param {Object} [options] Options object where you can set additional style to char
+   * @param {Number} [options.x] X coordinate
+   * @param {Number} [options.y] Y coordinate
    * @param {Object} [options.background] Background color, fill with -1 if you don't want to use background
    * @param {Number} [options.background.r] Red channel
    * @param {Number} [options.background.g] Green channel
@@ -46,7 +48,7 @@ export default class Cell {
    * @param {Boolean} [options.display.reverse] Reverse style
    * @param {Boolean} [options.display.hidden] Hidden style
    */
-  constructor(char, options) {
+  constructor(char, options = {}) {
     const {x, y, background, foreground, display} = options;
 
     this.setChar(char);
@@ -55,7 +57,7 @@ export default class Cell {
     this.setBackground(background);
     this.setForeground(foreground);
     this.setDisplay(display);
-    this.setModified(true);
+    this.setModified();
   }
 
   /**
@@ -93,10 +95,10 @@ export default class Cell {
   /**
    * Set new X coordinate for cell.
    *
-   * @param {Number} x
+   * @param {Number} [x=0]
    * @returns {Cell}
    */
-  setX(x) {
+  setX(x = 0) {
     this._x = Math.floor(x);
     this.setModified();
 
@@ -115,10 +117,10 @@ export default class Cell {
   /**
    * Set new Y coordinate for cell.
    *
-   * @param {Number} y
+   * @param {Number} [y=0]
    * @returns {Cell}
    */
-  setY(y) {
+  setY(y = 0) {
     this._y = Math.floor(y);
     this.setModified();
 
@@ -137,13 +139,13 @@ export default class Cell {
   /**
    * Set new background color.
    *
-   * @param {Number} [r] Red channel
-   * @param {Number} [g] Green channel
-   * @param {Number} [b] Blue channel
+   * @param {Number} [r=-1] Red channel
+   * @param {Number} [g=-1] Green channel
+   * @param {Number} [b=-1] Blue channel
    * @returns {Cell}
    */
   setBackground({r = -1, g = -1, b = -1} = {}) {
-    this._background = this._background || {};
+    this._background = this._background || Object.assign({}, DISABLED_COLOR);
     this._background.r = r;
     this._background.g = g;
     this._background.b = b;
@@ -165,13 +167,13 @@ export default class Cell {
   /**
    * Set new foreground color.
    *
-   * @param {Number} [r] Red channel
-   * @param {Number} [g] Green channel
-   * @param {Number} [b] Blue channel
+   * @param {Number} [r=-1] Red channel
+   * @param {Number} [g=-1] Green channel
+   * @param {Number} [b=-1] Blue channel
    * @returns {Cell}
    */
   setForeground({r = -1, g = -1, b = -1} = {}) {
-    this._foreground = this._foreground || {};
+    this._foreground = this._foreground || Object.assign({}, DISABLED_COLOR);
     this._foreground.r = r;
     this._foreground.g = g;
     this._foreground.b = b;
@@ -184,7 +186,7 @@ export default class Cell {
   /**
    * Get current display modes.
    *
-   * @returns {Object}
+   * @returns {{bold: Boolean, dim: Boolean, underlined: Boolean, blink: Boolean, reverse: Boolean, hidden: Boolean}}
    */
   getDisplay() {
     return this._display;
@@ -193,16 +195,16 @@ export default class Cell {
   /**
    * Set new display modes to cell.
    *
-   * @param {Boolean} [bold] Bold style
-   * @param {Boolean} [dim] Dim style
-   * @param {Boolean} [underlined] Underlined style
-   * @param {Boolean} [blink] Blink style
-   * @param {Boolean} [reverse] Reverse style
-   * @param {Boolean} [hidden] Hidden style
+   * @param {Boolean} [bold=false] Bold style
+   * @param {Boolean} [dim=false] Dim style
+   * @param {Boolean} [underlined=false] Underlined style
+   * @param {Boolean} [blink=false] Blink style
+   * @param {Boolean} [reverse=false] Reverse style
+   * @param {Boolean} [hidden=false] Hidden style
    * @returns {Cell}
    */
   setDisplay({bold = false, dim = false, underlined = false, blink = false, reverse = false, hidden = false} = {}) {
-    this._display = this._display || {};
+    this._display = this._display || Object.assign({}, DISABLED_DISPLAY_MODE);
     this._display.bold = bold;
     this._display.dim = dim;
     this._display.underlined = underlined;
@@ -243,7 +245,7 @@ export default class Cell {
    * @returns {Cell}
    */
   reset() {
-    return this.setChar(' ').setBackground(DISABLED_COLOR).setForeground(DISABLED_COLOR).setDisplay(DISABLED_DISPLAY_MODE);
+    return this.setChar().setBackground().setForeground().setDisplay();
   }
 
   /**
@@ -261,7 +263,7 @@ export default class Cell {
       encodeToVT100(`[${y + 1};${x + 1}f`) +
       encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) +
       encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) +
-      (Object.keys(display).filter(i => display[i]).map(i => encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('')) +
+      Object.keys(display).filter(i => display[i]).map(i => encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('') +
       char +
       encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
     );
