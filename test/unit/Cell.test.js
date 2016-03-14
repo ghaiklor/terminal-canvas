@@ -145,12 +145,12 @@ describe('Cell', () => {
   });
 
   it('Should properly create Cell instance from static create()', () => {
-    const cell = Cell.create();
+    const cell = Cell.create(' ', {x: 10, y: 20});
 
     assert.instanceOf(cell, Cell);
     assert.equal(cell._char, ' ');
-    assert.equal(cell._x, 0);
-    assert.equal(cell._y, 0);
+    assert.equal(cell._x, 10);
+    assert.equal(cell._y, 20);
     assert.deepEqual(cell._background, {r: -1, g: -1, b: -1});
     assert.deepEqual(cell._foreground, {r: -1, g: -1, b: -1});
     assert.deepEqual(cell._display, {

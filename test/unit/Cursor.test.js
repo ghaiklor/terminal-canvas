@@ -12,8 +12,8 @@ describe('Cursor', () => {
     assert.equal(cursor._height, process.stdout.rows);
     assert.equal(cursor._x, 0);
     assert.equal(cursor._y, 0);
-    assert.notOk(cursor._background);
-    assert.notOk(cursor._foreground);
+    assert.deepEqual(cursor._background, {r: -1, g: -1, b: -1});
+    assert.deepEqual(cursor._foreground, {r: -1, g: -1, b: -1});
     assert.notOk(cursor._display.bold);
     assert.notOk(cursor._display.dim);
     assert.notOk(cursor._display.underlined);
@@ -32,8 +32,8 @@ describe('Cursor', () => {
     assert.equal(cursor._height, 20);
     assert.equal(cursor._x, 0);
     assert.equal(cursor._y, 0);
-    assert.notOk(cursor._background);
-    assert.notOk(cursor._foreground);
+    assert.deepEqual(cursor._background, {r: -1, g: -1, b: -1});
+    assert.deepEqual(cursor._foreground, {r: -1, g: -1, b: -1});
     assert.notOk(cursor._display.bold);
     assert.notOk(cursor._display.dim);
     assert.notOk(cursor._display.underlined);
@@ -49,10 +49,10 @@ describe('Cursor', () => {
     assert.equal(cursor._cells[0].getChar(), ' ');
 
     cursor.write('test');
-    assert.equal(cursor._cells[0].toString(), '\u001b[1;1ft\u001b[0m');
-    assert.equal(cursor._cells[1].toString(), '\u001b[1;2fe\u001b[0m');
-    assert.equal(cursor._cells[2].toString(), '\u001b[1;3fs\u001b[0m');
-    assert.equal(cursor._cells[3].toString(), '\u001b[1;4ft\u001b[0m');
+    assert.equal(cursor._cells[0].toString(), '\u001b[1;1f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
+    assert.equal(cursor._cells[1].toString(), '\u001b[1;2f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1me\u001b[0m');
+    assert.equal(cursor._cells[2].toString(), '\u001b[1;3f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1ms\u001b[0m');
+    assert.equal(cursor._cells[3].toString(), '\u001b[1;4f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
   });
 
   it('Should properly ignore write if out of the bounding box', () => {
@@ -61,16 +61,16 @@ describe('Cursor', () => {
     assert.equal(cursor._cells[0].getChar(), ' ');
 
     cursor.write('test');
-    assert.equal(cursor._cells[0].toString(), '\u001b[1;1ft\u001b[0m');
-    assert.equal(cursor._cells[1].toString(), '\u001b[1;2fe\u001b[0m');
-    assert.equal(cursor._cells[2].toString(), '\u001b[1;3fs\u001b[0m');
-    assert.equal(cursor._cells[3].toString(), '\u001b[1;4ft\u001b[0m');
+    assert.equal(cursor._cells[0].toString(), '\u001b[1;1f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
+    assert.equal(cursor._cells[1].toString(), '\u001b[1;2f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1me\u001b[0m');
+    assert.equal(cursor._cells[2].toString(), '\u001b[1;3f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1ms\u001b[0m');
+    assert.equal(cursor._cells[3].toString(), '\u001b[1;4f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
 
     cursor.moveTo(-5, -5).write('do not print');
-    assert.equal(cursor._cells[0].toString(), '\u001b[1;1ft\u001b[0m');
-    assert.equal(cursor._cells[1].toString(), '\u001b[1;2fe\u001b[0m');
-    assert.equal(cursor._cells[2].toString(), '\u001b[1;3fs\u001b[0m');
-    assert.equal(cursor._cells[3].toString(), '\u001b[1;4ft\u001b[0m');
+    assert.equal(cursor._cells[0].toString(), '\u001b[1;1f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
+    assert.equal(cursor._cells[1].toString(), '\u001b[1;2f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1me\u001b[0m');
+    assert.equal(cursor._cells[2].toString(), '\u001b[1;3f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1ms\u001b[0m');
+    assert.equal(cursor._cells[3].toString(), '\u001b[1;4f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
     assert.equal(cursor._cells[4].getChar(), ' ');
   });
 
@@ -194,21 +194,21 @@ describe('Cursor', () => {
   it('Should properly change foreground color', () => {
     const cursor = new Cursor();
 
-    assert.equal(cursor._foreground, false);
+    assert.deepEqual(cursor._foreground, {r: -1, g: -1, b: -1});
     assert.instanceOf(cursor.foreground('white'), Cursor);
     assert.deepEqual(cursor._foreground, {r: 255, g: 255, b: 255});
     assert.instanceOf(cursor.foreground(false), Cursor);
-    assert.notOk(cursor._foreground);
+    assert.deepEqual(cursor._foreground, {r: -1, g: -1, b: -1});
   });
 
   it('Should properly change background color', () => {
     const cursor = new Cursor();
 
-    assert.equal(cursor._background, false);
+    assert.deepEqual(cursor._background, {r: -1, g: -1, b: -1});
     assert.instanceOf(cursor.background('black'), Cursor);
     assert.deepEqual(cursor._background, {r: 0, g: 0, b: 0});
     assert.instanceOf(cursor.background(false), Cursor);
-    assert.notOk(cursor._background);
+    assert.deepEqual(cursor._background, {r: -1, g: -1, b: -1});
   });
 
   it('Should properly enable bold mode', () => {
@@ -394,8 +394,8 @@ describe('Cursor', () => {
     assert.equal(cursor._height, process.stdout.rows);
     assert.equal(cursor._x, 0);
     assert.equal(cursor._y, 0);
-    assert.notOk(cursor._background);
-    assert.notOk(cursor._foreground);
+    assert.deepEqual(cursor._background, {r: -1, g: -1, b: -1});
+    assert.deepEqual(cursor._foreground, {r: -1, g: -1, b: -1});
     assert.notOk(cursor._display.bold);
     assert.notOk(cursor._display.dim);
     assert.notOk(cursor._display.underlined);
