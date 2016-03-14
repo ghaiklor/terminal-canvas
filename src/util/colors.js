@@ -1,5 +1,5 @@
 /**
- * Dictionary of colors which can be used for instantiating the Color instance.
+ * Dictionary of colors which can be used for instantiating the {@link Color} instance.
  *
  * @type {Object}
  */

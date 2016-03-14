@@ -1,6 +1,8 @@
 /**
  * Map of the display modes that can be used in Cursor API.
  * There are the most commonly supported control sequences for formatting text and their resetting.
+ *
+ * @type {Object}
  */
 export const DISPLAY_MODES = {
   RESET_ALL: 0,
