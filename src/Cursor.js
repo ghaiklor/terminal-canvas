@@ -30,11 +30,11 @@ export default class Cursor {
 
     this._x = 0;
     this._y = 0;
-    this._background = false;
-    this._foreground = false;
+    this._background = {r: -1, g: -1, b: -1};
+    this._foreground = {r: -1, g: -1, b: -1};
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
-    this._cells = Array.from({length: width * height}).map(() => new Cell(' ', {x: 0, y: 0}));
+    this._cells = Array.from({length: width * height}).map(() => new Cell());
   }
 
   /**
@@ -175,11 +175,11 @@ export default class Cursor {
    * Set the foreground color.
    * This color is used when text is rendering.
    *
-   * @param {String} color Color name
+   * @param {String|Boolean} color Color name or false if you want to disable foreground filling
    * @returns {Cursor}
    */
   foreground(color) {
-    this._foreground = color ? Color.create(color).toRgb() : false;
+    this._foreground = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
     return this;
   }
 
@@ -187,11 +187,11 @@ export default class Cursor {
    * Set the background color.
    * This color is used for filling the whole cell in the TTY.
    *
-   * @param {String} color Color name
+   * @param {String|Boolean} color Color name or false if you want to disable background filling
    * @returns {Cursor}
    */
   background(color) {
-    this._background = color ? Color.create(color).toRgb() : false;
+    this._background = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
     return this;
   }
 
