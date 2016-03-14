@@ -2,6 +2,10 @@
 logs
 *.log
 
+# V8 Logs
+*.asm
+*.cfg
+
 # Runtime data
 pids
 *.pid
