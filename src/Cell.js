@@ -41,7 +41,7 @@ export default class Cell {
     this._background = {r: -1, g: -1, b: -1};
     this._foreground = {r: -1, g: -1, b: -1};
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
-    this._modified = true;
+    this._modified = false;
 
     this.setChar(char);
     this.setX(x);
@@ -49,7 +49,7 @@ export default class Cell {
     this.setBackground(background);
     this.setForeground(foreground);
     this.setDisplay(display);
-    this.setModified();
+    this.setModified(false);
   }
 
   /**
