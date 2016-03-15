@@ -44,7 +44,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly write to the cursor', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._cells[0].getChar(), ' ');
 
@@ -56,7 +56,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly ignore write if out of the bounding box', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._cells[0].getChar(), ' ');
 
@@ -75,7 +75,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly flush the buffer into the stream', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor._stream);
 
     mock.expects('write').once();
@@ -86,16 +86,16 @@ describe('Cursor', () => {
   });
 
   it('Should properly calculate buffer pointer', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor.getPointerFromXY(), 0);
     assert.instanceOf(cursor.moveTo(10, 10), Cursor);
-    assert.equal(cursor.getPointerFromXY(), 10 * process.stdout.columns + 10);
-    assert.equal(cursor.getPointerFromXY(20, 20), 20 * process.stdout.columns + 20);
+    assert.equal(cursor.getPointerFromXY(), 10 * 20 + 10);
+    assert.equal(cursor.getPointerFromXY(20, 20), 20 * 20 + 20);
   });
 
   it('Should properly calculate coordinates from buffer pointer', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.deepEqual(cursor.getXYFromPointer(0), [0, 0]);
     assert.deepEqual(cursor.getXYFromPointer(1), [1, 0]);
@@ -104,7 +104,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor up with default arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._y, 0);
     assert.instanceOf(cursor.up(), Cursor);
@@ -112,7 +112,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor up with custom arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._y, 0);
     assert.instanceOf(cursor.up(5), Cursor);
@@ -120,7 +120,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor down with default arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._y, 0);
     assert.instanceOf(cursor.down(), Cursor);
@@ -128,7 +128,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor down with custom arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._y, 0);
     assert.instanceOf(cursor.down(5), Cursor);
@@ -136,7 +136,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor right with default arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._x, 0);
     assert.instanceOf(cursor.right(), Cursor);
@@ -144,7 +144,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor right with custom arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._x, 0);
     assert.instanceOf(cursor.right(5), Cursor);
@@ -152,7 +152,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor left with default arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._x, 0);
     assert.instanceOf(cursor.left(), Cursor);
@@ -160,7 +160,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly move cursor left with custom arguments', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._x, 0);
     assert.instanceOf(cursor.left(5), Cursor);
@@ -168,7 +168,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly set relative position of cursor', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
     mock.expects('right').once().withExactArgs(10);
@@ -182,7 +182,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly set absolute position of cursor', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.equal(cursor._x, 0);
     assert.equal(cursor._y, 0);
@@ -192,7 +192,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly change foreground color', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.deepEqual(cursor._foreground, {r: -1, g: -1, b: -1});
     assert.instanceOf(cursor.foreground('white'), Cursor);
@@ -202,7 +202,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly change background color', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.deepEqual(cursor._background, {r: -1, g: -1, b: -1});
     assert.instanceOf(cursor.background('black'), Cursor);
@@ -212,7 +212,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly enable bold mode', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.instanceOf(cursor.bold(), Cursor);
     assert.ok(cursor._display.bold);
@@ -221,7 +221,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly toggle dim mode', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.instanceOf(cursor.dim(), Cursor);
     assert.ok(cursor._display.dim);
@@ -230,7 +230,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly toggle underlined mode', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.instanceOf(cursor.underlined(), Cursor);
     assert.ok(cursor._display.underlined);
@@ -239,7 +239,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly toggle blink mode', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.instanceOf(cursor.blink(), Cursor);
     assert.ok(cursor._display.blink);
@@ -248,7 +248,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly toggle reverse mode', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.instanceOf(cursor.reverse(), Cursor);
     assert.ok(cursor._display.reverse);
@@ -257,7 +257,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly toggle hidden mode', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
 
     assert.instanceOf(cursor.hidden(), Cursor);
     assert.ok(cursor._display.hidden);
@@ -266,7 +266,7 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase the specified region', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
     mock.expects('getPointerFromXY').exactly(36).returns(0);
@@ -276,17 +276,17 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase from current position to the end of line', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withExactArgs(5, 5, process.stdout.columns - 1, 5).returns(cursor);
+    mock.expects('erase').once().withExactArgs(5, 5, 20 - 1, 5).returns(cursor);
 
     assert.instanceOf(cursor.moveTo(5, 5).eraseToEnd(), Cursor);
     mock.verify();
   });
 
   it('Should properly erase from current position to the start of line', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
     mock.expects('erase').once().withExactArgs(0, 5, 5, 5).returns(cursor);
@@ -296,90 +296,90 @@ describe('Cursor', () => {
   });
 
   it('Should properly erase from current line to down', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withExactArgs(0, 5, process.stdout.columns - 1, process.stdout.rows - 1).returns(cursor);
+    mock.expects('erase').once().withExactArgs(0, 5, 20 - 1, 10 - 1).returns(cursor);
 
     assert.instanceOf(cursor.moveTo(5, 5).eraseToDown(), Cursor);
     mock.verify();
   });
 
   it('Should properly erase from current line to up', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withExactArgs(0, 0, process.stdout.columns - 1, 5).returns(cursor);
+    mock.expects('erase').once().withExactArgs(0, 0, 20 - 1, 5).returns(cursor);
 
     assert.instanceOf(cursor.moveTo(5, 5).eraseToUp(), Cursor);
     mock.verify();
   });
 
   it('Should properly erase the current line', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withExactArgs(0, 5, process.stdout.columns - 1, 5).returns(cursor);
+    mock.expects('erase').once().withExactArgs(0, 5, 20 - 1, 5).returns(cursor);
 
     assert.instanceOf(cursor.moveTo(5, 5).eraseLine(), Cursor);
     mock.verify();
   });
 
   it('Should properly erase the entire screen', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor);
 
-    mock.expects('erase').once().withExactArgs(0, 0, process.stdout.columns - 1, process.stdout.rows - 1).returns(cursor);
+    mock.expects('erase').once().withExactArgs(0, 0, 20 - 1, 10 - 1).returns(cursor);
 
     assert.instanceOf(cursor.eraseScreen(), Cursor);
     mock.verify();
   });
 
   it('Should properly save the screen contents', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor._stream);
 
-    mock.expects('write').once().withExactArgs(new Buffer('\u001b[?47h'));
+    mock.expects('write').once().withExactArgs('\u001b[?47h');
 
     assert.instanceOf(cursor.saveScreen(), Cursor);
     mock.verify();
   });
 
   it('Should properly restore the screen contents', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor._stream);
 
-    mock.expects('write').once().withExactArgs(new Buffer('\u001b[?47l'));
+    mock.expects('write').once().withExactArgs('\u001b[?47l');
 
     assert.instanceOf(cursor.restoreScreen(), Cursor);
     mock.verify();
   });
 
   it('Should properly hide the cursor', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(process.stdout);
 
-    mock.expects('write').once().withExactArgs(new Buffer('\u001b[?25l'));
+    mock.expects('write').once().withExactArgs('\u001b[?25l');
 
     assert.instanceOf(cursor.hideCursor(), Cursor);
     mock.verify();
   });
 
   it('Should properly show the cursor', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(process.stdout);
 
-    mock.expects('write').once().withExactArgs(new Buffer('\u001b[?25h'));
+    mock.expects('write').once().withExactArgs('\u001b[?25h');
 
     assert.instanceOf(cursor.showCursor(), Cursor);
     mock.verify();
   });
 
   it('Should properly reset the TTY state', () => {
-    const cursor = new Cursor();
+    const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(process.stdout);
 
-    mock.expects('write').once().withExactArgs(new Buffer('\u001bc'));
+    mock.expects('write').once().withExactArgs('\u001bc');
 
     assert.instanceOf(cursor.reset(), Cursor);
     mock.verify();
