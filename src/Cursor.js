@@ -19,11 +19,14 @@ export default class Cursor {
    * Also, you can specify custom width and height of viewport where cursor will render the frame.
    *
    * @constructor
-   * @param {Stream} [stream=process.stdout] Writable stream
-   * @param {Number} [width=stream.columns] Number of columns (width)
-   * @param {Number} [height=stream.rows] Number of rows (height)
+   * @param {Object} [options] Object with options
+   * @param {Stream} [options.stream=process.stdout] Writable stream
+   * @param {Number} [options.width=stream.columns] Number of columns (width)
+   * @param {Number} [options.height=stream.rows] Number of rows (height)
    */
-  constructor({stream = process.stdout, width = stream.columns, height = stream.rows} = {}) {
+  constructor(options = {}) {
+    const {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
+
     this._stream = stream;
     this._width = width;
     this._height = height;
@@ -70,7 +73,7 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    this._stream.write(this._cells.filter(cell => cell.isModified()).reduce((seq, cell) => seq + cell));
+    this._stream.write(this._cells.reduce((seq, cell) => seq + (cell.isModified() ? cell.toString() : ''), ''));
 
     return this;
   }
