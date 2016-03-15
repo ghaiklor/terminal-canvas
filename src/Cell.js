@@ -2,22 +2,6 @@ import { DISPLAY_MODES } from './util/displayModes';
 import { encodeToVT100 } from './util/encodeToVT100';
 
 /**
- * Uses for disabling background and foreground of the cell.
- *
- * @type {{r: Number, g: Number, b: Number}}
- * @private
- */
-const DISABLED_COLOR = {r: -1, g: -1, b: -1};
-
-/**
- * Uses for disabling display modes of the cell.
- *
- * @type {{bold: Boolean, dim: Boolean, underlined: Boolean, blink: Boolean, reverse: Boolean, hidden: Boolean}}
- * @private
- */
-const DISABLED_DISPLAY_MODE = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
-
-/**
  * Wrapper around one cell in the terminal.
  * Used for filling terminal wrapper in the cursor.
  *
@@ -50,6 +34,14 @@ export default class Cell {
    */
   constructor(char, options = {}) {
     const {x, y, background, foreground, display} = options;
+
+    this._char = ' ';
+    this._x = 0;
+    this._y = 0;
+    this._background = {r: -1, g: -1, b: -1};
+    this._foreground = {r: -1, g: -1, b: -1};
+    this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
+    this._modified = true;
 
     this.setChar(char);
     this.setX(x);
@@ -139,13 +131,15 @@ export default class Cell {
   /**
    * Set new background color.
    *
-   * @param {Number} [r=-1] Red channel
-   * @param {Number} [g=-1] Green channel
-   * @param {Number} [b=-1] Blue channel
+   * @param {Object} [options] Object with background color
+   * @param {Number} [options.r=-1] Red channel
+   * @param {Number} [options.g=-1] Green channel
+   * @param {Number} [options.b=-1] Blue channel
    * @returns {Cell}
    */
-  setBackground({r = -1, g = -1, b = -1} = {}) {
-    this._background = this._background || Object.assign({}, DISABLED_COLOR);
+  setBackground(options = {}) {
+    const {r = -1, g = -1, b = -1} = options;
+
     this._background.r = r;
     this._background.g = g;
     this._background.b = b;
@@ -167,13 +161,15 @@ export default class Cell {
   /**
    * Set new foreground color.
    *
-   * @param {Number} [r=-1] Red channel
-   * @param {Number} [g=-1] Green channel
-   * @param {Number} [b=-1] Blue channel
+   * @param {Object} [options] Object with foreground color
+   * @param {Number} [options.r=-1] Red channel
+   * @param {Number} [options.g=-1] Green channel
+   * @param {Number} [options.b=-1] Blue channel
    * @returns {Cell}
    */
-  setForeground({r = -1, g = -1, b = -1} = {}) {
-    this._foreground = this._foreground || Object.assign({}, DISABLED_COLOR);
+  setForeground(options = {}) {
+    const {r = -1, g = -1, b = -1} = options;
+
     this._foreground.r = r;
     this._foreground.g = g;
     this._foreground.b = b;
@@ -195,16 +191,18 @@ export default class Cell {
   /**
    * Set new display modes to cell.
    *
-   * @param {Boolean} [bold=false] Bold style
-   * @param {Boolean} [dim=false] Dim style
-   * @param {Boolean} [underlined=false] Underlined style
-   * @param {Boolean} [blink=false] Blink style
-   * @param {Boolean} [reverse=false] Reverse style
-   * @param {Boolean} [hidden=false] Hidden style
+   * @param {Object} [options] Object with display modes
+   * @param {Boolean} [options.bold=false] Bold style
+   * @param {Boolean} [options.dim=false] Dim style
+   * @param {Boolean} [options.underlined=false] Underlined style
+   * @param {Boolean} [options.blink=false] Blink style
+   * @param {Boolean} [options.reverse=false] Reverse style
+   * @param {Boolean} [options.hidden=false] Hidden style
    * @returns {Cell}
    */
-  setDisplay({bold = false, dim = false, underlined = false, blink = false, reverse = false, hidden = false} = {}) {
-    this._display = this._display || Object.assign({}, DISABLED_DISPLAY_MODE);
+  setDisplay(options = {}) {
+    const {bold = false, dim = false, underlined = false, blink = false, reverse = false, hidden = false} = options;
+
     this._display.bold = bold;
     this._display.dim = dim;
     this._display.underlined = underlined;
@@ -263,7 +261,7 @@ export default class Cell {
       encodeToVT100(`[${y + 1};${x + 1}f`) +
       encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) +
       encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) +
-      Object.keys(display).filter(i => display[i]).map(i => encodeToVT100(`[${DISPLAY_MODES[i.toUpperCase()]}m`)).join('') +
+      Object.keys(display).reduce((seq, key) => seq + (display[key] ? encodeToVT100(`[${DISPLAY_MODES[key.toUpperCase()]}m`) : ''), '') +
       char +
       encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
     );
