@@ -78,8 +78,10 @@ describe('Cursor', () => {
     const cursor = new Cursor({width: 20, height: 10});
     const mock = sinon.mock(cursor._stream);
 
-    mock.expects('write').once();
+    mock.expects('write').twice();
 
+    assert.instanceOf(cursor.write('test'), Cursor);
+    assert.instanceOf(cursor.flush(), Cursor);
     assert.instanceOf(cursor.write('test'), Cursor);
     assert.instanceOf(cursor.flush(), Cursor);
     mock.verify();
