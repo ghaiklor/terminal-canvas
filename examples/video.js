@@ -7,7 +7,7 @@ const Throttle = require('stream-throttle').Throttle;
 const pcmAudio = require('youtube-terminal/lib/pcm-audio');
 const ffmpeg = require('youtube-terminal/lib/ffmpeg');
 const RawImageStream = require('youtube-terminal/lib/raw-image-stream');
-const cursor = require('../lib/Cursor').create().saveScreen().reset().hideCursor();
+const cursor = require('../lib/Cursor').create();
 
 ytdl.getInfo('https://www.youtube.com/watch?v=dQw4w9WgXcQ', (error, info) => {
   if (error) return console.error(error);
@@ -30,14 +30,17 @@ function playVideo(info) {
     .pipe(new Throttle({rate: frameSize * 12}))
     .pipe(new RawImageStream(frameSize))
     .on('data', frameData => {
-      const imageData = {data: frameData, width: frameWidth, height: frameHeight, format: 'RGB24'};
-      const ascii = asciiPixels(imageData, options).slice(0, -1).match(splitRegex);
+      var ascii = asciiPixels({
+        data: frameData,
+        width: frameWidth,
+        height: frameHeight,
+        format: 'RGB24'
+      }, options).match(splitRegex);
 
-      for (let y = 0; y < frameHeight; y++) cursor.moveTo(0, y).write(ascii[y + 1] || '');
+      for (var y = 0; y < frameHeight; y++) cursor.moveTo(0, y).write(ascii[y + 1] || '');
 
       cursor.flush();
-    })
-    .on('end', onExit);
+    });
 }
 
 function playAudio(info) {
@@ -50,9 +53,3 @@ function playAudio(info) {
 
   pcmAudio(audio.url).on('codecData', updateSpeaker).pipe(speaker);
 }
-
-function onExit() {
-  cursor.showCursor().restoreScreen();
-}
-
-process.on('exit', onExit);
