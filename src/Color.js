@@ -46,6 +46,10 @@ export default class Color {
     if (Color.isHex(color)) return Color.fromHex(color);
     if (!(color.hasOwnProperty('r') || color.hasOwnProperty('g') || color.hasOwnProperty('b'))) throw new Error(`Color ${color} can't be parsed`);
 
+    this._r = 0;
+    this._g = 0;
+    this._b = 0;
+
     this.setR(color.r);
     this.setG(color.g);
     this.setB(color.b);
@@ -114,7 +118,7 @@ export default class Color {
   /**
    * Convert color to RGB representation.
    *
-   * @returns {{r: (Number), g: Number, b: (Number)}}
+   * @returns {{r: Number, g: Number, b: Number}}
    */
   toRgb() {
     return {r: this.getR(), g: this.getG(), b: this.getB()};
@@ -133,6 +137,7 @@ export default class Color {
   /**
    * Check if provided color is named color.
    *
+   * @static
    * @param {String} color
    * @returns {Boolean}
    */
