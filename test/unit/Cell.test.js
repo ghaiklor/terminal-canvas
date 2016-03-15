@@ -108,7 +108,7 @@ describe('Cell', () => {
   it('Should properly mark cell as modified', () => {
     const cell = new Cell();
 
-    assert.ok(cell.isModified());
+    assert.notOk(cell.isModified());
     assert.instanceOf(cell.setModified(false), Cell);
     assert.notOk(cell.isModified());
     assert.instanceOf(cell.setModified(), Cell);
