@@ -1,6 +1,6 @@
 import Cell from './Cell';
 import Color from './Color';
-import { encodeToVT100 } from './util/encodeToVT100';
+import {encodeToVT100} from './util/encodeToVT100';
 
 /**
  * Cursor implements low-level API to terminal control codes.
@@ -55,9 +55,9 @@ export default class Cursor {
           .setChar(char)
           .setX(this._x)
           .setY(this._y)
-          .setBackground(this._background)
-          .setForeground(this._foreground)
-          .setDisplay(this._display);
+          .setBackground(this._background.r, this._background.g, this._background.b)
+          .setForeground(this._foreground.r, this._foreground.g, this._foreground.b)
+          .setDisplay(this._display.bold, this._display.dim, this._display.underlined, this._display.blink, this._display.reverse, this._display.hidden);
       }
 
       this._x++;
@@ -73,7 +73,13 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    this._stream.write(this._cells.reduce((seq, cell) => seq + (cell.isModified() ? cell.toString() : ''), ''));
+    var seq = '';
+
+    for (var i = 0; i < this._cells.length; i++) {
+      if (this._cells[i].isModified()) seq += this._cells[i].toString();
+    }
+
+    this._stream.write(seq);
 
     return this;
   }

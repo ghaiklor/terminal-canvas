@@ -1,5 +1,5 @@
-import { DISPLAY_MODES } from './util/displayModes';
-import { encodeToVT100 } from './util/encodeToVT100';
+import {DISPLAY_MODES} from './util/displayModes';
+import {encodeToVT100} from './util/encodeToVT100';
 
 /**
  * Wrapper around one cell in the terminal.
@@ -33,7 +33,7 @@ export default class Cell {
    * @param {Boolean} [options.display.hidden] Hidden style
    */
   constructor(char, options = {}) {
-    const {x, y, background, foreground, display} = options;
+    const {x, y, background = {}, foreground = {}, display = {}} = options;
 
     this._char = ' ';
     this._x = 0;
@@ -46,9 +46,9 @@ export default class Cell {
     this.setChar(char);
     this.setX(x);
     this.setY(y);
-    this.setBackground(background);
-    this.setForeground(foreground);
-    this.setDisplay(display);
+    this.setBackground(background.r, background.g, background.b);
+    this.setForeground(foreground.r, foreground.g, foreground.b);
+    this.setDisplay(display.bold, display.dim, display.underlined, display.blink, display.reverse, display.hidden);
     this.setModified(false);
   }
 
@@ -131,15 +131,12 @@ export default class Cell {
   /**
    * Set new background color.
    *
-   * @param {Object} [options] Object with background color
-   * @param {Number} [options.r=-1] Red channel
-   * @param {Number} [options.g=-1] Green channel
-   * @param {Number} [options.b=-1] Blue channel
+   * @param {Number} [r=-1] Red channel
+   * @param {Number} [g=-1] Green channel
+   * @param {Number} [b=-1] Blue channel
    * @returns {Cell}
    */
-  setBackground(options = {}) {
-    const {r = -1, g = -1, b = -1} = options;
-
+  setBackground(r = -1, g = -1, b = -1) {
     this._background.r = r;
     this._background.g = g;
     this._background.b = b;
@@ -161,15 +158,12 @@ export default class Cell {
   /**
    * Set new foreground color.
    *
-   * @param {Object} [options] Object with foreground color
-   * @param {Number} [options.r=-1] Red channel
-   * @param {Number} [options.g=-1] Green channel
-   * @param {Number} [options.b=-1] Blue channel
+   * @param {Number} [r=-1] Red channel
+   * @param {Number} [g=-1] Green channel
+   * @param {Number} [b=-1] Blue channel
    * @returns {Cell}
    */
-  setForeground(options = {}) {
-    const {r = -1, g = -1, b = -1} = options;
-
+  setForeground(r = -1, g = -1, b = -1) {
     this._foreground.r = r;
     this._foreground.g = g;
     this._foreground.b = b;
@@ -191,18 +185,15 @@ export default class Cell {
   /**
    * Set new display modes to cell.
    *
-   * @param {Object} [options] Object with display modes
-   * @param {Boolean} [options.bold=false] Bold style
-   * @param {Boolean} [options.dim=false] Dim style
-   * @param {Boolean} [options.underlined=false] Underlined style
-   * @param {Boolean} [options.blink=false] Blink style
-   * @param {Boolean} [options.reverse=false] Reverse style
-   * @param {Boolean} [options.hidden=false] Hidden style
+   * @param {Boolean} [bold=false] Bold style
+   * @param {Boolean} [dim=false] Dim style
+   * @param {Boolean} [underlined=false] Underlined style
+   * @param {Boolean} [blink=false] Blink style
+   * @param {Boolean} [reverse=false] Reverse style
+   * @param {Boolean} [hidden=false] Hidden style
    * @returns {Cell}
    */
-  setDisplay(options = {}) {
-    const {bold = false, dim = false, underlined = false, blink = false, reverse = false, hidden = false} = options;
-
+  setDisplay(bold = false, dim = false, underlined = false, blink = false, reverse = false, hidden = false) {
     this._display.bold = bold;
     this._display.dim = dim;
     this._display.underlined = underlined;
@@ -261,7 +252,12 @@ export default class Cell {
       encodeToVT100(`[${y + 1};${x + 1}f`) +
       encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) +
       encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) +
-      Object.keys(display).reduce((seq, key) => seq + (display[key] ? encodeToVT100(`[${DISPLAY_MODES[key.toUpperCase()]}m`) : ''), '') +
+      encodeToVT100(`[${display.bold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD}m`) +
+      encodeToVT100(`[${display.dim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM}m`) +
+      encodeToVT100(`[${display.underlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED}m`) +
+      encodeToVT100(`[${display.blink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK}m`) +
+      encodeToVT100(`[${display.reverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE}m`) +
+      encodeToVT100(`[${display.hidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN}m`) +
       char +
       encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
     );
