@@ -1,4 +1,4 @@
-import { COLORS } from './util/colors';
+import {COLORS} from './util/colors';
 
 /**
  * Regular expression for capturing RGB channels.
