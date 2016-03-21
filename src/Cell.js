@@ -232,18 +232,18 @@ export default class Cell {
    * @returns {String}
    */
   toString() {
-    const [char, x, y, background, foreground, display] = [this.getChar(), this.getX(), this.getY(), this.getBackground(), this.getForeground(), this.getDisplay()];
+    var [char, x, y, background, foreground, display] = [this.getChar(), this.getX(), this.getY(), this.getBackground(), this.getForeground(), this.getDisplay()];
 
     return (
       encodeToVT100(`[${y + 1};${x + 1}f`) +
-      encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) +
-      encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) +
-      encodeToVT100(`[${display.bold ? DISPLAY_MODES.BOLD : DISPLAY_MODES.RESET_BOLD}m`) +
-      encodeToVT100(`[${display.dim ? DISPLAY_MODES.DIM : DISPLAY_MODES.RESET_DIM}m`) +
-      encodeToVT100(`[${display.underlined ? DISPLAY_MODES.UNDERLINED : DISPLAY_MODES.RESET_UNDERLINED}m`) +
-      encodeToVT100(`[${display.blink ? DISPLAY_MODES.BLINK : DISPLAY_MODES.RESET_BLINK}m`) +
-      encodeToVT100(`[${display.reverse ? DISPLAY_MODES.REVERSE : DISPLAY_MODES.RESET_REVERSE}m`) +
-      encodeToVT100(`[${display.hidden ? DISPLAY_MODES.HIDDEN : DISPLAY_MODES.RESET_HIDDEN}m`) +
+      (background.r > -1 ? encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) : '') +
+      (foreground.r > -1 ? encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) : '') +
+      (display.bold ? encodeToVT100(`[${DISPLAY_MODES.BOLD}m`) : '') +
+      (display.dim ? encodeToVT100(`[${DISPLAY_MODES.DIM}m`) : '') +
+      (display.underlined ? encodeToVT100(`[${DISPLAY_MODES.UNDERLINED}m`) : '') +
+      (display.blink ? encodeToVT100(`[${DISPLAY_MODES.BLINK}m`) : '') +
+      (display.reverse ? encodeToVT100(`[${DISPLAY_MODES.REVERSE}m`) : '') +
+      (display.hidden ? encodeToVT100(`[${DISPLAY_MODES.HIDDEN}m`) : '') +
       char +
       encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
     );
