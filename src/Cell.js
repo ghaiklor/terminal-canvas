@@ -70,8 +70,6 @@ export default class Cell {
    */
   setChar(char = ' ') {
     this._char = char.slice(0, 1);
-    this.setModified();
-
     return this;
   }
 
@@ -92,8 +90,6 @@ export default class Cell {
    */
   setX(x = 0) {
     this._x = Math.floor(x);
-    this.setModified();
-
     return this;
   }
 
@@ -114,8 +110,6 @@ export default class Cell {
    */
   setY(y = 0) {
     this._y = Math.floor(y);
-    this.setModified();
-
     return this;
   }
 
@@ -141,8 +135,6 @@ export default class Cell {
     this._background.g = g;
     this._background.b = b;
 
-    this.setModified();
-
     return this;
   }
 
@@ -167,8 +159,6 @@ export default class Cell {
     this._foreground.r = r;
     this._foreground.g = g;
     this._foreground.b = b;
-
-    this.setModified();
 
     return this;
   }
@@ -201,8 +191,6 @@ export default class Cell {
     this._display.reverse = reverse;
     this._display.hidden = hidden;
 
-    this.setModified();
-
     return this;
   }
 
@@ -234,7 +222,7 @@ export default class Cell {
    * @returns {Cell}
    */
   reset() {
-    return this.setChar().setBackground().setForeground().setDisplay();
+    return this.setChar().setBackground().setForeground().setDisplay().setModified();
   }
 
   /**
@@ -245,8 +233,6 @@ export default class Cell {
    */
   toString() {
     const [char, x, y, background, foreground, display] = [this.getChar(), this.getX(), this.getY(), this.getBackground(), this.getForeground(), this.getDisplay()];
-
-    this.setModified(false);
 
     return (
       encodeToVT100(`[${y + 1};${x + 1}f`) +

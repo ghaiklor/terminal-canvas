@@ -57,7 +57,8 @@ export default class Cursor {
           .setY(this._y)
           .setBackground(this._background.r, this._background.g, this._background.b)
           .setForeground(this._foreground.r, this._foreground.g, this._foreground.b)
-          .setDisplay(this._display.bold, this._display.dim, this._display.underlined, this._display.blink, this._display.reverse, this._display.hidden);
+          .setDisplay(this._display.bold, this._display.dim, this._display.underlined, this._display.blink, this._display.reverse, this._display.hidden)
+          .setModified();
       }
 
       this._x++;
@@ -76,7 +77,7 @@ export default class Cursor {
     var seq = '';
 
     for (var i = 0; i < this._cells.length; i++) {
-      if (this._cells[i].isModified()) seq += this._cells[i].toString();
+      if (this._cells[i].isModified()) seq += this._cells[i].setModified(false).toString();
     }
 
     this._stream.write(seq);
