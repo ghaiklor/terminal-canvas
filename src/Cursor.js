@@ -25,7 +25,7 @@ export default class Cursor {
    * @param {Number} [options.height=stream.rows] Number of rows (height)
    */
   constructor(options = {}) {
-    const {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
+    var {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
 
     this._stream = stream;
     this._width = width;
@@ -49,20 +49,31 @@ export default class Cursor {
    * @returns {Cursor}
    */
   write(data) {
-    data.split('').forEach(char => {
-      if (0 <= this._x && this._x < this._width && 0 <= this._y && this._y < this._height) {
-        this._cells[this.getPointerFromXY(this._x, this._y)]
+    var width = this._width;
+    var height = this._height;
+    var background = this._background;
+    var foreground = this._foreground;
+    var display = this._display;
+
+    for (var i = 0; i < data.length; i++) {
+      var char = data[i];
+      var x = this._x;
+      var y = this._y;
+      var pointer = this.getPointerFromXY(x, y);
+
+      if (0 <= x && x < width && 0 <= y && y < height) {
+        this._cells[pointer]
           .setChar(char)
-          .setX(this._x)
-          .setY(this._y)
-          .setBackground(this._background.r, this._background.g, this._background.b)
-          .setForeground(this._foreground.r, this._foreground.g, this._foreground.b)
-          .setDisplay(this._display.bold, this._display.dim, this._display.underlined, this._display.blink, this._display.reverse, this._display.hidden)
-          .setModified();
+          .setX(x)
+          .setY(y)
+          .setBackground(background.r, background.g, background.b)
+          .setForeground(foreground.r, foreground.g, foreground.b)
+          .setDisplay(display.bold, display.dim, display.underlined, display.blink, display.reverse, display.hidden)
+          .setModified(true);
       }
 
       this._x++;
-    });
+    }
 
     return this;
   }
@@ -187,7 +198,12 @@ export default class Cursor {
    * @returns {Cursor}
    */
   foreground(color) {
-    this._foreground = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+    var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+
+    this._foreground.r = newColor.r;
+    this._foreground.g = newColor.g;
+    this._foreground.b = newColor.b;
+
     return this;
   }
 
@@ -199,7 +215,12 @@ export default class Cursor {
    * @returns {Cursor}
    */
   background(color) {
-    this._background = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+    var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+
+    this._background.r = newColor.r;
+    this._background.g = newColor.g;
+    this._background.b = newColor.b;
+
     return this;
   }
 
