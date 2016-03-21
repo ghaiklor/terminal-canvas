@@ -33,7 +33,7 @@ export default class Cell {
    * @param {Boolean} [options.display.hidden] Hidden style
    */
   constructor(char, options = {}) {
-    const {x, y, background = {}, foreground = {}, display = {}} = options;
+    var {x, y, background = {}, foreground = {}, display = {}} = options;
 
     this._char = ' ';
     this._x = 0;
