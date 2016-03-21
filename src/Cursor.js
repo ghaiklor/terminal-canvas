@@ -74,13 +74,11 @@ export default class Cursor {
    * @returns {Cursor}
    */
   flush() {
-    var seq = '';
-
     for (var i = 0; i < this._cells.length; i++) {
-      if (this._cells[i].isModified()) seq += this._cells[i].setModified(false).toString();
+      if (this._cells[i].isModified()) {
+        this._stream.write(this._cells[i].setModified(false).toString());
+      }
     }
-
-    this._stream.write(seq);
 
     return this;
   }
