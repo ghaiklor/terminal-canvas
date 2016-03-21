@@ -280,8 +280,8 @@ export default class Cursor {
    * @returns {Cursor}
    */
   erase(x1, y1, x2, y2) {
-    for (let y = y1; y <= y2; y++) {
-      for (let x = x1; x <= x2; x++) {
+    for (var y = y1; y <= y2; y++) {
+      for (var x = x1; x <= x2; x++) {
         this._cells[this.getPointerFromXY(x, y)].reset();
       }
     }
