@@ -282,7 +282,8 @@ export default class Cursor {
   erase(x1, y1, x2, y2) {
     for (var y = y1; y <= y2; y++) {
       for (var x = x1; x <= x2; x++) {
-        this._cells[this.getPointerFromXY(x, y)].reset();
+        var pointer = this.getPointerFromXY(x, y);
+        this._cells[pointer] && this._cells[pointer].reset();
       }
     }
 
