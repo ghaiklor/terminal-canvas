@@ -1,4 +1,4 @@
-import { assert } from 'chai';
+import {assert} from 'chai';
 import sinon from 'sinon';
 import Cell from '../../src/Cell';
 
@@ -56,7 +56,7 @@ describe('Cell', () => {
     const cell = new Cell();
 
     assert.deepEqual(cell.getBackground(), {r: -1, g: -1, b: -1});
-    assert.instanceOf(cell.setBackground({r: 0, g: 100, b: 200}), Cell);
+    assert.instanceOf(cell.setBackground(0, 100, 200), Cell);
     assert.deepEqual(cell.getBackground(), {r: 0, g: 100, b: 200});
     assert.instanceOf(cell.setBackground(), Cell);
     assert.deepEqual(cell.getBackground(), {r: -1, g: -1, b: -1});
@@ -66,7 +66,7 @@ describe('Cell', () => {
     const cell = new Cell();
 
     assert.deepEqual(cell.getForeground(), {r: -1, g: -1, b: -1});
-    assert.instanceOf(cell.setForeground({r: 0, g: 100, b: 200}), Cell);
+    assert.instanceOf(cell.setForeground(0, 100, 200), Cell);
     assert.deepEqual(cell.getForeground(), {r: 0, g: 100, b: 200});
     assert.instanceOf(cell.setForeground(), Cell);
     assert.deepEqual(cell.getForeground(), {r: -1, g: -1, b: -1});
@@ -84,7 +84,7 @@ describe('Cell', () => {
       hidden: false
     });
 
-    assert.instanceOf(cell.setDisplay({bold: true, underlined: true, dim: false}), Cell);
+    assert.instanceOf(cell.setDisplay(true, false, true, false, false, false), Cell);
     assert.deepEqual(cell.getDisplay(), {
       bold: true,
       dim: false,
@@ -119,10 +119,10 @@ describe('Cell', () => {
     const cell = new Cell();
     const mock = sinon.mock(cell);
 
-    mock.expects('setChar').once().returns(cell);
-    mock.expects('setBackground').once().returns(cell);
-    mock.expects('setForeground').once().returns(cell);
-    mock.expects('setDisplay').once().returns(cell);
+    mock.expects('setChar').once().withExactArgs(' ').returns(cell);
+    mock.expects('setBackground').once().withExactArgs(-1, -1, -1).returns(cell);
+    mock.expects('setForeground').once().withExactArgs(-1, -1, -1).returns(cell);
+    mock.expects('setDisplay').once().withExactArgs(false, false, false, false, false, false).returns(cell);
 
     assert.instanceOf(cell.reset(), Cell);
     mock.verify();
@@ -131,16 +131,16 @@ describe('Cell', () => {
   it('Should properly convert Cell into ASCII sequence', () => {
     const cell = new Cell();
 
-    assert.equal(cell.toString(), '\u001b[1;1f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1m \u001b[0m');
+    assert.equal(cell.toString(), '\u001b[1;1f \u001b[0m');
     assert.instanceOf(cell.setX(20), Cell);
-    assert.equal(cell.toString(), '\u001b[1;21f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1m \u001b[0m');
+    assert.equal(cell.toString(), '\u001b[1;21f \u001b[0m');
     assert.instanceOf(cell.setY(10), Cell);
-    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1m \u001b[0m');
-    assert.instanceOf(cell.setBackground({r: 0, g: 100, b: 200}), Cell);
-    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;-1;-1;-1m \u001b[0m');
-    assert.instanceOf(cell.setForeground({r: 200, g: 100, b: 0}), Cell);
+    assert.equal(cell.toString(), '\u001b[11;21f \u001b[0m');
+    assert.instanceOf(cell.setBackground(0, 100, 200), Cell);
+    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m \u001b[0m');
+    assert.instanceOf(cell.setForeground(200, 100, 0), Cell);
     assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m \u001b[0m');
-    assert.instanceOf(cell.setDisplay({bold: true, underlined: true, dim: false}), Cell);
+    assert.instanceOf(cell.setDisplay(true, false, true, false, false, false), Cell);
     assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m\u001b[1m\u001b[4m \u001b[0m');
   });
 
