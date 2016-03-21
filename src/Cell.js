@@ -222,7 +222,7 @@ export default class Cell {
    * @returns {Cell}
    */
   reset() {
-    return this.setChar().setBackground().setForeground().setDisplay().setModified();
+    return this.setChar(' ').setBackground(-1, -1, -1).setForeground(-1, -1, -1).setDisplay().setModified(true);
   }
 
   /**
