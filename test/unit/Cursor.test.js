@@ -335,53 +335,43 @@ describe('Cursor', () => {
   });
 
   it('Should properly save the screen contents', () => {
-    const cursor = new Cursor({width: 20, height: 10});
-    const mock = sinon.mock(cursor._stream);
-
-    mock.expects('write').once().withExactArgs('\u001b[?47h');
+    const cursor = new Cursor({stream: {write: sinon.spy()}, width: 20, height: 10});
 
     assert.instanceOf(cursor.saveScreen(), Cursor);
-    mock.verify();
+    assert.equal(cursor._stream.write.callCount, 1);
+    assert.equal(cursor._stream.write.getCall(0).args[0], '\u001b[?47h');
   });
 
   it('Should properly restore the screen contents', () => {
-    const cursor = new Cursor({width: 20, height: 10});
-    const mock = sinon.mock(cursor._stream);
-
-    mock.expects('write').once().withExactArgs('\u001b[?47l');
+    const cursor = new Cursor({stream: {write: sinon.spy()}, width: 20, height: 10});
 
     assert.instanceOf(cursor.restoreScreen(), Cursor);
-    mock.verify();
+    assert.equal(cursor._stream.write.callCount, 1);
+    assert.equal(cursor._stream.write.getCall(0).args[0], '\u001b[?47l');
   });
 
   it('Should properly hide the cursor', () => {
-    const cursor = new Cursor({width: 20, height: 10});
-    const mock = sinon.mock(process.stdout);
-
-    mock.expects('write').once().withExactArgs('\u001b[?25l');
+    const cursor = new Cursor({stream: {write: sinon.spy()}, width: 20, height: 10});
 
     assert.instanceOf(cursor.hideCursor(), Cursor);
-    mock.verify();
+    assert.equal(cursor._stream.write.callCount, 1);
+    assert.equal(cursor._stream.write.getCall(0).args[0], '\u001b[?25l');
   });
 
   it('Should properly show the cursor', () => {
-    const cursor = new Cursor({width: 20, height: 10});
-    const mock = sinon.mock(process.stdout);
-
-    mock.expects('write').once().withExactArgs('\u001b[?25h');
+    const cursor = new Cursor({stream: {write: sinon.spy()}, width: 20, height: 10});
 
     assert.instanceOf(cursor.showCursor(), Cursor);
-    mock.verify();
+    assert.equal(cursor._stream.write.callCount, 1);
+    assert.equal(cursor._stream.write.getCall(0).args[0], '\u001b[?25h');
   });
 
   it('Should properly reset the TTY state', () => {
-    const cursor = new Cursor({width: 20, height: 10});
-    const mock = sinon.mock(process.stdout);
-
-    mock.expects('write').once().withExactArgs('\u001bc');
+    const cursor = new Cursor({stream: {write: sinon.spy()}, width: 20, height: 10});
 
     assert.instanceOf(cursor.reset(), Cursor);
-    mock.verify();
+    assert.equal(cursor._stream.write.callCount, 1);
+    assert.equal(cursor._stream.write.getCall(0).args[0], '\u001bc');
   });
 
   it('Should properly create new instance from static create()', () => {
