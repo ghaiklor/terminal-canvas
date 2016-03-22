@@ -30,23 +30,26 @@ function imageToAscii(data, width, height) {
 }
 
 function playVideo(info) {
-  const options = {fps: 30, width: cursor._width};
   const video = info.formats.filter(format => format.resolution === '144p' && format.audioBitrate === null).sort((a, b) => a.container === 'webm' ? -1 : 1)[0];
   const m = video.size.match(/^(\d+)x(\d+)$/);
   const videoSize = {width: m[1], height: m[2]};
-  const frameWidth = Math.round(options.width);
-  const frameHeight = Math.round(videoSize.height / (videoSize.width / frameWidth));
+  const frameHeight = Math.round(cursor._height * 2);
+  const frameWidth = Math.round(frameHeight * (videoSize.width / videoSize.height));
   const frameSize = frameWidth * frameHeight * 3;
 
-  ffmpeg.rawImageStream(video.url, options)
-    .pipe(new Throttle({rate: frameSize * options.fps}))
+  ffmpeg.rawImageStream(video.url, {fps: 30, width: frameWidth})
+    .on('start', () => cursor.saveScreen().reset())
+    .on('end', () => process.exit(0))
+    .pipe(new Throttle({rate: frameSize * 30}))
     .pipe(new RawImageStream(frameSize))
     .on('data', function (frameData) {
       var ascii = imageToAscii(frameData, frameWidth, frameHeight);
 
       for (var y = 0; y < frameHeight; y++) {
         for (var x = 0; x < frameWidth; x++) {
-          cursor.moveTo(x, y).write(ascii[y * frameWidth + x] || '');
+          cursor
+            .moveTo(x + (cursor._width / 2 - frameWidth / 2), y)
+            .write(ascii[y * frameWidth + x] || '');
         }
       }
 
@@ -71,3 +74,5 @@ ytdl.getInfo('https://www.youtube.com/watch?v=Hiqn1Ur32AE', (error, info) => {
   playVideo(info);
   playAudio(info);
 });
+
+process.on('SIGTERM', () => cursor.restoreScreen());
