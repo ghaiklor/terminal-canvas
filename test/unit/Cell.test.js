@@ -22,6 +22,31 @@ describe('Cell', () => {
     });
   });
 
+  it('Should properly create cell with custom arguments', () => {
+    const cell = new Cell(' ', {
+      x: 10,
+      y: 10,
+      background: {r: 1, g: 2, b: 3},
+      foreground: {r: 1, g: 2, b: 3},
+      display: {bold: true}
+    });
+
+    assert.instanceOf(cell, Cell);
+    assert.equal(cell._char, ' ');
+    assert.equal(cell._x, 10);
+    assert.equal(cell._y, 10);
+    assert.deepEqual(cell._background, {r: 1, g: 2, b: 3});
+    assert.deepEqual(cell._foreground, {r: 1, g: 2, b: 3});
+    assert.deepEqual(cell._display, {
+      bold: true,
+      dim: false,
+      underlined: false,
+      blink: false,
+      reverse: false,
+      hidden: false
+    });
+  });
+
   it('Should properly get/set char', () => {
     const cell = new Cell();
 
