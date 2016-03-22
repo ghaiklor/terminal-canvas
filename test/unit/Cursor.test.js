@@ -79,9 +79,19 @@ describe('Cursor', () => {
 
     assert.instanceOf(cursor.write('test'), Cursor);
     assert.instanceOf(cursor.flush(), Cursor);
-    assert.instanceOf(cursor.write('test'), Cursor);
+    assert.instanceOf(cursor.moveTo(0, 0).write('1234'), Cursor);
     assert.instanceOf(cursor.flush(), Cursor);
     assert.equal(cursor._stream.write.callCount, 8);
+  });
+
+  it('Should properly skip the flush when changes the same', () => {
+    const cursor = new Cursor({stream: {write: sinon.spy()}, width: 20, height: 10});
+
+    assert.instanceOf(cursor.write('test'), Cursor);
+    assert.instanceOf(cursor.flush(), Cursor);
+    assert.instanceOf(cursor.moveTo(0, 0).write('test'), Cursor);
+    assert.instanceOf(cursor.flush(), Cursor);
+    assert.equal(cursor._stream.write.callCount, 4);
   });
 
   it('Should properly calculate buffer pointer', () => {
