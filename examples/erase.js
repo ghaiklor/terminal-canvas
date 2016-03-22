@@ -3,9 +3,7 @@
 const Cursor = require('../lib/Cursor');
 const cursor = Cursor.create().reset().hideCursor();
 
-for (let y = 0; y < process.stdout.rows; y++) {
-  cursor.moveTo(0, y).write('E'.repeat(process.stdout.columns));
-}
+for (var y = 0; y < process.stdout.rows; y++) cursor.moveTo(0, y).write('E'.repeat(process.stdout.columns));
 
 cursor.moveTo(process.stdout.columns / 2, process.stdout.rows / 2).flush();
 

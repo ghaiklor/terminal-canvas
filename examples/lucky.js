@@ -8,11 +8,11 @@ const text = 'Always after me lucky charms.';
 let offset = 0;
 
 setInterval(() => {
-  let y = 0, dy = 1;
+  var y = 0, dy = 1;
 
-  for (let i = 0; i < 40; i++) {
-    const color = colors[(i + offset) % colors.length];
-    const c = text[(i + offset) % text.length];
+  for (var i = 0; i < 40; i++) {
+    var color = colors[(i + offset) % colors.length];
+    var c = text[(i + offset) % text.length];
 
     cursor.moveBy(1, dy).foreground(color).write(c);
 
