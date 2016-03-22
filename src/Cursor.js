@@ -38,6 +38,7 @@ export default class Cursor {
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
     this._cells = Array.from({length: width * height}).map(() => new Cell());
+    this._lastFrame = Array.from({length: width * height}).fill('');
   }
 
   /**
@@ -87,7 +88,12 @@ export default class Cursor {
   flush() {
     for (var i = 0; i < this._cells.length; i++) {
       if (this._cells[i].isModified()) {
-        this._stream.write(this._cells[i].setModified(false).toString());
+        var cellSeq = this._cells[i].setModified(false).toString();
+
+        if (cellSeq !== this._lastFrame[i]) {
+          this._lastFrame[i] = cellSeq;
+          this._stream.write(cellSeq);
+        }
       }
     }
 
