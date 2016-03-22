@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import sinon from 'sinon';
+import {assert} from 'chai';
 import Color from '../../src/Color';
 
 describe('Color', () => {
