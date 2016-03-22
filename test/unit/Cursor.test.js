@@ -1,4 +1,4 @@
-import { assert } from 'chai';
+import {assert} from 'chai';
 import sinon from 'sinon';
 import Cursor from '../../src/Cursor';
 
@@ -49,10 +49,10 @@ describe('Cursor', () => {
     assert.equal(cursor._cells[0].getChar(), ' ');
 
     cursor.write('test');
-    assert.equal(cursor._cells[0].toString(), '\u001b[1;1f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
-    assert.equal(cursor._cells[1].toString(), '\u001b[1;2f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1me\u001b[0m');
-    assert.equal(cursor._cells[2].toString(), '\u001b[1;3f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1ms\u001b[0m');
-    assert.equal(cursor._cells[3].toString(), '\u001b[1;4f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
+    assert.equal(cursor._cells[0].toString(), '\u001b[1;1ft\u001b[0m');
+    assert.equal(cursor._cells[1].toString(), '\u001b[1;2fe\u001b[0m');
+    assert.equal(cursor._cells[2].toString(), '\u001b[1;3fs\u001b[0m');
+    assert.equal(cursor._cells[3].toString(), '\u001b[1;4ft\u001b[0m');
   });
 
   it('Should properly ignore write if out of the bounding box', () => {
@@ -61,30 +61,27 @@ describe('Cursor', () => {
     assert.equal(cursor._cells[0].getChar(), ' ');
 
     cursor.write('test');
-    assert.equal(cursor._cells[0].toString(), '\u001b[1;1f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
-    assert.equal(cursor._cells[1].toString(), '\u001b[1;2f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1me\u001b[0m');
-    assert.equal(cursor._cells[2].toString(), '\u001b[1;3f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1ms\u001b[0m');
-    assert.equal(cursor._cells[3].toString(), '\u001b[1;4f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
+    assert.equal(cursor._cells[0].toString(), '\u001b[1;1ft\u001b[0m');
+    assert.equal(cursor._cells[1].toString(), '\u001b[1;2fe\u001b[0m');
+    assert.equal(cursor._cells[2].toString(), '\u001b[1;3fs\u001b[0m');
+    assert.equal(cursor._cells[3].toString(), '\u001b[1;4ft\u001b[0m');
 
     cursor.moveTo(-5, -5).write('do not print');
-    assert.equal(cursor._cells[0].toString(), '\u001b[1;1f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
-    assert.equal(cursor._cells[1].toString(), '\u001b[1;2f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1me\u001b[0m');
-    assert.equal(cursor._cells[2].toString(), '\u001b[1;3f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1ms\u001b[0m');
-    assert.equal(cursor._cells[3].toString(), '\u001b[1;4f\u001b[48;2;-1;-1;-1m\u001b[38;2;-1;-1;-1mt\u001b[0m');
+    assert.equal(cursor._cells[0].toString(), '\u001b[1;1ft\u001b[0m');
+    assert.equal(cursor._cells[1].toString(), '\u001b[1;2fe\u001b[0m');
+    assert.equal(cursor._cells[2].toString(), '\u001b[1;3fs\u001b[0m');
+    assert.equal(cursor._cells[3].toString(), '\u001b[1;4ft\u001b[0m');
     assert.equal(cursor._cells[4].getChar(), ' ');
   });
 
   it('Should properly flush the buffer into the stream', () => {
-    const cursor = new Cursor({width: 20, height: 10});
-    const mock = sinon.mock(cursor._stream);
-
-    mock.expects('write').twice();
+    const cursor = new Cursor({stream: {write: sinon.spy()}, width: 20, height: 10});
 
     assert.instanceOf(cursor.write('test'), Cursor);
     assert.instanceOf(cursor.flush(), Cursor);
     assert.instanceOf(cursor.write('test'), Cursor);
     assert.instanceOf(cursor.flush(), Cursor);
-    mock.verify();
+    assert.equal(cursor._stream.write.callCount, 8);
   });
 
   it('Should properly calculate buffer pointer', () => {
