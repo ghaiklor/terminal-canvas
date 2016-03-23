@@ -1,9 +1,9 @@
 "use strict";
 
-const Cursor = require('../lib/Cursor');
-const cursor = Cursor.create().reset();
+const Canvas = require('../lib/Canvas');
+const canvas = Canvas.create().reset();
 
-cursor
+canvas
   .moveTo(15, 5)
   .write('moveTo')
   .moveBy(15, 5)

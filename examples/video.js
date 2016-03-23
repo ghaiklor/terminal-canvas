@@ -6,7 +6,7 @@ const Throttle = require('stream-throttle').Throttle;
 const pcmAudio = require('youtube-terminal/lib/pcm-audio');
 const ffmpeg = require('youtube-terminal/lib/ffmpeg');
 const RawImageStream = require('youtube-terminal/lib/raw-image-stream');
-const cursor = require('../lib/Cursor').create();
+const canvas = require('../lib/Canvas').create();
 
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 
@@ -33,13 +33,13 @@ function playVideo(info) {
   const video = info.formats.filter(format => format.resolution === '144p' && format.audioBitrate === null).sort((a, b) => a.container === 'webm' ? -1 : 1)[0];
   const m = video.size.match(/^(\d+)x(\d+)$/);
   const videoSize = {width: m[1], height: m[2]};
-  const frameHeight = Math.round(cursor._height * 2);
+  const frameHeight = Math.round(canvas._height * 2);
   const frameWidth = Math.round(frameHeight * (videoSize.width / videoSize.height));
   const frameSize = frameWidth * frameHeight * 3;
 
   ffmpeg.rawImageStream(video.url, {fps: 30, width: frameWidth})
-    .on('start', () => cursor.saveScreen().reset())
-    .on('end', () => process.exit(0))
+    .on('start', () => canvas.saveScreen().reset())
+    .on('end', () => canvas.restoreScreen())
     .pipe(new Throttle({rate: frameSize * 30}))
     .pipe(new RawImageStream(frameSize))
     .on('data', function (frameData) {
@@ -47,13 +47,13 @@ function playVideo(info) {
 
       for (var y = 0; y < frameHeight; y++) {
         for (var x = 0; x < frameWidth; x++) {
-          cursor
-            .moveTo(x + (cursor._width / 2 - frameWidth / 2), y)
+          canvas
+            .moveTo(x + (canvas._width / 2 - frameWidth / 2), y)
             .write(ascii[y * frameWidth + x] || '');
         }
       }
 
-      cursor.flush();
+      canvas.flush();
     });
 }
 
@@ -75,4 +75,4 @@ ytdl.getInfo('https://www.youtube.com/watch?v=Hiqn1Ur32AE', (error, info) => {
   playAudio(info);
 });
 
-process.on('SIGTERM', () => cursor.restoreScreen());
+process.on('SIGTERM', () => canvas.restoreScreen());

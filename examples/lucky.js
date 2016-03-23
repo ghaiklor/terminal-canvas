@@ -1,7 +1,7 @@
 "use strict";
 
-const Cursor = require('../lib/Cursor');
-const cursor = Cursor.create().reset();
+const Canvas = require('../lib/Canvas');
+const canvas = Canvas.create().reset();
 const colors = ['red', 'cyan', 'yellow', 'green', 'blue'];
 const text = 'Always after me lucky charms.';
 
@@ -14,13 +14,13 @@ setInterval(() => {
     var color = colors[(i + offset) % colors.length];
     var c = text[(i + offset) % text.length];
 
-    cursor.moveBy(1, dy).foreground(color).write(c);
+    canvas.moveBy(1, dy).foreground(color).write(c);
 
     y += dy;
 
     if (y <= 0 || y >= 5) dy *= -1;
   }
 
-  cursor.moveTo(0, 0).flush();
+  canvas.moveTo(0, 0).flush();
   offset++;
 }, 150);

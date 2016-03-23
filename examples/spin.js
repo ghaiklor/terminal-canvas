@@ -1,7 +1,7 @@
 "use strict";
 
-const Cursor = require('../lib/Cursor');
-const cursor = Cursor.create().reset();
+const Canvas = require('../lib/Canvas');
+const canvas = Canvas.create().reset();
 const radius = 10;
 const colors = ['red', 'yellow', 'green', 'dark_cyan', 'blue', 'magenta'];
 
@@ -14,11 +14,11 @@ setInterval(function () {
 
   points.unshift([x, y]);
   points.forEach((p, i) => {
-    cursor.moveTo(p[0], p[1]);
-    cursor.background(colors[Math.floor(i / 12)]).write(' ').flush();
+    canvas.moveTo(p[0], p[1]);
+    canvas.background(colors[Math.floor(i / 12)]).write(' ').flush();
   });
 
   points = points.slice(0, 12 * colors.length - 1);
 
   theta += Math.PI / 40;
-}, 150);
+}, 30);
