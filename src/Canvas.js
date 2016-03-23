@@ -3,7 +3,7 @@ import Color from './Color';
 import {encodeToVT100} from './util/encodeToVT100';
 
 /**
- * Cursor implements low-level API to terminal control codes.
+ * Canvas implements low-level API to terminal control codes.
  *
  * @see http://www.termsys.demon.co.uk/vtansi.htm
  * @see http://misc.flogisoft.com/bash/tip_colors_and_formatting
@@ -12,7 +12,7 @@ import {encodeToVT100} from './util/encodeToVT100';
  * @see http://wiki.bash-hackers.org/scripting/terminalcodes
  * @since 1.0.0
  */
-export default class Cursor {
+export default class Canvas {
   /**
    * Creates cursor that writes direct to `stdout`.
    * You can override target stream with another one.
@@ -47,7 +47,7 @@ export default class Cursor {
    * For applying changes you need to {@link flush} changes.
    *
    * @param {String} data Data to write to the terminal
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   write(data) {
     var width = this._width;
@@ -83,7 +83,7 @@ export default class Cursor {
    * Takes only modified cells from virtual terminal and flush changes to the real terminal.
    * There is no requirements to build diff or something, we have the markers for each cell that has been modified.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   flush() {
     for (var i = 0; i < this._cells.length; i++) {
@@ -125,7 +125,7 @@ export default class Cursor {
    * Move the cursor up.
    *
    * @param {Number} [y=1]
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   up(y = 1) {
     this._y -= Math.floor(y);
@@ -136,7 +136,7 @@ export default class Cursor {
    * Move the cursor down.
    *
    * @param {Number} [y=1]
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   down(y = 1) {
     this._y += Math.floor(y);
@@ -147,7 +147,7 @@ export default class Cursor {
    * Move the cursor right.
    *
    * @param {Number} [x=1]
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   right(x = 1) {
     this._x += Math.floor(x);
@@ -158,7 +158,7 @@ export default class Cursor {
    * Move the cursor left.
    *
    * @param {Number} [x=1]
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   left(x = 1) {
     this._x -= Math.floor(x);
@@ -170,7 +170,7 @@ export default class Cursor {
    *
    * @param {Number} x Offset by X coordinate
    * @param {Number} y Offset by Y coordinate
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   moveBy(x, y) {
     if (x < 0) this.left(-x);
@@ -187,7 +187,7 @@ export default class Cursor {
    *
    * @param {Number} x X coordinate
    * @param {Number} y Y coordinate
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   moveTo(x, y) {
     this._x = Math.floor(x);
@@ -201,7 +201,7 @@ export default class Cursor {
    * This color is used when text is rendering.
    *
    * @param {String|Boolean} color Color name or false if you want to disable foreground filling
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   foreground(color) {
     var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
@@ -218,7 +218,7 @@ export default class Cursor {
    * This color is used for filling the whole cell in the TTY.
    *
    * @param {String|Boolean} color Color name or false if you want to disable background filling
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   background(color) {
     var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
@@ -234,7 +234,7 @@ export default class Cursor {
    * Toggle bold display mode.
    *
    * @param {Boolean} [isBold=true] If false, disables bold mode
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   bold(isBold = true) {
     this._display.bold = isBold;
@@ -245,7 +245,7 @@ export default class Cursor {
    * Toggle dim display mode.
    *
    * @param {Boolean} [isDim=true] If false, disables dim mode
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   dim(isDim = true) {
     this._display.dim = isDim;
@@ -256,7 +256,7 @@ export default class Cursor {
    * Toggle underlined display mode.
    *
    * @param {Boolean} [isUnderlined=true] If false, disables underlined mode
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   underlined(isUnderlined = true) {
     this._display.underlined = isUnderlined;
@@ -267,7 +267,7 @@ export default class Cursor {
    * Toggle blink display mode.
    *
    * @param {Boolean} [isBlink=true] If false, disables blink mode
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   blink(isBlink = true) {
     this._display.blink = isBlink;
@@ -278,7 +278,7 @@ export default class Cursor {
    * Toggle reverse display mode.
    *
    * @param {Boolean} [isReverse=true] If false, disables reverse display mode
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   reverse(isReverse = true) {
     this._display.reverse = isReverse;
@@ -289,7 +289,7 @@ export default class Cursor {
    * Toggle hidden display mode.
    *
    * @param {Boolean} [isHidden=true] If false, disables hidden display mode
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   hidden(isHidden = true) {
     this._display.hidden = isHidden;
@@ -304,7 +304,7 @@ export default class Cursor {
    * @param {Number} y1
    * @param {Number} x2
    * @param {Number} y2
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   erase(x1, y1, x2, y2) {
     for (var y = y1; y <= y2; y++) {
@@ -320,7 +320,7 @@ export default class Cursor {
   /**
    * Erase from current position to end of the line.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   eraseToEnd() {
     return this.erase(this._x, this._y, this._width - 1, this._y);
@@ -329,7 +329,7 @@ export default class Cursor {
   /**
    * Erase from current position to start of the line.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   eraseToStart() {
     return this.erase(0, this._y, this._x, this._y);
@@ -338,7 +338,7 @@ export default class Cursor {
   /**
    * Erase from current line to down.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   eraseToDown() {
     return this.erase(0, this._y, this._width - 1, this._height - 1);
@@ -347,7 +347,7 @@ export default class Cursor {
   /**
    * Erase from current line to up.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   eraseToUp() {
     return this.erase(0, 0, this._width - 1, this._y);
@@ -356,7 +356,7 @@ export default class Cursor {
   /**
    * Erase current line.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   eraseLine() {
     return this.erase(0, this._y, this._width - 1, this._y);
@@ -365,7 +365,7 @@ export default class Cursor {
   /**
    * Erase the entire screen.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   eraseScreen() {
     return this.erase(0, 0, this._width - 1, this._height - 1);
@@ -375,7 +375,7 @@ export default class Cursor {
    * Save current terminal contents into the buffer.
    * Applies immediately without calling {@link flush}.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   saveScreen() {
     this._stream.write(encodeToVT100('[?47h'));
@@ -386,7 +386,7 @@ export default class Cursor {
    * Restore terminal contents to previously saved via {@link saveScreen}.
    * Applies immediately without calling {@link flush}.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   restoreScreen() {
     this._stream.write(encodeToVT100('[?47l'));
@@ -397,7 +397,7 @@ export default class Cursor {
    * Set the terminal cursor invisible.
    * Applies immediately without calling {@link flush}.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   hideCursor() {
     this._stream.write(encodeToVT100('[?25l'));
@@ -408,7 +408,7 @@ export default class Cursor {
    * Set the terminal cursor visible.
    * Applies immediately without calling {@link flush}.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   showCursor() {
     this._stream.write(encodeToVT100('[?25h'));
@@ -419,7 +419,7 @@ export default class Cursor {
    * Reset all terminal settings.
    * Applies immediately without calling {@link flush}.
    *
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   reset() {
     this._stream.write(encodeToVT100('c'));
@@ -427,10 +427,10 @@ export default class Cursor {
   }
 
   /**
-   * Wrapper around `new Cursor()`.
+   * Wrapper around `new Canvas()`.
    *
    * @static
-   * @returns {Cursor}
+   * @returns {Canvas}
    */
   static create(...args) {
     return new this(...args);
