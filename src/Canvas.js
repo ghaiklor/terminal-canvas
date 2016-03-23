@@ -14,15 +14,17 @@ import {encodeToVT100} from './util/encodeToVT100';
  */
 export default class Canvas {
   /**
-   * Creates cursor that writes direct to `stdout`.
-   * You can override target stream with another one.
+   * Creates canvas that writes direct to `stdout` by default.
+   * You can override destination stream with another Writable stream.
    * Also, you can specify custom width and height of viewport where cursor will render the frame.
    *
    * @constructor
-   * @param {Object} [options] Object with options
+   * @param {Object} [options]
    * @param {Stream} [options.stream=process.stdout] Writable stream
    * @param {Number} [options.width=stream.columns] Number of columns (width)
    * @param {Number} [options.height=stream.rows] Number of rows (height)
+   * @example
+   * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
   constructor(options = {}) {
     var {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
@@ -42,12 +44,14 @@ export default class Canvas {
   }
 
   /**
-   * Write to the stream.
-   * It doesn't applies immediately but stores in virtual terminal that represented as array of {@link Cell} instances.
-   * For applying changes you need to {@link flush} changes.
+   * Write to the buffer.
+   * It doesn't applies immediately, but stores in virtual terminal that represented as array of {@link Cell} instances.
+   * For applying changes, you need to call {@link flush} method.
    *
    * @param {String} data Data to write to the terminal
    * @returns {Canvas}
+   * @example
+   * canvas.write('Hello, world').flush();
    */
   write(data) {
     var width = this._width;
@@ -80,8 +84,10 @@ export default class Canvas {
   }
 
   /**
-   * Takes only modified cells from virtual terminal and flush changes to the real terminal.
-   * There is no requirements to build diff or something, we have the markers for each cell that has been modified.
+   * Flush changes to the real terminal, taking only modified cells.
+   * Firstly, we get modified cells that have been affected by {@link write} method.
+   * Secondly, we compare these modified cells with the last frame.
+   * If cell has changes that doesn't equal to the cell from the last frame - write to the stream.
    *
    * @returns {Canvas}
    */
@@ -106,6 +112,9 @@ export default class Canvas {
    * @param {Number} [x] X coordinate on the terminal
    * @param {Number} [y] Y coordinate on the terminal
    * @returns {Number} Returns index in the buffer array
+   * @example
+   * canvas.getPointerFromXY(0, 0); // returns 0
+   * canvas.getPointerFromXY(); // x and y in this case is current position of the cursor
    */
   getPointerFromXY(x = this._x, y = this._y) {
     return y * this._width + x;
@@ -116,6 +125,8 @@ export default class Canvas {
    *
    * @param {Number} index Index in the buffer
    * @returns {Array} Returns an array [x, y]
+   * @example
+   * canvas.getXYFromPointer(0); // returns [0, 0]
    */
   getXYFromPointer(index) {
     return [index - (Math.floor(index / this._width) * this._width), Math.floor(index / this._width)];
@@ -126,6 +137,9 @@ export default class Canvas {
    *
    * @param {Number} [y=1]
    * @returns {Canvas}
+   * @example
+   * canvas.up(); // moves cursor up by one cell
+   * canvas.up(5); // moves cursor up by five cells
    */
   up(y = 1) {
     this._y -= Math.floor(y);
@@ -137,6 +151,9 @@ export default class Canvas {
    *
    * @param {Number} [y=1]
    * @returns {Canvas}
+   * @example
+   * canvas.down(); // moves cursor down by one cell
+   * canvas.down(5); // moves cursor down by five cells
    */
   down(y = 1) {
     this._y += Math.floor(y);
@@ -148,6 +165,9 @@ export default class Canvas {
    *
    * @param {Number} [x=1]
    * @returns {Canvas}
+   * @example
+   * canvas.right(); // moves cursor right by one cell
+   * canvas.right(5); // moves cursor right by five cells
    */
   right(x = 1) {
     this._x += Math.floor(x);
@@ -159,6 +179,9 @@ export default class Canvas {
    *
    * @param {Number} [x=1]
    * @returns {Canvas}
+   * @example
+   * canvas.left(); // moves cursor left by one cell
+   * canvas.left(5); // moves cursor left by five cells
    */
   left(x = 1) {
     this._x -= Math.floor(x);
@@ -166,11 +189,13 @@ export default class Canvas {
   }
 
   /**
-   * Move the cursor position relative current coordinates.
+   * Move the cursor position relative to the current coordinates.
    *
    * @param {Number} x Offset by X coordinate
    * @param {Number} y Offset by Y coordinate
    * @returns {Canvas}
+   * @example
+   * canvas.moveBy(5, 5); // moves cursor to the right and down by five cells
    */
   moveBy(x, y) {
     if (x < 0) this.left(-x);
@@ -188,6 +213,8 @@ export default class Canvas {
    * @param {Number} x X coordinate
    * @param {Number} y Y coordinate
    * @returns {Canvas}
+   * @example
+   * canvas.moveTo(10, 10); // moves cursor to the (10, 10) coordinate
    */
   moveTo(x, y) {
     this._x = Math.floor(x);
@@ -200,8 +227,13 @@ export default class Canvas {
    * Set the foreground color.
    * This color is used when text is rendering.
    *
-   * @param {String|Boolean} color Color name or false if you want to disable foreground filling
+   * @param {String|Boolean} color Color name, rgb, hex or false if you want to disable foreground filling
    * @returns {Canvas}
+   * @example
+   * canvas.foreground('white');
+   * canvas.foreground('#000000');
+   * canvas.foreground('rgb(255, 255, 255)');
+   * canvas.foreground(false); // disables foreground filling (will be used default filling)
    */
   foreground(color) {
     var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
@@ -217,8 +249,13 @@ export default class Canvas {
    * Set the background color.
    * This color is used for filling the whole cell in the TTY.
    *
-   * @param {String|Boolean} color Color name or false if you want to disable background filling
+   * @param {String|Boolean} color Color name, rgb, hex or false if you want to disable background filling
    * @returns {Canvas}
+   * @example
+   * canvas.background('white');
+   * canvas.background('#000000');
+   * canvas.background('rgb(255, 255, 255)');
+   * canvas.background(false); // disables background filling (will be used default filling)
    */
   background(color) {
     var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
@@ -235,6 +272,9 @@ export default class Canvas {
    *
    * @param {Boolean} [isBold=true] If false, disables bold mode
    * @returns {Canvas}
+   * @example
+   * canvas.bold(); // enable bold mode
+   * canvas.bold(false); // disable bold mode
    */
   bold(isBold = true) {
     this._display.bold = isBold;
@@ -246,6 +286,9 @@ export default class Canvas {
    *
    * @param {Boolean} [isDim=true] If false, disables dim mode
    * @returns {Canvas}
+   * @example
+   * canvas.dim(); // enable dim mode
+   * canvas.dim(false); // disable dim mode
    */
   dim(isDim = true) {
     this._display.dim = isDim;
@@ -257,6 +300,9 @@ export default class Canvas {
    *
    * @param {Boolean} [isUnderlined=true] If false, disables underlined mode
    * @returns {Canvas}
+   * @example
+   * canvas.underlined(); // enable underlined mode
+   * canvas.underlined(false); // disable underlined mode
    */
   underlined(isUnderlined = true) {
     this._display.underlined = isUnderlined;
@@ -268,6 +314,9 @@ export default class Canvas {
    *
    * @param {Boolean} [isBlink=true] If false, disables blink mode
    * @returns {Canvas}
+   * @example
+   * canvas.blink(); // enable blink mode
+   * canvas.blink(false); // disable blink mode
    */
   blink(isBlink = true) {
     this._display.blink = isBlink;
@@ -279,6 +328,9 @@ export default class Canvas {
    *
    * @param {Boolean} [isReverse=true] If false, disables reverse display mode
    * @returns {Canvas}
+   * @example
+   * canvas.reverse(); // enable reverse mode
+   * canvas.reverse(false); // disable reverse mode
    */
   reverse(isReverse = true) {
     this._display.reverse = isReverse;
@@ -290,6 +342,9 @@ export default class Canvas {
    *
    * @param {Boolean} [isHidden=true] If false, disables hidden display mode
    * @returns {Canvas}
+   * @example
+   * canvas.hidden(); // enable hidden mode
+   * canvas.hidden(false); // disable hidden mode
    */
   hidden(isHidden = true) {
     this._display.hidden = isHidden;
@@ -305,6 +360,8 @@ export default class Canvas {
    * @param {Number} x2
    * @param {Number} y2
    * @returns {Canvas}
+   * @example
+   * canvas.erase(0, 0, 5, 5);
    */
   erase(x1, y1, x2, y2) {
     for (var y = y1; y <= y2; y++) {
@@ -321,6 +378,8 @@ export default class Canvas {
    * Erase from current position to end of the line.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.eraseToEnd();
    */
   eraseToEnd() {
     return this.erase(this._x, this._y, this._width - 1, this._y);
@@ -330,6 +389,8 @@ export default class Canvas {
    * Erase from current position to start of the line.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.eraseToStart();
    */
   eraseToStart() {
     return this.erase(0, this._y, this._x, this._y);
@@ -339,6 +400,8 @@ export default class Canvas {
    * Erase from current line to down.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.eraseToDown();
    */
   eraseToDown() {
     return this.erase(0, this._y, this._width - 1, this._height - 1);
@@ -348,6 +411,8 @@ export default class Canvas {
    * Erase from current line to up.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.eraseToUp();
    */
   eraseToUp() {
     return this.erase(0, 0, this._width - 1, this._y);
@@ -357,6 +422,8 @@ export default class Canvas {
    * Erase current line.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.eraseLine();
    */
   eraseLine() {
     return this.erase(0, this._y, this._width - 1, this._y);
@@ -366,16 +433,20 @@ export default class Canvas {
    * Erase the entire screen.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.eraseScreen();
    */
   eraseScreen() {
     return this.erase(0, 0, this._width - 1, this._height - 1);
   }
 
   /**
-   * Save current terminal contents into the buffer.
-   * Applies immediately without calling {@link flush}.
+   * Save current terminal state into the buffer.
+   * Applies immediately without calling {@link flush} method.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.saveScreen();
    */
   saveScreen() {
     this._stream.write(encodeToVT100('[?47h'));
@@ -383,10 +454,12 @@ export default class Canvas {
   }
 
   /**
-   * Restore terminal contents to previously saved via {@link saveScreen}.
+   * Restore terminal state from the buffer.
    * Applies immediately without calling {@link flush}.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.restoreScreen();
    */
   restoreScreen() {
     this._stream.write(encodeToVT100('[?47l'));
@@ -398,6 +471,8 @@ export default class Canvas {
    * Applies immediately without calling {@link flush}.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.hideCursor();
    */
   hideCursor() {
     this._stream.write(encodeToVT100('[?25l'));
@@ -409,6 +484,8 @@ export default class Canvas {
    * Applies immediately without calling {@link flush}.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.showCursor();
    */
   showCursor() {
     this._stream.write(encodeToVT100('[?25h'));
@@ -420,6 +497,8 @@ export default class Canvas {
    * Applies immediately without calling {@link flush}.
    *
    * @returns {Canvas}
+   * @example
+   * canvas.reset();
    */
   reset() {
     this._stream.write(encodeToVT100('c'));

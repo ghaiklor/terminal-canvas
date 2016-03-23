@@ -1,5 +1,5 @@
 /**
- * Map of the display modes that can be used in Cursor API.
+ * Map of the display modes that can be used in Canvas API.
  * There are the most commonly supported control sequences for formatting text and their resetting.
  *
  * @type {Object}
