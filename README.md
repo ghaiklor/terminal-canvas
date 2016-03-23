@@ -13,6 +13,12 @@
 ![dependencies](https://img.shields.io/david/ghaiklor/terminal-canvas.svg)
 ![dev dependencies](https://img.shields.io/david/dev/ghaiklor/terminal-canvas.svg)
 
+## Demo
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=_KpDKTihgxY" target="_blank">
+  <img src="http://img.youtube.com/vi/_KpDKTihgxY/0.jpg" alt="Touhou - Bad Apple (Terminal Edition)" width="240" height="180" border="10"/>
+</a>
+
 ## Getting Started
 
 Install it via npm:
