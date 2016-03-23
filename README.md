@@ -41,6 +41,18 @@ const canvas = new Canvas();
 canvas.moveTo(10, 10).write('Hello, world').flush();
 ```
 
+## API
+
+You can find API documentation [here](./API.md)
+
+## Examples
+
+A lot of examples are available to you [here](./examples)
+
+## How terminal-canvas works?
+
+TODO
+
 ## License
 
 The MIT License (MIT)
