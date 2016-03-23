@@ -102,6 +102,7 @@ After some time, you decide to flush changes. When flush() method was called it 
 - If they are not equal, store new control sequence and write to stream, otherwise, ignore it
 
 That's how I made possible to render videos in the terminal at 30 FPS.
+
 BTW, if I remove Throttle stream, I'm getting 120 FPS :smiley:
 
 ## License
