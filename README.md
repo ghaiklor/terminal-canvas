@@ -21,7 +21,7 @@ Just look at the demo videos below to see, what you can do with terminal-canvas 
 
 | Touhou - Bad Apple  | Rick Astley - Never Gonna Give You Up |
 | ------------------- | ------------------------------------- |
-| [![Touhou - Bad Apple](https://img.youtube.com/vi/_KpDKTihgxY/0.jpg)](https://www.youtube.com/watch?v=_KpDKTihgxY) | [![ Rick Astley - Never Gonna Give You Up ](https://img.youtube.com/vi/IsD3qn63-i4/0.jpg)](https://www.youtube.com/watch?v=IsD3qn63-i4) |
+| [![Touhou - Bad Apple](https://img.youtube.com/vi/_KpDKTihgxY/0.jpg)](https://www.youtube.com/watch?v=_KpDKTihgxY) | [![ Rick Astley - Never Gonna Give You Up ](https://img.youtube.com/vi/JffWhWba2M4/0.jpg)](https://www.youtube.com/watch?v=JffWhWba2M4) |
 
 ## Getting Started
 
