@@ -69,16 +69,16 @@ The next thing which terminal-canvas does is wrap those control codes, so you ar
 
 The first releases of the terminal-canvas (which was kittik-cursor) were based on real-time updating terminal cursor, when you are calling some method on the canvas.
 
-In result, I was getting performance issues.
-So I decided to implement own wrapper around terminal and cells.
+This caused performance issues.
+So I decided to create my own wrapper around terminal cells.
 
 Each real cell in the terminal has a wrapper (class Cell in the src folder).
 The main problem, which Cell resolves, is to render each cell independently from another cells.
-So I can grab any cell at any coordinate and render only it.
+So I can grab any cell at any coordinate and render it independently from others.
 
-It works the next way.
+It works the following way.
 Each Cell has style settings and position in the real terminal.
-When you are converting Cell to the control sequences, it concatenate the following sequences:
+When you are converting Cell to the control sequences, it concatenates the following sequences:
 
 - Convert cell position to control sequence
 - Convert foreground and background color to control sequence
@@ -90,18 +90,18 @@ That way, each cell wrapped in own control sequences that can be flushed at any 
 
 ### Difference between two frames
 
-The last thing, that I made, is to update only cells, that really was changed.
+The last thing I did, was update only cells that really changed.
 
 The algorithm is simple.
 
 When you are writing to the canvas, all write operations mark virtual cells as modified cells.
-After some time, you decide to flush changes. When flush() method was called it does 2 things:
+After some time, you decide to flush changes. When flush() method is called it does 2 things:
 
 - Iterate through all cells and find only cells with modified marker;
-- Convert modified cell to control sequence and compare that sequence with the sequence which was used at the previous frame;
+- Convert modified cell to control sequence and compare that sequence with the sequence that was used at the previous frame;
 - If they are not equal, store new control sequence and write to stream, otherwise, ignore it
 
-That's how I made possible to render videos in the terminal at 30 FPS.
+That's how I made it possible to render videos in the terminal at 30 FPS.
 
 BTW, if I remove Throttle stream, I'm getting 120 FPS :smiley:
 
