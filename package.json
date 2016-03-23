@@ -1,12 +1,12 @@
 {
-  "name": "kittik-cursor",
+  "name": "terminal-canvas",
   "version": "0.0.0-semantic-release",
-  "description": "Implements low-level API for access to cursor in terminal",
+  "description": "High-performant low-level API for access to cursor in terminal",
   "main": "lib/Cursor.js",
   "author": "ghaiklor",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kittikjs/cursor.git"
+    "url": "https://github.com/ghaiklor/terminal-canvas.git"
   },
   "license": "MIT",
   "scripts": {
