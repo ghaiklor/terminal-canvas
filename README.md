@@ -13,6 +13,10 @@
 ![dependencies](https://img.shields.io/david/ghaiklor/terminal-canvas.svg)
 ![dev dependencies](https://img.shields.io/david/dev/ghaiklor/terminal-canvas.svg)
 
+Entirely written with JavaScript, terminal-canvas exposes features that you can use for rendering in terminal.
+High-performance algorithms and optimisations allow to render only cells which have been changed.
+Just look at the demo videos below to see, what you can do with terminal-canvas :smiley:
+
 ## Demo
 
 | Touhou - Bad Apple  | Rick Astley - Never Gonna Give You Up |
