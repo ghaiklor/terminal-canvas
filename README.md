@@ -15,9 +15,9 @@
 
 ## Demo
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=_KpDKTihgxY" target="_blank">
-  <img src="http://img.youtube.com/vi/_KpDKTihgxY/0.jpg" alt="Touhou - Bad Apple (Terminal Edition)" width="240" height="180" border="10"/>
-</a>
+| Touhou - Bad Apple  | Rick Astley - Never Gonna Give You Up |
+| ------------------- | ------------------------------------- |
+| [![Touhou - Bad Apple](https://img.youtube.com/vi/_KpDKTihgxY/0.jpg)](https://www.youtube.com/watch?v=_KpDKTihgxY) | [![ Rick Astley - Never Gonna Give You Up ](https://img.youtube.com/vi/IsD3qn63-i4/0.jpg)](https://www.youtube.com/watch?v=IsD3qn63-i4) |
 
 ## Getting Started
 
