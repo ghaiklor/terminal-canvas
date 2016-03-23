@@ -1,8 +1,8 @@
 import {assert} from 'chai';
 import sinon from 'sinon';
-import Cursor from '../../src/Cursor';
+import Cursor from '../../src/Canvas';
 
-describe('Cursor', () => {
+describe('Canvas', () => {
   it('Should properly initialize with default arguments', () => {
     const cursor = new Cursor();
 
