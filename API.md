@@ -5,11 +5,11 @@
 <dd><p>Dictionary of colors which can be used for instantiating the <a href="Color">Color</a> instance.</p>
 </dd>
 <dt><a href="#DISPLAY_MODES">DISPLAY_MODES</a> : <code>Object</code></dt>
-<dd><p>Map of the display modes that can be used in Cursor API.
+<dd><p>Map of the display modes that can be used in Canvas API.
 There are the most commonly supported control sequences for formatting text and their resetting.</p>
 </dd>
 <dt><a href="#encodeToVT100">encodeToVT100</a> ⇒ <code>String</code></dt>
-<dd><p>Bytes to encode to VT100 control sequence.</p>
+<dd><p>Converts string with control code to VT100 control sequence.</p>
 </dd>
 </dl>
 
@@ -17,13 +17,15 @@ There are the most commonly supported control sequences for formatting text and 
 
 <dl>
 <dt><a href="#write">write(data)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Write to the stream.
-It doesn&#39;t applies immediately but stores in virtual terminal that represented as array of <a href="Cell">Cell</a> instances.
-For applying changes you need to <a href="#flush">flush</a> changes.</p>
+<dd><p>Write to the buffer.
+It doesn&#39;t applies immediately, but stores in virtual terminal that represented as array of <a href="Cell">Cell</a> instances.
+For applying changes, you need to call <a href="#flush">flush</a> method.</p>
 </dd>
 <dt><a href="#flush">flush()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Takes only modified cells from virtual terminal and flush changes to the real terminal.
-There is no requirements to build diff or something, we have the markers for each cell that has been modified.</p>
+<dd><p>Flush changes to the real terminal, taking only modified cells.
+Firstly, we get modified cells that have been affected by <a href="#write">write</a> method.
+Secondly, we compare these modified cells with the last frame.
+If cell has changes that doesn&#39;t equal to the cell from the last frame - write to the stream.</p>
 </dd>
 <dt><a href="#getPointerFromXY">getPointerFromXY([x], [y])</a> ⇒ <code>Number</code></dt>
 <dd><p>Get index of the virtual terminal representation from (x, y) coordinates.</p>
@@ -44,7 +46,7 @@ There is no requirements to build diff or something, we have the markers for eac
 <dd><p>Move the cursor left.</p>
 </dd>
 <dt><a href="#moveBy">moveBy(x, y)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Move the cursor position relative current coordinates.</p>
+<dd><p>Move the cursor position relative to the current coordinates.</p>
 </dd>
 <dt><a href="#moveTo">moveTo(x, y)</a> ⇒ <code>Canvas</code></dt>
 <dd><p>Set the cursor position by absolute coordinates.</p>
@@ -98,11 +100,11 @@ The region describes the rectangle shape which need to erase.</p>
 <dd><p>Erase the entire screen.</p>
 </dd>
 <dt><a href="#saveScreen">saveScreen()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Save current terminal contents into the buffer.
-Applies immediately without calling <a href="#flush">flush</a>.</p>
+<dd><p>Save current terminal state into the buffer.
+Applies immediately without calling <a href="#flush">flush</a> method.</p>
 </dd>
 <dt><a href="#restoreScreen">restoreScreen()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Restore terminal contents to previously saved via <a href="#saveScreen">saveScreen</a>.
+<dd><p>Restore terminal state from the buffer.
 Applies immediately without calling <a href="#flush">flush</a>.</p>
 </dd>
 <dt><a href="#hideCursor">hideCursor()</a> ⇒ <code>Canvas</code></dt>
@@ -228,17 +230,17 @@ Dictionary of colors which can be used for instantiating the [Color](Color) inst
 <a name="DISPLAY_MODES"></a>
 
 ## DISPLAY_MODES : <code>Object</code>
-Map of the display modes that can be used in Cursor API.
+Map of the display modes that can be used in Canvas API.
 There are the most commonly supported control sequences for formatting text and their resetting.
 
 **Kind**: global constant  
 <a name="encodeToVT100"></a>
 
 ## encodeToVT100 ⇒ <code>String</code>
-Bytes to encode to VT100 control sequence.
+Converts string with control code to VT100 control sequence.
 
 **Kind**: global constant  
-**Returns**: <code>String</code> - Returns encoded string  
+**Returns**: <code>String</code> - Returns VT100 control sequence  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -247,9 +249,9 @@ Bytes to encode to VT100 control sequence.
 <a name="write"></a>
 
 ## write(data) ⇒ <code>Canvas</code>
-Write to the stream.
-It doesn't applies immediately but stores in virtual terminal that represented as array of [Cell](Cell) instances.
-For applying changes you need to [flush](#flush) changes.
+Write to the buffer.
+It doesn't applies immediately, but stores in virtual terminal that represented as array of [Cell](Cell) instances.
+For applying changes, you need to call [flush](#flush) method.
 
 **Kind**: global function  
 
@@ -257,11 +259,17 @@ For applying changes you need to [flush](#flush) changes.
 | --- | --- | --- |
 | data | <code>String</code> | Data to write to the terminal |
 
+**Example**  
+```js
+canvas.write('Hello, world').flush();
+```
 <a name="flush"></a>
 
 ## flush() ⇒ <code>Canvas</code>
-Takes only modified cells from virtual terminal and flush changes to the real terminal.
-There is no requirements to build diff or something, we have the markers for each cell that has been modified.
+Flush changes to the real terminal, taking only modified cells.
+Firstly, we get modified cells that have been affected by [write](#write) method.
+Secondly, we compare these modified cells with the last frame.
+If cell has changes that doesn't equal to the cell from the last frame - write to the stream.
 
 **Kind**: global function  
 <a name="getPointerFromXY"></a>
@@ -277,6 +285,11 @@ Get index of the virtual terminal representation from (x, y) coordinates.
 | [x] | <code>Number</code> | X coordinate on the terminal |
 | [y] | <code>Number</code> | Y coordinate on the terminal |
 
+**Example**  
+```js
+canvas.getPointerFromXY(0, 0); // returns 0
+canvas.getPointerFromXY(); // x and y in this case is current position of the cursor
+```
 <a name="getXYFromPointer"></a>
 
 ## getXYFromPointer(index) ⇒ <code>Array</code>
@@ -289,6 +302,10 @@ Get (x, y) coordinate from the virtual terminal pointer.
 | --- | --- | --- |
 | index | <code>Number</code> | Index in the buffer |
 
+**Example**  
+```js
+canvas.getXYFromPointer(0); // returns [0, 0]
+```
 <a name="up"></a>
 
 ## up([y]) ⇒ <code>Canvas</code>
@@ -300,6 +317,11 @@ Move the cursor up.
 | --- | --- | --- |
 | [y] | <code>Number</code> | <code>1</code> | 
 
+**Example**  
+```js
+canvas.up(); // moves cursor up by one cell
+canvas.up(5); // moves cursor up by five cells
+```
 <a name="down"></a>
 
 ## down([y]) ⇒ <code>Canvas</code>
@@ -311,6 +333,11 @@ Move the cursor down.
 | --- | --- | --- |
 | [y] | <code>Number</code> | <code>1</code> | 
 
+**Example**  
+```js
+canvas.down(); // moves cursor down by one cell
+canvas.down(5); // moves cursor down by five cells
+```
 <a name="right"></a>
 
 ## right([x]) ⇒ <code>Canvas</code>
@@ -322,6 +349,11 @@ Move the cursor right.
 | --- | --- | --- |
 | [x] | <code>Number</code> | <code>1</code> | 
 
+**Example**  
+```js
+canvas.right(); // moves cursor right by one cell
+canvas.right(5); // moves cursor right by five cells
+```
 <a name="left"></a>
 
 ## left([x]) ⇒ <code>Canvas</code>
@@ -333,10 +365,15 @@ Move the cursor left.
 | --- | --- | --- |
 | [x] | <code>Number</code> | <code>1</code> | 
 
+**Example**  
+```js
+canvas.left(); // moves cursor left by one cell
+canvas.left(5); // moves cursor left by five cells
+```
 <a name="moveBy"></a>
 
 ## moveBy(x, y) ⇒ <code>Canvas</code>
-Move the cursor position relative current coordinates.
+Move the cursor position relative to the current coordinates.
 
 **Kind**: global function  
 
@@ -345,6 +382,10 @@ Move the cursor position relative current coordinates.
 | x | <code>Number</code> | Offset by X coordinate |
 | y | <code>Number</code> | Offset by Y coordinate |
 
+**Example**  
+```js
+canvas.moveBy(5, 5); // moves cursor to the right and down by five cells
+```
 <a name="moveTo"></a>
 
 ## moveTo(x, y) ⇒ <code>Canvas</code>
@@ -357,6 +398,10 @@ Set the cursor position by absolute coordinates.
 | x | <code>Number</code> | X coordinate |
 | y | <code>Number</code> | Y coordinate |
 
+**Example**  
+```js
+canvas.moveTo(10, 10); // moves cursor to the (10, 10) coordinate
+```
 <a name="foreground"></a>
 
 ## foreground(color) ⇒ <code>Canvas</code>
@@ -367,8 +412,15 @@ This color is used when text is rendering.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| color | <code>String</code> &#124; <code>Boolean</code> | Color name or false if you want to disable foreground filling |
+| color | <code>String</code> &#124; <code>Boolean</code> | Color name, rgb, hex or false if you want to disable foreground filling |
 
+**Example**  
+```js
+canvas.foreground('white');
+canvas.foreground('#000000');
+canvas.foreground('rgb(255, 255, 255)');
+canvas.foreground(false); // disables foreground filling (will be used default filling)
+```
 <a name="background"></a>
 
 ## background(color) ⇒ <code>Canvas</code>
@@ -379,8 +431,15 @@ This color is used for filling the whole cell in the TTY.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| color | <code>String</code> &#124; <code>Boolean</code> | Color name or false if you want to disable background filling |
+| color | <code>String</code> &#124; <code>Boolean</code> | Color name, rgb, hex or false if you want to disable background filling |
 
+**Example**  
+```js
+canvas.background('white');
+canvas.background('#000000');
+canvas.background('rgb(255, 255, 255)');
+canvas.background(false); // disables background filling (will be used default filling)
+```
 <a name="bold"></a>
 
 ## bold([isBold]) ⇒ <code>Canvas</code>
@@ -392,6 +451,11 @@ Toggle bold display mode.
 | --- | --- | --- | --- |
 | [isBold] | <code>Boolean</code> | <code>true</code> | If false, disables bold mode |
 
+**Example**  
+```js
+canvas.bold(); // enable bold mode
+canvas.bold(false); // disable bold mode
+```
 <a name="dim"></a>
 
 ## dim([isDim]) ⇒ <code>Canvas</code>
@@ -403,6 +467,11 @@ Toggle dim display mode.
 | --- | --- | --- | --- |
 | [isDim] | <code>Boolean</code> | <code>true</code> | If false, disables dim mode |
 
+**Example**  
+```js
+canvas.dim(); // enable dim mode
+canvas.dim(false); // disable dim mode
+```
 <a name="underlined"></a>
 
 ## underlined([isUnderlined]) ⇒ <code>Canvas</code>
@@ -414,6 +483,11 @@ Toggle underlined display mode.
 | --- | --- | --- | --- |
 | [isUnderlined] | <code>Boolean</code> | <code>true</code> | If false, disables underlined mode |
 
+**Example**  
+```js
+canvas.underlined(); // enable underlined mode
+canvas.underlined(false); // disable underlined mode
+```
 <a name="blink"></a>
 
 ## blink([isBlink]) ⇒ <code>Canvas</code>
@@ -425,6 +499,11 @@ Toggle blink display mode.
 | --- | --- | --- | --- |
 | [isBlink] | <code>Boolean</code> | <code>true</code> | If false, disables blink mode |
 
+**Example**  
+```js
+canvas.blink(); // enable blink mode
+canvas.blink(false); // disable blink mode
+```
 <a name="reverse"></a>
 
 ## reverse([isReverse]) ⇒ <code>Canvas</code>
@@ -436,6 +515,11 @@ Toggle reverse display mode.
 | --- | --- | --- | --- |
 | [isReverse] | <code>Boolean</code> | <code>true</code> | If false, disables reverse display mode |
 
+**Example**  
+```js
+canvas.reverse(); // enable reverse mode
+canvas.reverse(false); // disable reverse mode
+```
 <a name="hidden"></a>
 
 ## hidden([isHidden]) ⇒ <code>Canvas</code>
@@ -447,6 +531,11 @@ Toggle hidden display mode.
 | --- | --- | --- | --- |
 | [isHidden] | <code>Boolean</code> | <code>true</code> | If false, disables hidden display mode |
 
+**Example**  
+```js
+canvas.hidden(); // enable hidden mode
+canvas.hidden(false); // disable hidden mode
+```
 <a name="erase"></a>
 
 ## erase(x1, y1, x2, y2) ⇒ <code>Canvas</code>
@@ -462,56 +551,92 @@ The region describes the rectangle shape which need to erase.
 | x2 | <code>Number</code> | 
 | y2 | <code>Number</code> | 
 
+**Example**  
+```js
+canvas.erase(0, 0, 5, 5);
+```
 <a name="eraseToEnd"></a>
 
 ## eraseToEnd() ⇒ <code>Canvas</code>
 Erase from current position to end of the line.
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.eraseToEnd();
+```
 <a name="eraseToStart"></a>
 
 ## eraseToStart() ⇒ <code>Canvas</code>
 Erase from current position to start of the line.
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.eraseToStart();
+```
 <a name="eraseToDown"></a>
 
 ## eraseToDown() ⇒ <code>Canvas</code>
 Erase from current line to down.
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.eraseToDown();
+```
 <a name="eraseToUp"></a>
 
 ## eraseToUp() ⇒ <code>Canvas</code>
 Erase from current line to up.
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.eraseToUp();
+```
 <a name="eraseLine"></a>
 
 ## eraseLine() ⇒ <code>Canvas</code>
 Erase current line.
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.eraseLine();
+```
 <a name="eraseScreen"></a>
 
 ## eraseScreen() ⇒ <code>Canvas</code>
 Erase the entire screen.
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.eraseScreen();
+```
 <a name="saveScreen"></a>
 
 ## saveScreen() ⇒ <code>Canvas</code>
-Save current terminal contents into the buffer.
-Applies immediately without calling [flush](#flush).
+Save current terminal state into the buffer.
+Applies immediately without calling [flush](#flush) method.
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.saveScreen();
+```
 <a name="restoreScreen"></a>
 
 ## restoreScreen() ⇒ <code>Canvas</code>
-Restore terminal contents to previously saved via [saveScreen](#saveScreen).
+Restore terminal state from the buffer.
 Applies immediately without calling [flush](#flush).
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.restoreScreen();
+```
 <a name="hideCursor"></a>
 
 ## hideCursor() ⇒ <code>Canvas</code>
@@ -519,6 +644,10 @@ Set the terminal cursor invisible.
 Applies immediately without calling [flush](#flush).
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.hideCursor();
+```
 <a name="showCursor"></a>
 
 ## showCursor() ⇒ <code>Canvas</code>
@@ -526,6 +655,10 @@ Set the terminal cursor visible.
 Applies immediately without calling [flush](#flush).
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.showCursor();
+```
 <a name="reset"></a>
 
 ## reset() ⇒ <code>Canvas</code>
@@ -533,6 +666,10 @@ Reset all terminal settings.
 Applies immediately without calling [flush](#flush).
 
 **Kind**: global function  
+**Example**  
+```js
+canvas.reset();
+```
 <a name="create"></a>
 
 ## create() ⇒ <code>Canvas</code>
