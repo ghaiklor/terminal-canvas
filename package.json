@@ -31,7 +31,7 @@
     "mocha": "2.4.5",
     "semantic-release": "4.3.5",
     "sinon": "1.17.4",
-    "youtube-terminal": "0.4.1"
+    "youtube-terminal": "0.4.2"
   },
   "config": {
     "commitizen": {
