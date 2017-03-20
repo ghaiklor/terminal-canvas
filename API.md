@@ -1,259 +1,97 @@
-## Constants
+## Classes
 
 <dl>
-<dt><a href="#COLORS">COLORS</a> : <code>Object</code></dt>
-<dd><p>Dictionary of colors which can be used for instantiating the <a href="Color">Color</a> instance.</p>
+<dt><a href="#Canvas">Canvas</a></dt>
+<dd><p>Canvas implements low-level API to terminal control codes.</p>
 </dd>
-<dt><a href="#DISPLAY_MODES">DISPLAY_MODES</a> : <code>Object</code></dt>
-<dd><p>Map of the display modes that can be used in Canvas API.
-There are the most commonly supported control sequences for formatting text and their resetting.</p>
+<dt><a href="#Cell">Cell</a></dt>
+<dd><p>Wrapper around one cell in the terminal.
+Used for filling terminal wrapper in the cursor.</p>
 </dd>
-<dt><a href="#encodeToVT100">encodeToVT100</a> ⇒ <code>String</code></dt>
-<dd><p>Converts string with control code to VT100 control sequence.</p>
+<dt><a href="#Color">Color</a></dt>
+<dd><p>Color class responsible for converting colors between rgb and hex.</p>
 </dd>
 </dl>
 
-## Functions
+<a name="Canvas"></a>
 
-<dl>
-<dt><a href="#write">write(data)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Write to the buffer.
-It doesn&#39;t applies immediately, but stores in virtual terminal that represented as array of <a href="Cell">Cell</a> instances.
-For applying changes, you need to call <a href="#flush">flush</a> method.</p>
-</dd>
-<dt><a href="#flush">flush()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Flush changes to the real terminal, taking only modified cells.
-Firstly, we get modified cells that have been affected by <a href="#write">write</a> method.
-Secondly, we compare these modified cells with the last frame.
-If cell has changes that doesn&#39;t equal to the cell from the last frame - write to the stream.</p>
-</dd>
-<dt><a href="#getPointerFromXY">getPointerFromXY([x], [y])</a> ⇒ <code>Number</code></dt>
-<dd><p>Get index of the virtual terminal representation from (x, y) coordinates.</p>
-</dd>
-<dt><a href="#getXYFromPointer">getXYFromPointer(index)</a> ⇒ <code>Array</code></dt>
-<dd><p>Get (x, y) coordinate from the virtual terminal pointer.</p>
-</dd>
-<dt><a href="#up">up([y])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Move the cursor up.</p>
-</dd>
-<dt><a href="#down">down([y])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Move the cursor down.</p>
-</dd>
-<dt><a href="#right">right([x])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Move the cursor right.</p>
-</dd>
-<dt><a href="#left">left([x])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Move the cursor left.</p>
-</dd>
-<dt><a href="#moveBy">moveBy(x, y)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Move the cursor position relative to the current coordinates.</p>
-</dd>
-<dt><a href="#moveTo">moveTo(x, y)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Set the cursor position by absolute coordinates.</p>
-</dd>
-<dt><a href="#foreground">foreground(color)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Set the foreground color.
-This color is used when text is rendering.</p>
-</dd>
-<dt><a href="#background">background(color)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Set the background color.
-This color is used for filling the whole cell in the TTY.</p>
-</dd>
-<dt><a href="#bold">bold([isBold])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Toggle bold display mode.</p>
-</dd>
-<dt><a href="#dim">dim([isDim])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Toggle dim display mode.</p>
-</dd>
-<dt><a href="#underlined">underlined([isUnderlined])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Toggle underlined display mode.</p>
-</dd>
-<dt><a href="#blink">blink([isBlink])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Toggle blink display mode.</p>
-</dd>
-<dt><a href="#reverse">reverse([isReverse])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Toggle reverse display mode.</p>
-</dd>
-<dt><a href="#hidden">hidden([isHidden])</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Toggle hidden display mode.</p>
-</dd>
-<dt><a href="#erase">erase(x1, y1, x2, y2)</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Erase the specified region.
-The region describes the rectangle shape which need to erase.</p>
-</dd>
-<dt><a href="#eraseToEnd">eraseToEnd()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Erase from current position to end of the line.</p>
-</dd>
-<dt><a href="#eraseToStart">eraseToStart()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Erase from current position to start of the line.</p>
-</dd>
-<dt><a href="#eraseToDown">eraseToDown()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Erase from current line to down.</p>
-</dd>
-<dt><a href="#eraseToUp">eraseToUp()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Erase from current line to up.</p>
-</dd>
-<dt><a href="#eraseLine">eraseLine()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Erase current line.</p>
-</dd>
-<dt><a href="#eraseScreen">eraseScreen()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Erase the entire screen.</p>
-</dd>
-<dt><a href="#saveScreen">saveScreen()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Save current terminal state into the buffer.
-Applies immediately without calling <a href="#flush">flush</a> method.</p>
-</dd>
-<dt><a href="#restoreScreen">restoreScreen()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Restore terminal state from the buffer.
-Applies immediately without calling <a href="#flush">flush</a>.</p>
-</dd>
-<dt><a href="#hideCursor">hideCursor()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Set the terminal cursor invisible.
-Applies immediately without calling <a href="#flush">flush</a>.</p>
-</dd>
-<dt><a href="#showCursor">showCursor()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Set the terminal cursor visible.
-Applies immediately without calling <a href="#flush">flush</a>.</p>
-</dd>
-<dt><a href="#reset">reset()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Reset all terminal settings.
-Applies immediately without calling <a href="#flush">flush</a>.</p>
-</dd>
-<dt><a href="#create">create()</a> ⇒ <code>Canvas</code></dt>
-<dd><p>Wrapper around <code>new Canvas()</code>.</p>
-</dd>
-<dt><a href="#getChar">getChar()</a> ⇒ <code>String</code></dt>
-<dd><p>Get current char.</p>
-</dd>
-<dt><a href="#setChar">setChar([char])</a> ⇒ <code>Cell</code></dt>
-<dd><p>Set new char to cell.
-If char is longer than 1 char, it slices string to 1 char.</p>
-</dd>
-<dt><a href="#getX">getX()</a> ⇒ <code>Number</code></dt>
-<dd><p>Get X coordinate of this cell.</p>
-</dd>
-<dt><a href="#setX">setX([x])</a> ⇒ <code>Cell</code></dt>
-<dd><p>Set new X coordinate for cell.</p>
-</dd>
-<dt><a href="#getY">getY()</a> ⇒ <code>Number</code></dt>
-<dd><p>Get Y coordinate.</p>
-</dd>
-<dt><a href="#setY">setY([y])</a> ⇒ <code>Cell</code></dt>
-<dd><p>Set new Y coordinate for cell.</p>
-</dd>
-<dt><a href="#getBackground">getBackground()</a> ⇒ <code>Object</code></dt>
-<dd><p>Get current background color.</p>
-</dd>
-<dt><a href="#setBackground">setBackground([r], [g], [b])</a> ⇒ <code>Cell</code></dt>
-<dd><p>Set new background color.</p>
-</dd>
-<dt><a href="#getForeground">getForeground()</a> ⇒ <code>Object</code></dt>
-<dd><p>Get current foreground color.</p>
-</dd>
-<dt><a href="#setForeground">setForeground([r], [g], [b])</a> ⇒ <code>Cell</code></dt>
-<dd><p>Set new foreground color.</p>
-</dd>
-<dt><a href="#getDisplay">getDisplay()</a> ⇒ <code>Object</code></dt>
-<dd><p>Get current display modes.</p>
-</dd>
-<dt><a href="#setDisplay">setDisplay([bold], [dim], [underlined], [blink], [reverse], [hidden])</a> ⇒ <code>Cell</code></dt>
-<dd><p>Set new display modes to cell.</p>
-</dd>
-<dt><a href="#setModified">setModified([isModified])</a> ⇒ <code>Cell</code></dt>
-<dd><p>Mark cell as modified or not.
-It useful when you need to filter out only modified cells without building the diff.</p>
-</dd>
-<dt><a href="#isModified">isModified()</a> ⇒ <code>Boolean</code></dt>
-<dd><p>Check if cell has been modified.</p>
-</dd>
-<dt><a href="#reset">reset()</a> ⇒ <code>Cell</code></dt>
-<dd><p>Reset display settings.
-It resets char, background, foreground and display mode.</p>
-</dd>
-<dt><a href="#toString">toString()</a> ⇒ <code>String</code></dt>
-<dd><p>Convert cell to ASCII control sequence.
-Disables flag which marks cell as modified.</p>
-</dd>
-<dt><a href="#create">create()</a> ⇒ <code>Cell</code></dt>
-<dd><p>Wrapper around <code>new Cell()</code>.</p>
-</dd>
-<dt><a href="#getR">getR()</a> ⇒ <code>Number</code></dt>
-<dd><p>Get rounded value of red channel.</p>
-</dd>
-<dt><a href="#setR">setR(value)</a> ⇒ <code>Color</code></dt>
-<dd><p>Set clamped value of red channel.</p>
-</dd>
-<dt><a href="#getG">getG()</a> ⇒ <code>Number</code></dt>
-<dd><p>Get rounded value of green channel.</p>
-</dd>
-<dt><a href="#setG">setG(value)</a> ⇒ <code>Color</code></dt>
-<dd><p>Set clamped value of green channel.</p>
-</dd>
-<dt><a href="#getB">getB()</a> ⇒ <code>Number</code></dt>
-<dd><p>Get rounded value of blue channel.</p>
-</dd>
-<dt><a href="#setB">setB(value)</a> ⇒ <code>Color</code></dt>
-<dd><p>Set clamped value of blue channel.</p>
-</dd>
-<dt><a href="#toRgb">toRgb()</a> ⇒ <code>Object</code></dt>
-<dd><p>Convert color to RGB representation.</p>
-</dd>
-<dt><a href="#toHex">toHex()</a> ⇒ <code>String</code></dt>
-<dd><p>Convert color to HEX representation.</p>
-</dd>
-<dt><a href="#isNamed">isNamed(color)</a> ⇒ <code>Boolean</code></dt>
-<dd><p>Check if provided color is named color.</p>
-</dd>
-<dt><a href="#isRgb">isRgb(rgb)</a> ⇒ <code>Boolean</code></dt>
-<dd><p>Check if provided color written in RGB representation.</p>
-</dd>
-<dt><a href="#isHex">isHex(hex)</a> ⇒ <code>Boolean</code></dt>
-<dd><p>Check if provided color written in HEX representation.</p>
-</dd>
-<dt><a href="#fromRgb">fromRgb(rgb)</a> ⇒ <code>Color</code></dt>
-<dd><p>Parse RGB color and return Color instance.</p>
-</dd>
-<dt><a href="#fromHex">fromHex(hex)</a> ⇒ <code>Color</code></dt>
-<dd><p>Parse HEX color and return Color instance.</p>
-</dd>
-<dt><a href="#create">create()</a> ⇒ <code>Color</code></dt>
-<dd><p>Wrapper around <code>new Color()</code>.</p>
-</dd>
-</dl>
+## Canvas
+Canvas implements low-level API to terminal control codes.
 
-<a name="COLORS"></a>
+**Kind**: global class  
+**See**
 
-## COLORS : <code>Object</code>
-Dictionary of colors which can be used for instantiating the [Color](Color) instance.
+- http://www.termsys.demon.co.uk/vtansi.htm
+- http://misc.flogisoft.com/bash/tip_colors_and_formatting
+- http://man7.org/linux/man-pages/man4/console_codes.4.html
+- http://www.x.org/docs/xterm/ctlseqs.pdf
+- http://wiki.bash-hackers.org/scripting/terminalcodes
 
-**Kind**: global constant  
-<a name="DISPLAY_MODES"></a>
+**Since**: 1.0.0  
 
-## DISPLAY_MODES : <code>Object</code>
-Map of the display modes that can be used in Canvas API.
-There are the most commonly supported control sequences for formatting text and their resetting.
+* [Canvas](#Canvas)
+    * [new Canvas([options])](#new_Canvas_new)
+    * _instance_
+        * [.write(data)](#Canvas+write) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.flush()](#Canvas+flush) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.getPointerFromXY([x], [y])](#Canvas+getPointerFromXY) ⇒ <code>Number</code>
+        * [.getXYFromPointer(index)](#Canvas+getXYFromPointer) ⇒ <code>Array</code>
+        * [.up([y])](#Canvas+up) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.down([y])](#Canvas+down) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.right([x])](#Canvas+right) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.left([x])](#Canvas+left) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.moveBy(x, y)](#Canvas+moveBy) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.moveTo(x, y)](#Canvas+moveTo) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.foreground(color)](#Canvas+foreground) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.background(color)](#Canvas+background) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.bold([isBold])](#Canvas+bold) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.dim([isDim])](#Canvas+dim) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.underlined([isUnderlined])](#Canvas+underlined) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.blink([isBlink])](#Canvas+blink) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.reverse([isReverse])](#Canvas+reverse) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.hidden([isHidden])](#Canvas+hidden) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.erase(x1, y1, x2, y2)](#Canvas+erase) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.eraseToEnd()](#Canvas+eraseToEnd) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.eraseToStart()](#Canvas+eraseToStart) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.eraseToDown()](#Canvas+eraseToDown) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.eraseToUp()](#Canvas+eraseToUp) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.eraseLine()](#Canvas+eraseLine) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.eraseScreen()](#Canvas+eraseScreen) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.saveScreen()](#Canvas+saveScreen) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.restoreScreen()](#Canvas+restoreScreen) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.hideCursor()](#Canvas+hideCursor) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.showCursor()](#Canvas+showCursor) ⇒ <code>[Canvas](#Canvas)</code>
+        * [.reset()](#Canvas+reset) ⇒ <code>[Canvas](#Canvas)</code>
+    * _static_
+        * [.create()](#Canvas.create) ⇒ <code>[Canvas](#Canvas)</code>
 
-**Kind**: global constant  
-<a name="encodeToVT100"></a>
+<a name="new_Canvas_new"></a>
 
-## encodeToVT100 ⇒ <code>String</code>
-Converts string with control code to VT100 control sequence.
+### new Canvas([options])
+Creates canvas that writes direct to `stdout` by default.
+You can override destination stream with another Writable stream.
+Also, you can specify custom width and height of viewport where cursor will render the frame.
 
-**Kind**: global constant  
-**Returns**: <code>String</code> - Returns VT100 control sequence  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| code | <code>String</code> | Control code that you want to encode |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [options] | <code>Object</code> |  |  |
+| [options.stream] | <code>Stream</code> | <code>process.stdout</code> | Writable stream |
+| [options.width] | <code>Number</code> | <code>stream.columns</code> | Number of columns (width) |
+| [options.height] | <code>Number</code> | <code>stream.rows</code> | Number of rows (height) |
 
-<a name="write"></a>
+**Example**  
+```js
+Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
+```
+<a name="Canvas+write"></a>
 
-## write(data) ⇒ <code>Canvas</code>
+### canvas.write(data) ⇒ <code>[Canvas](#Canvas)</code>
 Write to the buffer.
-It doesn't applies immediately, but stores in virtual terminal that represented as array of [Cell](Cell) instances.
-For applying changes, you need to call [flush](#flush) method.
+It doesn't applies immediately, but stores in virtual terminal that represented as array of [Cell](#Cell) instances.
+For applying changes, you need to call [flush](flush) method.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -263,21 +101,21 @@ For applying changes, you need to call [flush](#flush) method.
 ```js
 canvas.write('Hello, world').flush();
 ```
-<a name="flush"></a>
+<a name="Canvas+flush"></a>
 
-## flush() ⇒ <code>Canvas</code>
+### canvas.flush() ⇒ <code>[Canvas](#Canvas)</code>
 Flush changes to the real terminal, taking only modified cells.
-Firstly, we get modified cells that have been affected by [write](#write) method.
+Firstly, we get modified cells that have been affected by [write](write) method.
 Secondly, we compare these modified cells with the last frame.
 If cell has changes that doesn't equal to the cell from the last frame - write to the stream.
 
-**Kind**: global function  
-<a name="getPointerFromXY"></a>
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
+<a name="Canvas+getPointerFromXY"></a>
 
-## getPointerFromXY([x], [y]) ⇒ <code>Number</code>
+### canvas.getPointerFromXY([x], [y]) ⇒ <code>Number</code>
 Get index of the virtual terminal representation from (x, y) coordinates.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Returns**: <code>Number</code> - Returns index in the buffer array  
 
 | Param | Type | Description |
@@ -290,12 +128,12 @@ Get index of the virtual terminal representation from (x, y) coordinates.
 canvas.getPointerFromXY(0, 0); // returns 0
 canvas.getPointerFromXY(); // x and y in this case is current position of the cursor
 ```
-<a name="getXYFromPointer"></a>
+<a name="Canvas+getXYFromPointer"></a>
 
-## getXYFromPointer(index) ⇒ <code>Array</code>
+### canvas.getXYFromPointer(index) ⇒ <code>Array</code>
 Get (x, y) coordinate from the virtual terminal pointer.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Returns**: <code>Array</code> - Returns an array [x, y]  
 
 | Param | Type | Description |
@@ -306,12 +144,12 @@ Get (x, y) coordinate from the virtual terminal pointer.
 ```js
 canvas.getXYFromPointer(0); // returns [0, 0]
 ```
-<a name="up"></a>
+<a name="Canvas+up"></a>
 
-## up([y]) ⇒ <code>Canvas</code>
+### canvas.up([y]) ⇒ <code>[Canvas](#Canvas)</code>
 Move the cursor up.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -322,12 +160,12 @@ Move the cursor up.
 canvas.up(); // moves cursor up by one cell
 canvas.up(5); // moves cursor up by five cells
 ```
-<a name="down"></a>
+<a name="Canvas+down"></a>
 
-## down([y]) ⇒ <code>Canvas</code>
+### canvas.down([y]) ⇒ <code>[Canvas](#Canvas)</code>
 Move the cursor down.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -338,12 +176,12 @@ Move the cursor down.
 canvas.down(); // moves cursor down by one cell
 canvas.down(5); // moves cursor down by five cells
 ```
-<a name="right"></a>
+<a name="Canvas+right"></a>
 
-## right([x]) ⇒ <code>Canvas</code>
+### canvas.right([x]) ⇒ <code>[Canvas](#Canvas)</code>
 Move the cursor right.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -354,12 +192,12 @@ Move the cursor right.
 canvas.right(); // moves cursor right by one cell
 canvas.right(5); // moves cursor right by five cells
 ```
-<a name="left"></a>
+<a name="Canvas+left"></a>
 
-## left([x]) ⇒ <code>Canvas</code>
+### canvas.left([x]) ⇒ <code>[Canvas](#Canvas)</code>
 Move the cursor left.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -370,12 +208,12 @@ Move the cursor left.
 canvas.left(); // moves cursor left by one cell
 canvas.left(5); // moves cursor left by five cells
 ```
-<a name="moveBy"></a>
+<a name="Canvas+moveBy"></a>
 
-## moveBy(x, y) ⇒ <code>Canvas</code>
+### canvas.moveBy(x, y) ⇒ <code>[Canvas](#Canvas)</code>
 Move the cursor position relative to the current coordinates.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -386,12 +224,12 @@ Move the cursor position relative to the current coordinates.
 ```js
 canvas.moveBy(5, 5); // moves cursor to the right and down by five cells
 ```
-<a name="moveTo"></a>
+<a name="Canvas+moveTo"></a>
 
-## moveTo(x, y) ⇒ <code>Canvas</code>
+### canvas.moveTo(x, y) ⇒ <code>[Canvas](#Canvas)</code>
 Set the cursor position by absolute coordinates.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -402,13 +240,13 @@ Set the cursor position by absolute coordinates.
 ```js
 canvas.moveTo(10, 10); // moves cursor to the (10, 10) coordinate
 ```
-<a name="foreground"></a>
+<a name="Canvas+foreground"></a>
 
-## foreground(color) ⇒ <code>Canvas</code>
+### canvas.foreground(color) ⇒ <code>[Canvas](#Canvas)</code>
 Set the foreground color.
 This color is used when text is rendering.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -421,13 +259,13 @@ canvas.foreground('#000000');
 canvas.foreground('rgb(255, 255, 255)');
 canvas.foreground(false); // disables foreground filling (will be used default filling)
 ```
-<a name="background"></a>
+<a name="Canvas+background"></a>
 
-## background(color) ⇒ <code>Canvas</code>
+### canvas.background(color) ⇒ <code>[Canvas](#Canvas)</code>
 Set the background color.
 This color is used for filling the whole cell in the TTY.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -440,12 +278,12 @@ canvas.background('#000000');
 canvas.background('rgb(255, 255, 255)');
 canvas.background(false); // disables background filling (will be used default filling)
 ```
-<a name="bold"></a>
+<a name="Canvas+bold"></a>
 
-## bold([isBold]) ⇒ <code>Canvas</code>
+### canvas.bold([isBold]) ⇒ <code>[Canvas](#Canvas)</code>
 Toggle bold display mode.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -456,12 +294,12 @@ Toggle bold display mode.
 canvas.bold(); // enable bold mode
 canvas.bold(false); // disable bold mode
 ```
-<a name="dim"></a>
+<a name="Canvas+dim"></a>
 
-## dim([isDim]) ⇒ <code>Canvas</code>
+### canvas.dim([isDim]) ⇒ <code>[Canvas](#Canvas)</code>
 Toggle dim display mode.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -472,12 +310,12 @@ Toggle dim display mode.
 canvas.dim(); // enable dim mode
 canvas.dim(false); // disable dim mode
 ```
-<a name="underlined"></a>
+<a name="Canvas+underlined"></a>
 
-## underlined([isUnderlined]) ⇒ <code>Canvas</code>
+### canvas.underlined([isUnderlined]) ⇒ <code>[Canvas](#Canvas)</code>
 Toggle underlined display mode.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -488,12 +326,12 @@ Toggle underlined display mode.
 canvas.underlined(); // enable underlined mode
 canvas.underlined(false); // disable underlined mode
 ```
-<a name="blink"></a>
+<a name="Canvas+blink"></a>
 
-## blink([isBlink]) ⇒ <code>Canvas</code>
+### canvas.blink([isBlink]) ⇒ <code>[Canvas](#Canvas)</code>
 Toggle blink display mode.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -504,12 +342,12 @@ Toggle blink display mode.
 canvas.blink(); // enable blink mode
 canvas.blink(false); // disable blink mode
 ```
-<a name="reverse"></a>
+<a name="Canvas+reverse"></a>
 
-## reverse([isReverse]) ⇒ <code>Canvas</code>
+### canvas.reverse([isReverse]) ⇒ <code>[Canvas](#Canvas)</code>
 Toggle reverse display mode.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -520,12 +358,12 @@ Toggle reverse display mode.
 canvas.reverse(); // enable reverse mode
 canvas.reverse(false); // disable reverse mode
 ```
-<a name="hidden"></a>
+<a name="Canvas+hidden"></a>
 
-## hidden([isHidden]) ⇒ <code>Canvas</code>
+### canvas.hidden([isHidden]) ⇒ <code>[Canvas](#Canvas)</code>
 Toggle hidden display mode.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -536,13 +374,13 @@ Toggle hidden display mode.
 canvas.hidden(); // enable hidden mode
 canvas.hidden(false); // disable hidden mode
 ```
-<a name="erase"></a>
+<a name="Canvas+erase"></a>
 
-## erase(x1, y1, x2, y2) ⇒ <code>Canvas</code>
+### canvas.erase(x1, y1, x2, y2) ⇒ <code>[Canvas](#Canvas)</code>
 Erase the specified region.
 The region describes the rectangle shape which need to erase.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 
 | Param | Type |
 | --- | --- |
@@ -555,191 +393,250 @@ The region describes the rectangle shape which need to erase.
 ```js
 canvas.erase(0, 0, 5, 5);
 ```
-<a name="eraseToEnd"></a>
+<a name="Canvas+eraseToEnd"></a>
 
-## eraseToEnd() ⇒ <code>Canvas</code>
+### canvas.eraseToEnd() ⇒ <code>[Canvas](#Canvas)</code>
 Erase from current position to end of the line.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.eraseToEnd();
 ```
-<a name="eraseToStart"></a>
+<a name="Canvas+eraseToStart"></a>
 
-## eraseToStart() ⇒ <code>Canvas</code>
+### canvas.eraseToStart() ⇒ <code>[Canvas](#Canvas)</code>
 Erase from current position to start of the line.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.eraseToStart();
 ```
-<a name="eraseToDown"></a>
+<a name="Canvas+eraseToDown"></a>
 
-## eraseToDown() ⇒ <code>Canvas</code>
+### canvas.eraseToDown() ⇒ <code>[Canvas](#Canvas)</code>
 Erase from current line to down.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.eraseToDown();
 ```
-<a name="eraseToUp"></a>
+<a name="Canvas+eraseToUp"></a>
 
-## eraseToUp() ⇒ <code>Canvas</code>
+### canvas.eraseToUp() ⇒ <code>[Canvas](#Canvas)</code>
 Erase from current line to up.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.eraseToUp();
 ```
-<a name="eraseLine"></a>
+<a name="Canvas+eraseLine"></a>
 
-## eraseLine() ⇒ <code>Canvas</code>
+### canvas.eraseLine() ⇒ <code>[Canvas](#Canvas)</code>
 Erase current line.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.eraseLine();
 ```
-<a name="eraseScreen"></a>
+<a name="Canvas+eraseScreen"></a>
 
-## eraseScreen() ⇒ <code>Canvas</code>
+### canvas.eraseScreen() ⇒ <code>[Canvas](#Canvas)</code>
 Erase the entire screen.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.eraseScreen();
 ```
-<a name="saveScreen"></a>
+<a name="Canvas+saveScreen"></a>
 
-## saveScreen() ⇒ <code>Canvas</code>
+### canvas.saveScreen() ⇒ <code>[Canvas](#Canvas)</code>
 Save current terminal state into the buffer.
-Applies immediately without calling [flush](#flush) method.
+Applies immediately without calling [flush](flush) method.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.saveScreen();
 ```
-<a name="restoreScreen"></a>
+<a name="Canvas+restoreScreen"></a>
 
-## restoreScreen() ⇒ <code>Canvas</code>
+### canvas.restoreScreen() ⇒ <code>[Canvas](#Canvas)</code>
 Restore terminal state from the buffer.
-Applies immediately without calling [flush](#flush).
+Applies immediately without calling [flush](flush).
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.restoreScreen();
 ```
-<a name="hideCursor"></a>
+<a name="Canvas+hideCursor"></a>
 
-## hideCursor() ⇒ <code>Canvas</code>
+### canvas.hideCursor() ⇒ <code>[Canvas](#Canvas)</code>
 Set the terminal cursor invisible.
-Applies immediately without calling [flush](#flush).
+Applies immediately without calling [flush](flush).
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.hideCursor();
 ```
-<a name="showCursor"></a>
+<a name="Canvas+showCursor"></a>
 
-## showCursor() ⇒ <code>Canvas</code>
+### canvas.showCursor() ⇒ <code>[Canvas](#Canvas)</code>
 Set the terminal cursor visible.
-Applies immediately without calling [flush](#flush).
+Applies immediately without calling [flush](flush).
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.showCursor();
 ```
-<a name="reset"></a>
+<a name="Canvas+reset"></a>
 
-## reset() ⇒ <code>Canvas</code>
+### canvas.reset() ⇒ <code>[Canvas](#Canvas)</code>
 Reset all terminal settings.
-Applies immediately without calling [flush](#flush).
+Applies immediately without calling [flush](flush).
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Canvas](#Canvas)</code>  
 **Example**  
 ```js
 canvas.reset();
 ```
-<a name="create"></a>
+<a name="Canvas.create"></a>
 
-## create() ⇒ <code>Canvas</code>
+### Canvas.create() ⇒ <code>[Canvas](#Canvas)</code>
 Wrapper around `new Canvas()`.
 
-**Kind**: global function  
-<a name="getChar"></a>
+**Kind**: static method of <code>[Canvas](#Canvas)</code>  
+<a name="Cell"></a>
 
-## getChar() ⇒ <code>String</code>
+## Cell
+Wrapper around one cell in the terminal.
+Used for filling terminal wrapper in the cursor.
+
+**Kind**: global class  
+**Since**: 3.1.0  
+
+* [Cell](#Cell)
+    * [new Cell([char], [options])](#new_Cell_new)
+    * _instance_
+        * [.getChar()](#Cell+getChar) ⇒ <code>String</code>
+        * [.setChar([char])](#Cell+setChar) ⇒ <code>[Cell](#Cell)</code>
+        * [.getX()](#Cell+getX) ⇒ <code>Number</code>
+        * [.setX([x])](#Cell+setX) ⇒ <code>[Cell](#Cell)</code>
+        * [.getY()](#Cell+getY) ⇒ <code>Number</code>
+        * [.setY([y])](#Cell+setY) ⇒ <code>[Cell](#Cell)</code>
+        * [.getBackground()](#Cell+getBackground) ⇒ <code>Object</code>
+        * [.setBackground([r], [g], [b])](#Cell+setBackground) ⇒ <code>[Cell](#Cell)</code>
+        * [.getForeground()](#Cell+getForeground) ⇒ <code>Object</code>
+        * [.setForeground([r], [g], [b])](#Cell+setForeground) ⇒ <code>[Cell](#Cell)</code>
+        * [.getDisplay()](#Cell+getDisplay) ⇒ <code>Object</code>
+        * [.setDisplay([bold], [dim], [underlined], [blink], [reverse], [hidden])](#Cell+setDisplay) ⇒ <code>[Cell](#Cell)</code>
+        * [.setModified([isModified])](#Cell+setModified) ⇒ <code>[Cell](#Cell)</code>
+        * [.isModified()](#Cell+isModified) ⇒ <code>Boolean</code>
+        * [.reset()](#Cell+reset) ⇒ <code>[Cell](#Cell)</code>
+        * [.toString()](#Cell+toString) ⇒ <code>String</code>
+    * _static_
+        * [.create()](#Cell.create) ⇒ <code>[Cell](#Cell)</code>
+
+<a name="new_Cell_new"></a>
+
+### new Cell([char], [options])
+Create Cell instance which are able to convert itself to ASCII control sequence.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [char] | <code>String</code> | Char that you want to wrap with control sequence |
+| [options] | <code>Object</code> | Options object where you can set additional style to char |
+| [options.x] | <code>Number</code> | X coordinate |
+| [options.y] | <code>Number</code> | Y coordinate |
+| [options.background] | <code>Object</code> | Background color, fill with -1 if you don't want to use background |
+| [options.background.r] | <code>Number</code> | Red channel |
+| [options.background.g] | <code>Number</code> | Green channel |
+| [options.background.b] | <code>Number</code> | Blue channel |
+| [options.foreground] | <code>Object</code> | Foreground color, fill with -1 if you don't want to use foreground |
+| [options.foreground.r] | <code>Number</code> | Red channel |
+| [options.foreground.g] | <code>Number</code> | Green channel |
+| [options.foreground.b] | <code>Number</code> | Blue channel |
+| [options.display] | <code>Object</code> | Object with display modes |
+| [options.display.bold] | <code>Boolean</code> | Bold style |
+| [options.display.dim] | <code>Boolean</code> | Dim style |
+| [options.display.underlined] | <code>Boolean</code> | Underlined style |
+| [options.display.blink] | <code>Boolean</code> | Blink style |
+| [options.display.reverse] | <code>Boolean</code> | Reverse style |
+| [options.display.hidden] | <code>Boolean</code> | Hidden style |
+
+<a name="Cell+getChar"></a>
+
+### cell.getChar() ⇒ <code>String</code>
 Get current char.
 
-**Kind**: global function  
-<a name="setChar"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+setChar"></a>
 
-## setChar([char]) ⇒ <code>Cell</code>
+### cell.setChar([char]) ⇒ <code>[Cell](#Cell)</code>
 Set new char to cell.
 If char is longer than 1 char, it slices string to 1 char.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
 | [char] | <code>String</code> | <code> </code> | 
 
-<a name="getX"></a>
+<a name="Cell+getX"></a>
 
-## getX() ⇒ <code>Number</code>
+### cell.getX() ⇒ <code>Number</code>
 Get X coordinate of this cell.
 
-**Kind**: global function  
-<a name="setX"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+setX"></a>
 
-## setX([x]) ⇒ <code>Cell</code>
+### cell.setX([x]) ⇒ <code>[Cell](#Cell)</code>
 Set new X coordinate for cell.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
 | [x] | <code>Number</code> | <code>0</code> | 
 
-<a name="getY"></a>
+<a name="Cell+getY"></a>
 
-## getY() ⇒ <code>Number</code>
+### cell.getY() ⇒ <code>Number</code>
 Get Y coordinate.
 
-**Kind**: global function  
-<a name="setY"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+setY"></a>
 
-## setY([y]) ⇒ <code>Cell</code>
+### cell.setY([y]) ⇒ <code>[Cell](#Cell)</code>
 Set new Y coordinate for cell.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
 | [y] | <code>Number</code> | <code>0</code> | 
 
-<a name="getBackground"></a>
+<a name="Cell+getBackground"></a>
 
-## getBackground() ⇒ <code>Object</code>
+### cell.getBackground() ⇒ <code>Object</code>
 Get current background color.
 
-**Kind**: global function  
-<a name="setBackground"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+setBackground"></a>
 
-## setBackground([r], [g], [b]) ⇒ <code>Cell</code>
+### cell.setBackground([r], [g], [b]) ⇒ <code>[Cell](#Cell)</code>
 Set new background color.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -747,18 +644,18 @@ Set new background color.
 | [g] | <code>Number</code> | <code>-1</code> | Green channel |
 | [b] | <code>Number</code> | <code>-1</code> | Blue channel |
 
-<a name="getForeground"></a>
+<a name="Cell+getForeground"></a>
 
-## getForeground() ⇒ <code>Object</code>
+### cell.getForeground() ⇒ <code>Object</code>
 Get current foreground color.
 
-**Kind**: global function  
-<a name="setForeground"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+setForeground"></a>
 
-## setForeground([r], [g], [b]) ⇒ <code>Cell</code>
+### cell.setForeground([r], [g], [b]) ⇒ <code>[Cell](#Cell)</code>
 Set new foreground color.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -766,18 +663,18 @@ Set new foreground color.
 | [g] | <code>Number</code> | <code>-1</code> | Green channel |
 | [b] | <code>Number</code> | <code>-1</code> | Blue channel |
 
-<a name="getDisplay"></a>
+<a name="Cell+getDisplay"></a>
 
-## getDisplay() ⇒ <code>Object</code>
+### cell.getDisplay() ⇒ <code>Object</code>
 Get current display modes.
 
-**Kind**: global function  
-<a name="setDisplay"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+setDisplay"></a>
 
-## setDisplay([bold], [dim], [underlined], [blink], [reverse], [hidden]) ⇒ <code>Cell</code>
+### cell.setDisplay([bold], [dim], [underlined], [blink], [reverse], [hidden]) ⇒ <code>[Cell](#Cell)</code>
 Set new display modes to cell.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -788,165 +685,214 @@ Set new display modes to cell.
 | [reverse] | <code>Boolean</code> | <code>false</code> | Reverse style |
 | [hidden] | <code>Boolean</code> | <code>false</code> | Hidden style |
 
-<a name="setModified"></a>
+<a name="Cell+setModified"></a>
 
-## setModified([isModified]) ⇒ <code>Cell</code>
+### cell.setModified([isModified]) ⇒ <code>[Cell](#Cell)</code>
 Mark cell as modified or not.
 It useful when you need to filter out only modified cells without building the diff.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | [isModified] | <code>Boolean</code> | <code>true</code> | Flag shows if cell is modified |
 
-<a name="isModified"></a>
+<a name="Cell+isModified"></a>
 
-## isModified() ⇒ <code>Boolean</code>
+### cell.isModified() ⇒ <code>Boolean</code>
 Check if cell has been modified.
 
-**Kind**: global function  
-<a name="reset"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+reset"></a>
 
-## reset() ⇒ <code>Cell</code>
+### cell.reset() ⇒ <code>[Cell](#Cell)</code>
 Reset display settings.
 It resets char, background, foreground and display mode.
 
-**Kind**: global function  
-<a name="toString"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell+toString"></a>
 
-## toString() ⇒ <code>String</code>
+### cell.toString() ⇒ <code>String</code>
 Convert cell to ASCII control sequence.
 Disables flag which marks cell as modified.
 
-**Kind**: global function  
-<a name="create"></a>
+**Kind**: instance method of <code>[Cell](#Cell)</code>  
+<a name="Cell.create"></a>
 
-## create() ⇒ <code>Cell</code>
+### Cell.create() ⇒ <code>[Cell](#Cell)</code>
 Wrapper around `new Cell()`.
 
-**Kind**: global function  
-<a name="getR"></a>
+**Kind**: static method of <code>[Cell](#Cell)</code>  
+<a name="Color"></a>
 
-## getR() ⇒ <code>Number</code>
+## Color
+Color class responsible for converting colors between rgb and hex.
+
+**Kind**: global class  
+**Since**: 3.1.0  
+
+* [Color](#Color)
+    * [new Color(color)](#new_Color_new)
+    * _instance_
+        * [.getR()](#Color+getR) ⇒ <code>Number</code>
+        * [.setR(value)](#Color+setR) ⇒ <code>[Color](#Color)</code>
+        * [.getG()](#Color+getG) ⇒ <code>Number</code>
+        * [.setG(value)](#Color+setG) ⇒ <code>[Color](#Color)</code>
+        * [.getB()](#Color+getB) ⇒ <code>Number</code>
+        * [.setB(value)](#Color+setB) ⇒ <code>[Color](#Color)</code>
+        * [.toRgb()](#Color+toRgb) ⇒ <code>Object</code>
+        * [.toHex()](#Color+toHex) ⇒ <code>String</code>
+    * _static_
+        * [.isNamed(color)](#Color.isNamed) ⇒ <code>Boolean</code>
+        * [.isRgb(rgb)](#Color.isRgb) ⇒ <code>Boolean</code>
+        * [.isHex(hex)](#Color.isHex) ⇒ <code>Boolean</code>
+        * [.fromRgb(rgb)](#Color.fromRgb) ⇒ <code>[Color](#Color)</code>
+        * [.fromHex(hex)](#Color.fromHex) ⇒ <code>[Color](#Color)</code>
+        * [.create()](#Color.create) ⇒ <code>[Color](#Color)</code>
+
+<a name="new_Color_new"></a>
+
+### new Color(color)
+Create new Color instance.
+You can use different formats of color: named, rgb or hex.
+Class will try to parse your provided color, otherwise throws an error.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| color | <code>String</code> &#124; <code>Object</code> | String with named color, rgb, hex or object with {r, g, b} properties |
+| color.r | <code>Number</code> | Red channel |
+| color.g | <code>Number</code> | Green channel |
+| color.b | <code>Number</code> | Blue channel |
+
+**Example**  
+```js
+Color.create('black');
+Color.create('rgb(0, 10, 20)');
+Color.create('#AABBCC');
+Color.create({r: 0, g: 10, b: 20});
+```
+<a name="Color+getR"></a>
+
+### color.getR() ⇒ <code>Number</code>
 Get rounded value of red channel.
 
-**Kind**: global function  
-<a name="setR"></a>
+**Kind**: instance method of <code>[Color](#Color)</code>  
+<a name="Color+setR"></a>
 
-## setR(value) ⇒ <code>Color</code>
+### color.setR(value) ⇒ <code>[Color](#Color)</code>
 Set clamped value of red channel.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Color](#Color)</code>  
 
 | Param | Type |
 | --- | --- |
 | value | <code>Number</code> | 
 
-<a name="getG"></a>
+<a name="Color+getG"></a>
 
-## getG() ⇒ <code>Number</code>
+### color.getG() ⇒ <code>Number</code>
 Get rounded value of green channel.
 
-**Kind**: global function  
-<a name="setG"></a>
+**Kind**: instance method of <code>[Color](#Color)</code>  
+<a name="Color+setG"></a>
 
-## setG(value) ⇒ <code>Color</code>
+### color.setG(value) ⇒ <code>[Color](#Color)</code>
 Set clamped value of green channel.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Color](#Color)</code>  
 
 | Param | Type |
 | --- | --- |
 | value | <code>Number</code> | 
 
-<a name="getB"></a>
+<a name="Color+getB"></a>
 
-## getB() ⇒ <code>Number</code>
+### color.getB() ⇒ <code>Number</code>
 Get rounded value of blue channel.
 
-**Kind**: global function  
-<a name="setB"></a>
+**Kind**: instance method of <code>[Color](#Color)</code>  
+<a name="Color+setB"></a>
 
-## setB(value) ⇒ <code>Color</code>
+### color.setB(value) ⇒ <code>[Color](#Color)</code>
 Set clamped value of blue channel.
 
-**Kind**: global function  
+**Kind**: instance method of <code>[Color](#Color)</code>  
 
 | Param | Type |
 | --- | --- |
 | value | <code>Number</code> | 
 
-<a name="toRgb"></a>
+<a name="Color+toRgb"></a>
 
-## toRgb() ⇒ <code>Object</code>
+### color.toRgb() ⇒ <code>Object</code>
 Convert color to RGB representation.
 
-**Kind**: global function  
-<a name="toHex"></a>
+**Kind**: instance method of <code>[Color](#Color)</code>  
+<a name="Color+toHex"></a>
 
-## toHex() ⇒ <code>String</code>
+### color.toHex() ⇒ <code>String</code>
 Convert color to HEX representation.
 
-**Kind**: global function  
-<a name="isNamed"></a>
+**Kind**: instance method of <code>[Color](#Color)</code>  
+<a name="Color.isNamed"></a>
 
-## isNamed(color) ⇒ <code>Boolean</code>
+### Color.isNamed(color) ⇒ <code>Boolean</code>
 Check if provided color is named color.
 
-**Kind**: global function  
+**Kind**: static method of <code>[Color](#Color)</code>  
 
 | Param | Type |
 | --- | --- |
 | color | <code>String</code> | 
 
-<a name="isRgb"></a>
+<a name="Color.isRgb"></a>
 
-## isRgb(rgb) ⇒ <code>Boolean</code>
+### Color.isRgb(rgb) ⇒ <code>Boolean</code>
 Check if provided color written in RGB representation.
 
-**Kind**: global function  
+**Kind**: static method of <code>[Color](#Color)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | rgb | <code>String</code> | RGB color |
 
-<a name="isHex"></a>
+<a name="Color.isHex"></a>
 
-## isHex(hex) ⇒ <code>Boolean</code>
+### Color.isHex(hex) ⇒ <code>Boolean</code>
 Check if provided color written in HEX representation.
 
-**Kind**: global function  
+**Kind**: static method of <code>[Color](#Color)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | hex | <code>String</code> | HEX color |
 
-<a name="fromRgb"></a>
+<a name="Color.fromRgb"></a>
 
-## fromRgb(rgb) ⇒ <code>Color</code>
+### Color.fromRgb(rgb) ⇒ <code>[Color](#Color)</code>
 Parse RGB color and return Color instance.
 
-**Kind**: global function  
+**Kind**: static method of <code>[Color](#Color)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | rgb | <code>String</code> | RGB color |
 
-<a name="fromHex"></a>
+<a name="Color.fromHex"></a>
 
-## fromHex(hex) ⇒ <code>Color</code>
+### Color.fromHex(hex) ⇒ <code>[Color](#Color)</code>
 Parse HEX color and return Color instance.
 
-**Kind**: global function  
+**Kind**: static method of <code>[Color](#Color)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | hex | <code>String</code> | HEX color |
 
-<a name="create"></a>
+<a name="Color.create"></a>
 
-## create() ⇒ <code>Color</code>
+### Color.create() ⇒ <code>[Color](#Color)</code>
 Wrapper around `new Color()`.
 
-**Kind**: global function  
+**Kind**: static method of <code>[Color](#Color)</code>  

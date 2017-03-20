@@ -1,5 +1,5 @@
-import {DISPLAY_MODES} from './util/displayModes';
-import {encodeToVT100} from './util/encodeToVT100';
+const DISPLAY_MODES = require('./util/displayModes');
+const encodeToVT100 = require('./util/encodeToVT100');
 
 /**
  * Wrapper around one cell in the terminal.
@@ -7,7 +7,7 @@ import {encodeToVT100} from './util/encodeToVT100';
  *
  * @since 3.1.0
  */
-export default class Cell {
+class Cell {
   /**
    * Create Cell instance which are able to convert itself to ASCII control sequence.
    *
@@ -259,3 +259,5 @@ export default class Cell {
     return new this(...args);
   }
 }
+
+module.exports = Cell;

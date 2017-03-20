@@ -1,6 +1,4 @@
-"use strict";
-
-const Canvas = require('../lib/Canvas');
+const Canvas = require('../src/Canvas');
 const canvas = Canvas.create().reset();
 
 let x = 0;

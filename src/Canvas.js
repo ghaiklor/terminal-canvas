@@ -1,6 +1,6 @@
-import Cell from './Cell';
-import Color from './Color';
-import {encodeToVT100} from './util/encodeToVT100';
+const Cell = require('./Cell');
+const Color = require('./Color');
+const encodeToVT100 = require('./util/encodeToVT100');
 
 /**
  * Canvas implements low-level API to terminal control codes.
@@ -12,7 +12,7 @@ import {encodeToVT100} from './util/encodeToVT100';
  * @see http://wiki.bash-hackers.org/scripting/terminalcodes
  * @since 1.0.0
  */
-export default class Canvas {
+class Canvas {
   /**
    * Creates canvas that writes direct to `stdout` by default.
    * You can override destination stream with another Writable stream.
@@ -515,3 +515,5 @@ export default class Canvas {
     return new this(...args);
   }
 }
+
+module.exports = Canvas;

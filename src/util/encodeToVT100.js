@@ -4,4 +4,4 @@
  * @param {String} code Control code that you want to encode
  * @returns {String} Returns VT100 control sequence
  */
-export const encodeToVT100 = code => '\u001b' + code;
+module.exports = code => '\u001b' + code;

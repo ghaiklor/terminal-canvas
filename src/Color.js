@@ -1,4 +1,4 @@
-import {COLORS} from './util/colors';
+const COLORS = require('./util/colors');
 
 /**
  * Regular expression for capturing RGB channels.
@@ -21,7 +21,7 @@ const HEX_REGEX = /#([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})/i;
  *
  * @since 3.1.0
  */
-export default class Color {
+class Color {
   /**
    * Create new Color instance.
    * You can use different formats of color: named, rgb or hex.
@@ -201,3 +201,5 @@ export default class Color {
     return new this(...args);
   }
 }
+
+module.exports = Color;

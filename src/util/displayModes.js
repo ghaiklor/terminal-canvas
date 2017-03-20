@@ -4,7 +4,7 @@
  *
  * @type {Object}
  */
-export const DISPLAY_MODES = {
+module.exports = {
   RESET_ALL: 0,
   BOLD: 1,
   DIM: 2,

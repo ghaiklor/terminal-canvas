@@ -1,12 +1,10 @@
-"use strict";
-
 const ytdl = require('ytdl-core');
 const Speaker = require('speaker');
 const Throttle = require('stream-throttle').Throttle;
 const pcmAudio = require('youtube-terminal/lib/pcm-audio');
 const ffmpeg = require('youtube-terminal/lib/ffmpeg');
 const RawImageStream = require('youtube-terminal/lib/raw-image-stream');
-const canvas = require('../lib/Canvas').create();
+const canvas = require('../src/Canvas').create();
 
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 

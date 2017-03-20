@@ -1,6 +1,6 @@
-import {assert} from 'chai';
-import sinon from 'sinon';
-import Cell from '../../src/Cell';
+const assert = require('chai').assert;
+const sinon = require('sinon');
+const Cell = require('../../src/Cell');
 
 describe('Cell', () => {
   it('Should properly create cell with default arguments', () => {

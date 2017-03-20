@@ -1,6 +1,4 @@
-"use strict";
-
-const Canvas = require('../lib/Canvas');
+const Canvas = require('../src/Canvas');
 const canvas = Canvas.create().reset().hideCursor();
 
 for (var y = 0; y < process.stdout.rows; y++) canvas.moveTo(0, y).write('E'.repeat(process.stdout.columns));

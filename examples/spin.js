@@ -1,6 +1,4 @@
-"use strict";
-
-const Canvas = require('../lib/Canvas');
+const Canvas = require('../src/Canvas');
 const canvas = Canvas.create().reset();
 const radius = 10;
 const colors = ['red', 'yellow', 'green', 'dark_cyan', 'blue', 'magenta'];

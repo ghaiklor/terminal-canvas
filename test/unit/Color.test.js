@@ -1,5 +1,5 @@
-import {assert} from 'chai';
-import Color from '../../src/Color';
+const assert = require('chai').assert;
+const Color = require('../../src/Color');
 
 describe('Color', () => {
   it('Should properly create Color instance from named color', () => {

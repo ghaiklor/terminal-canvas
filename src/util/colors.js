@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-export const COLORS = {
+module.exports = {
   ALICE_BLUE: '#F0F8FF',
   ANTIQUE_WHITE: '#FAEBD7',
   AQUA: '#00FFFF',

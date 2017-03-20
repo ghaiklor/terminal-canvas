@@ -1,7 +1,5 @@
-"use strict";
-
-const canvas = require('../lib/Canvas').create().reset();
-const COLORS = Object.keys(require('../lib/util/colors').COLORS);
+const canvas = require('../src/Canvas').create().reset();
+const COLORS = Object.keys(require('../src/util/colors'));
 
 for (var y = 0; y < process.stdout.rows; y++) {
   for (var x = 0; x < process.stdout.columns; x++) {
