@@ -23,7 +23,6 @@ class Canvas {
    * @param {Stream} [options.stream=process.stdout] Writable stream
    * @param {Number} [options.width=stream.columns] Number of columns (width)
    * @param {Number} [options.height=stream.rows] Number of rows (height)
-   * @param {Number} [options.height=stream.rows] Number of rows (height)
    * @param {Object} [options.colorSupport] Object with color support
    * @param {Boolean} [options.colorSupport.has16m] Support true color
    * @example
