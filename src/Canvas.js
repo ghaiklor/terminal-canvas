@@ -23,11 +23,14 @@ class Canvas {
    * @param {Stream} [options.stream=process.stdout] Writable stream
    * @param {Number} [options.width=stream.columns] Number of columns (width)
    * @param {Number} [options.height=stream.rows] Number of rows (height)
+   * @param {Number} [options.height=stream.rows] Number of rows (height)
+   * @param {Object} [options.colorSupport] Object with color support
+   * @param {Boolean} [options.colorSupport.has16m] Support true color
    * @example
    * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
   constructor(options = {}) {
-    var {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
+    var {stream = process.stdout, width = stream.columns, height = stream.rows, colorSupport = { has16m: true }} = options;
 
     this._stream = stream;
     this._width = width;
@@ -39,7 +42,7 @@ class Canvas {
     this._foreground = {r: -1, g: -1, b: -1};
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
 
-    this._cells = Array.from({length: width * height}).map(() => new Cell());
+    this._cells = Array.from({length: width * height}).map(() => new Cell(undefined, { colorSupport }));
     this._lastFrame = Array.from({length: width * height}).fill('');
   }
 

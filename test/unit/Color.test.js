@@ -135,4 +135,9 @@ describe('Color', () => {
     assert.equal(color._g, 0);
     assert.equal(color._b, 0);
   });
+
+  it('Should properly convert to 256 color number', () => {
+    assert.equal(Color.create('black').to256Color(), 16);
+    assert.equal(Color.create('#ff0000').to256Color(), 196);
+  });
 });

@@ -16,7 +16,9 @@
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "test": "istanbul cover _mocha"
   },
-  "dependencies": {},
+  "dependencies": {
+    "color-convert": "^1.9.1"
+  },
   "devDependencies": {
     "chai": "3.5.0",
     "coveralls": "2.12.0",

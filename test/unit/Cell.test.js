@@ -154,7 +154,7 @@ describe('Cell', () => {
   });
 
   it('Should properly convert Cell into ASCII sequence', () => {
-    const cell = new Cell();
+    const cell = new Cell(undefined, { colorSupport: { has16m: true } });
 
     assert.equal(cell.toString(), '\u001b[1;1f \u001b[0m');
     assert.instanceOf(cell.setX(20), Cell);

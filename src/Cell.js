@@ -1,5 +1,6 @@
 const DISPLAY_MODES = require('./util/displayModes');
 const encodeToVT100 = require('./util/encodeToVT100');
+const Color = require('./Color');
 
 /**
  * Wrapper around one cell in the terminal.
@@ -31,9 +32,13 @@ class Cell {
    * @param {Boolean} [options.display.blink] Blink style
    * @param {Boolean} [options.display.reverse] Reverse style
    * @param {Boolean} [options.display.hidden] Hidden style
+   * @param {Object} [options.colorSupport] Object with color support
+   * @param {Boolean} [options.colorSupport.has16m] Support true color
+   * @param {Boolean} [options.display.dim] Dim style
+   * @param {Boolean} [options.display.underlined] Underlined style
    */
   constructor(char, options = {}) {
-    var {x, y, background = {}, foreground = {}, display = {}} = options;
+    var {x, y, background = {}, foreground = {}, display = {}, colorSupport = {}} = options;
 
     this._char = ' ';
     this._x = 0;
@@ -42,6 +47,7 @@ class Cell {
     this._foreground = {r: -1, g: -1, b: -1};
     this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
     this._modified = false;
+    this._colorSupport = colorSupport;
 
     this.setChar(char);
     this.setX(x);
@@ -236,8 +242,8 @@ class Cell {
 
     return (
       encodeToVT100(`[${y + 1};${x + 1}f`) +
-      (background.r > -1 ? encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) : '') +
-      (foreground.r > -1 ? encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) : '') +
+        this.getColorSequences(background, false) +
+        this.getColorSequences(foreground, true) +
       (display.bold ? encodeToVT100(`[${DISPLAY_MODES.BOLD}m`) : '') +
       (display.dim ? encodeToVT100(`[${DISPLAY_MODES.DIM}m`) : '') +
       (display.underlined ? encodeToVT100(`[${DISPLAY_MODES.UNDERLINED}m`) : '') +
@@ -247,6 +253,32 @@ class Cell {
       char +
       encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
     );
+  }
+
+  /**
+   * Return color sequences
+   *
+   * @param {Object} color Object with {r, g, b}
+   * @param {Number} color.r Red channel
+   * @param {Number} color.g Green channel
+   * @param {Number} color.b Blue channel
+   * @param {Boolean} [isForeground] (true=foreground,false=background)
+   * @returns {String}
+   */
+  getColorSequences(color, isForeground) {
+    const { r, g, b } = color;
+
+    if (r > -1 && this._colorSupport) {
+      const prefix = isForeground ? 38 : 48;
+
+      if (this._colorSupport.has16m) {
+        return encodeToVT100(`[${prefix};2;${r};${g};${b}m`);
+      } else {
+        return encodeToVT100(`[${prefix};5;${Color.create({ r, g, b }).to256Color()}m`);
+      }
+    }
+
+    return '';
   }
 
   /**

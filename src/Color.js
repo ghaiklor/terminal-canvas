@@ -1,4 +1,5 @@
 const COLORS = require('./util/colors');
+const convert = require('color-convert');
 
 /**
  * Regular expression for capturing RGB channels.
@@ -132,6 +133,17 @@ class Color {
   toHex() {
     const pad2 = c => c.length === 1 ? '0' + c : c;
     return '#' + [pad2(this.getR().toString(16)), pad2(this.getG().toString(16)), pad2(this.getB().toString(16))].join('');
+  }
+
+  /**
+   * Convert and return 256 color number.
+   *
+   * @returns {Number}
+   */
+  to256Color() {
+    const { r, g, b } = this.toRgb();
+
+    return convert.rgb.ansi256(r, g, b);
   }
 
   /**
