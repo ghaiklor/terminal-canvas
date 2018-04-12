@@ -154,7 +154,8 @@ describe('Cell', () => {
   });
 
   it('Should properly convert Cell into ASCII sequence', () => {
-    const cell = new Cell(undefined, { colorSupport: { has16m: true } });
+    const colorSupport = { has16m: true };
+    const cell = new Cell(undefined, { colorSupport });
 
     assert.equal(cell.toString(), '\u001b[1;1f \u001b[0m');
     assert.instanceOf(cell.setX(20), Cell);
@@ -167,6 +168,14 @@ describe('Cell', () => {
     assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m \u001b[0m');
     assert.instanceOf(cell.setDisplay(true, true, true, true, true, true), Cell);
     assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m\u001b[1m\u001b[2m\u001b[4m\u001b[5m\u001b[7m\u001b[8m \u001b[0m');
+
+    colorSupport.has16m = false;
+    cell.reset();
+
+    assert.instanceOf(cell.setBackground(0, 100, 200), Cell);
+    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;5;32m \u001b[0m');
+    assert.instanceOf(cell.setForeground(200, 100, 0), Cell);
+    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;5;32m\u001b[38;5;172m \u001b[0m');
   });
 
   it('Should properly create Cell instance from static create()', () => {
