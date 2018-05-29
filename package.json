@@ -1,42 +1,46 @@
 {
   "name": "terminal-canvas",
-  "version": "0.0.0-development",
+  "version": "2.0.0",
   "description": "High-performant low-level API for access to cursor in terminal",
   "main": "src/Canvas.js",
-  "author": "ghaiklor",
+  "license": "MIT",
+  "homepage": "https://github.com/ghaiklor/terminal-canvas#readme",
+  "keywords": [
+    "terminal",
+    "cursor",
+    "canvas",
+    "renderer",
+    "render"
+  ],
+  "bugs": {
+    "url": "https://github.com/ghaiklor/terminal-canvas/issues",
+    "email": "ghaiklor@gmail.com"
+  },
+  "author": {
+    "name": "Eugene Obrezkov",
+    "email": "ghaiklor@gmail.com",
+    "url": "http://ghaiklor.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ghaiklor/terminal-canvas.git"
   },
-  "license": "MIT",
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "scripts": {
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "jsdoc2md \"src/**/*.js\" > ./API.md",
     "prepublish": "npm run test && npm run docs",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "test": "istanbul cover _mocha"
   },
-  "dependencies": {},
   "devDependencies": {
-    "chai": "3.5.0",
-    "coveralls": "2.12.0",
-    "cz-conventional-changelog": "2.0.0",
+    "chai": "4.1.2",
+    "coveralls": "3.0.1",
     "istanbul": "0.4.5",
-    "jsdoc-to-markdown": "3.0.0",
-    "mocha": "3.2.0",
-    "semantic-release": "6.3.2",
-    "sinon": "2.0.0",
-    "youtube-terminal": "0.4.3"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "publishConfig": {
-    "tag": "latest"
-  },
-  "release": {
-    "branch": "master"
+    "jsdoc-to-markdown": "4.0.1",
+    "mocha": "5.2.0",
+    "sinon": "5.0.10",
+    "youtube-terminal": "0.5.2"
   }
 }

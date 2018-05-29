@@ -1,5 +1,13 @@
-sudo: false
 language: node_js
+node_js:
+  - "node"
+  - "10"
+  - "9"
+  - "8"
+  - "7"
+  - "6"
+  - "5"
+  - "4"
 env:
   - CXX=g++-4.8
 addons:
@@ -11,18 +19,6 @@ addons:
       - g++-4.8
 cache:
   directories:
-    - node_modules
-notifications:
-  email: true
-node_js:
-  - stable
-before_install:
-  - npm install -g npm@latest
-before_script:
-  - npm prune
+    - "node_modules"
 after_success:
   - npm run coveralls
-  - npm run semantic-release
-branches:
-  except:
-    - /^v\d+\.\d+\.\d+$/
