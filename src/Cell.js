@@ -1,11 +1,10 @@
-const DISPLAY_MODES = require('./util/displayModes');
-const encodeToVT100 = require('./util/encodeToVT100');
+const encodeToVT100 = require('./encodeToVT100');
 
 /**
  * Wrapper around one cell in the terminal.
  * Used for filling terminal wrapper in the cursor.
  *
- * @since 3.1.0
+ * @since 2.0.0
  */
 class Cell {
   /**
@@ -33,7 +32,7 @@ class Cell {
    * @param {Boolean} [options.display.hidden] Hidden style
    */
   constructor(char, options = {}) {
-    var {x, y, background = {}, foreground = {}, display = {}} = options;
+    const {x, y, background = {}, foreground = {}, display = {}} = options;
 
     this._char = ' ';
     this._x = 0;
@@ -232,20 +231,20 @@ class Cell {
    * @returns {String}
    */
   toString() {
-    var [char, x, y, background, foreground, display] = [this.getChar(), this.getX(), this.getY(), this.getBackground(), this.getForeground(), this.getDisplay()];
+    const [char, x, y, background, foreground, display] = [this.getChar(), this.getX(), this.getY(), this.getBackground(), this.getForeground(), this.getDisplay()];
 
     return (
       encodeToVT100(`[${y + 1};${x + 1}f`) +
       (background.r > -1 ? encodeToVT100(`[48;2;${background.r};${background.g};${background.b}m`) : '') +
       (foreground.r > -1 ? encodeToVT100(`[38;2;${foreground.r};${foreground.g};${foreground.b}m`) : '') +
-      (display.bold ? encodeToVT100(`[${DISPLAY_MODES.BOLD}m`) : '') +
-      (display.dim ? encodeToVT100(`[${DISPLAY_MODES.DIM}m`) : '') +
-      (display.underlined ? encodeToVT100(`[${DISPLAY_MODES.UNDERLINED}m`) : '') +
-      (display.blink ? encodeToVT100(`[${DISPLAY_MODES.BLINK}m`) : '') +
-      (display.reverse ? encodeToVT100(`[${DISPLAY_MODES.REVERSE}m`) : '') +
-      (display.hidden ? encodeToVT100(`[${DISPLAY_MODES.HIDDEN}m`) : '') +
+      (display.bold ? encodeToVT100(`[${Cell.DISPLAY_MODES.BOLD}m`) : '') +
+      (display.dim ? encodeToVT100(`[${Cell.DISPLAY_MODES.DIM}m`) : '') +
+      (display.underlined ? encodeToVT100(`[${Cell.DISPLAY_MODES.UNDERLINED}m`) : '') +
+      (display.blink ? encodeToVT100(`[${Cell.DISPLAY_MODES.BLINK}m`) : '') +
+      (display.reverse ? encodeToVT100(`[${Cell.DISPLAY_MODES.REVERSE}m`) : '') +
+      (display.hidden ? encodeToVT100(`[${Cell.DISPLAY_MODES.HIDDEN}m`) : '') +
       char +
-      encodeToVT100(`[${DISPLAY_MODES.RESET_ALL}m`)
+      encodeToVT100(`[${Cell.DISPLAY_MODES.RESET_ALL}m`)
     );
   }
 
@@ -257,6 +256,30 @@ class Cell {
    */
   static create(...args) {
     return new this(...args);
+  }
+
+  /**
+   * Returns a dictionary of all available display modes.
+   *
+   * @static
+   * @returns {Object}
+   */
+  static get DISPLAY_MODES() {
+    return {
+      RESET_ALL: 0,
+      BOLD: 1,
+      DIM: 2,
+      UNDERLINED: 4,
+      BLINK: 5,
+      REVERSE: 7,
+      HIDDEN: 8,
+      RESET_BOLD: 21,
+      RESET_DIM: 22,
+      RESET_UNDERLINED: 24,
+      RESET_BLINK: 25,
+      RESET_REVERSE: 27,
+      RESET_HIDDEN: 28
+    }
   }
 }
 

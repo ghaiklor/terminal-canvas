@@ -1,6 +1,6 @@
 const Cell = require('./Cell');
 const Color = require('./Color');
-const encodeToVT100 = require('./util/encodeToVT100');
+const encodeToVT100 = require('./encodeToVT100');
 
 /**
  * Canvas implements low-level API to terminal control codes.
@@ -27,7 +27,7 @@ class Canvas {
    * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
   constructor(options = {}) {
-    var {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
+    const {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
 
     this._stream = stream;
     this._width = width;
@@ -54,17 +54,17 @@ class Canvas {
    * canvas.write('Hello, world').flush();
    */
   write(data) {
-    var width = this._width;
-    var height = this._height;
-    var background = this._background;
-    var foreground = this._foreground;
-    var display = this._display;
+    const width = this._width;
+    const height = this._height;
+    const background = this._background;
+    const foreground = this._foreground;
+    const display = this._display;
 
-    for (var i = 0; i < data.length; i++) {
-      var char = data[i];
-      var x = this._x;
-      var y = this._y;
-      var pointer = this.getPointerFromXY(x, y);
+    for (let i = 0; i < data.length; i++) {
+      const char = data[i];
+      const x = this._x;
+      const y = this._y;
+      const pointer = this.getPointerFromXY(x, y);
 
       if (0 <= x && x < width && 0 <= y && y < height) {
         this._cells[pointer]
@@ -92,9 +92,9 @@ class Canvas {
    * @returns {Canvas}
    */
   flush() {
-    for (var i = 0; i < this._cells.length; i++) {
+    for (let i = 0; i < this._cells.length; i++) {
       if (this._cells[i].isModified()) {
-        var cellSeq = this._cells[i].setModified(false).toString();
+        const cellSeq = this._cells[i].setModified(false).toString();
 
         if (cellSeq !== this._lastFrame[i]) {
           this._lastFrame[i] = cellSeq;
@@ -236,7 +236,7 @@ class Canvas {
    * canvas.foreground(false); // disables foreground filling (will be used default filling)
    */
   foreground(color) {
-    var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+    const newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
 
     this._foreground.r = newColor.r;
     this._foreground.g = newColor.g;
@@ -258,7 +258,7 @@ class Canvas {
    * canvas.background(false); // disables background filling (will be used default filling)
    */
   background(color) {
-    var newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+    const newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
 
     this._background.r = newColor.r;
     this._background.g = newColor.g;
@@ -364,9 +364,9 @@ class Canvas {
    * canvas.erase(0, 0, 5, 5);
    */
   erase(x1, y1, x2, y2) {
-    for (var y = y1; y <= y2; y++) {
-      for (var x = x1; x <= x2; x++) {
-        var pointer = this.getPointerFromXY(x, y);
+    for (let y = y1; y <= y2; y++) {
+      for (let x = x1; x <= x2; x++) {
+        const pointer = this.getPointerFromXY(x, y);
         this._cells[pointer] && this._cells[pointer].reset();
       }
     }

@@ -6,11 +6,11 @@ const text = 'Always after me lucky charms.';
 let offset = 0;
 
 setInterval(() => {
-  var y = 0, dy = 1;
+  let y = 0, dy = 1;
 
-  for (var i = 0; i < 40; i++) {
-    var color = colors[(i + offset) % colors.length];
-    var c = text[(i + offset) % text.length];
+  for (let i = 0; i < 40; i++) {
+    let color = colors[(i + offset) % colors.length];
+    let c = text[(i + offset) % text.length];
 
     canvas.moveBy(1, dy).foreground(color).write(c);
 

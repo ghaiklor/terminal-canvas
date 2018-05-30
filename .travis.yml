@@ -6,8 +6,6 @@ node_js:
   - "8"
   - "7"
   - "6"
-  - "5"
-  - "4"
 env:
   - CXX=g++-4.8
 addons:
@@ -20,5 +18,7 @@ addons:
 cache:
   directories:
     - "node_modules"
+script:
+  - npm run travis
 after_success:
   - npm run coveralls

@@ -80,10 +80,6 @@ Also, you can specify custom width and height of viewport where cursor will rend
 | [options.width] | <code>Number</code> | <code>stream.columns</code> | Number of columns (width) |
 | [options.height] | <code>Number</code> | <code>stream.rows</code> | Number of rows (height) |
 
-**Example**  
-```js
-Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
-```
 <a name="Canvas+write"></a>
 
 ### canvas.write(data) ⇒ [<code>Canvas</code>](#Canvas)
@@ -521,7 +517,7 @@ Wrapper around one cell in the terminal.
 Used for filling terminal wrapper in the cursor.
 
 **Kind**: global class  
-**Since**: 3.1.0  
+**Since**: 2.0.0  
 
 * [Cell](#Cell)
     * [new Cell([char], [options])](#new_Cell_new)
@@ -543,6 +539,7 @@ Used for filling terminal wrapper in the cursor.
         * [.reset()](#Cell+reset) ⇒ [<code>Cell</code>](#Cell)
         * [.toString()](#Cell+toString) ⇒ <code>String</code>
     * _static_
+        * [.DISPLAY_MODES](#Cell.DISPLAY_MODES) ⇒ <code>Object</code>
         * [.create()](#Cell.create) ⇒ [<code>Cell</code>](#Cell)
 
 <a name="new_Cell_new"></a>
@@ -717,6 +714,12 @@ Convert cell to ASCII control sequence.
 Disables flag which marks cell as modified.
 
 **Kind**: instance method of [<code>Cell</code>](#Cell)  
+<a name="Cell.DISPLAY_MODES"></a>
+
+### Cell.DISPLAY_MODES ⇒ <code>Object</code>
+Returns a dictionary of all available display modes.
+
+**Kind**: static property of [<code>Cell</code>](#Cell)  
 <a name="Cell.create"></a>
 
 ### Cell.create() ⇒ [<code>Cell</code>](#Cell)
@@ -729,7 +732,7 @@ Wrapper around `new Cell()`.
 Color class responsible for converting colors between rgb and hex.
 
 **Kind**: global class  
-**Since**: 3.1.0  
+**Since**: 2.0.0  
 
 * [Color](#Color)
     * [new Color(color)](#new_Color_new)
@@ -743,6 +746,7 @@ Color class responsible for converting colors between rgb and hex.
         * [.toRgb()](#Color+toRgb) ⇒ <code>Object</code>
         * [.toHex()](#Color+toHex) ⇒ <code>String</code>
     * _static_
+        * [.COLORS](#Color.COLORS) ⇒ <code>Object</code>
         * [.isNamed(color)](#Color.isNamed) ⇒ <code>Boolean</code>
         * [.isRgb(rgb)](#Color.isRgb) ⇒ <code>Boolean</code>
         * [.isHex(hex)](#Color.isHex) ⇒ <code>Boolean</code>
@@ -765,13 +769,6 @@ Class will try to parse your provided color, otherwise throws an error.
 | color.g | <code>Number</code> | Green channel |
 | color.b | <code>Number</code> | Blue channel |
 
-**Example**  
-```js
-Color.create('black');
-Color.create('rgb(0, 10, 20)');
-Color.create('#AABBCC');
-Color.create({r: 0, g: 10, b: 20});
-```
 <a name="Color+getR"></a>
 
 ### color.getR() ⇒ <code>Number</code>
@@ -835,6 +832,12 @@ Convert color to RGB representation.
 Convert color to HEX representation.
 
 **Kind**: instance method of [<code>Color</code>](#Color)  
+<a name="Color.COLORS"></a>
+
+### Color.COLORS ⇒ <code>Object</code>
+Dictionary of all available named colors.
+
+**Kind**: static property of [<code>Color</code>](#Color)  
 <a name="Color.isNamed"></a>
 
 ### Color.isNamed(color) ⇒ <code>Boolean</code>

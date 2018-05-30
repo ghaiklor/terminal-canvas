@@ -1,4 +1,4 @@
-const assert = require('chai').assert;
+const {assert} = require('chai');
 const sinon = require('sinon');
 const Cell = require('../../src/Cell');
 

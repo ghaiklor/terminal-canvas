@@ -9,16 +9,16 @@ const canvas = require('../src/Canvas').create();
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 
 function imageToAscii(data, width, height) {
-  var contrastFactor = 2.95;
-  var ascii = '';
+  let contrastFactor = 2.95;
+  let ascii = '';
 
-  for (var y = 0; y < height; y += 2) {
-    for (var x = 0; x < width; x++) {
-      var offset = (y * width + x) * 3;
-      var r = Math.max(0, Math.min(contrastFactor * (data[offset] - 128) + 128, 255));
-      var g = Math.max(0, Math.min(contrastFactor * (data[offset + 1] - 128) + 128, 255));
-      var b = Math.max(0, Math.min(contrastFactor * (data[offset + 2] - 128) + 128, 255));
-      var brightness = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  for (let y = 0; y < height; y += 2) {
+    for (let x = 0; x < width; x++) {
+      let offset = (y * width + x) * 3;
+      let r = Math.max(0, Math.min(contrastFactor * (data[offset] - 128) + 128, 255));
+      let g = Math.max(0, Math.min(contrastFactor * (data[offset + 1] - 128) + 128, 255));
+      let b = Math.max(0, Math.min(contrastFactor * (data[offset + 2] - 128) + 128, 255));
+      let brightness = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
       ascii += CHARACTERS[Math.round(brightness * 14)];
     }
@@ -41,10 +41,10 @@ function playVideo(info) {
     .pipe(new Throttle({rate: frameSize * 30}))
     .pipe(new RawImageStream(frameSize))
     .on('data', function (frameData) {
-      var ascii = imageToAscii(frameData, frameWidth, frameHeight);
+      let ascii = imageToAscii(frameData, frameWidth, frameHeight);
 
-      for (var y = 0; y < frameHeight; y++) {
-        for (var x = 0; x < frameWidth; x++) {
+      for (let y = 0; y < frameHeight; y++) {
+        for (let x = 0; x < frameWidth; x++) {
           canvas
             .moveTo(x + (canvas._width / 2 - frameWidth / 2), y)
             .write(ascii[y * frameWidth + x] || '');

@@ -26,17 +26,21 @@
     "url": "https://github.com/ghaiklor/terminal-canvas.git"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "scripts": {
+    "travis": "npm run lint && npm run test",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "jsdoc2md \"src/**/*.js\" > ./API.md",
-    "prepublish": "npm run test && npm run docs",
+    "lint": "eslint .",
+    "prepublish": "npm run lint && npm run test && npm run docs",
     "test": "istanbul cover _mocha"
   },
   "devDependencies": {
     "chai": "4.1.2",
     "coveralls": "3.0.1",
+    "eslint": "4.19.1",
+    "eslint-plugin-node": "6.0.1",
     "istanbul": "0.4.5",
     "jsdoc-to-markdown": "4.0.1",
     "mocha": "5.2.0",
