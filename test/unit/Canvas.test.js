@@ -20,7 +20,6 @@ describe('Canvas', () => {
     assert.notOk(canvas._display.blink);
     assert.notOk(canvas._display.reverse);
     assert.notOk(canvas._display.hidden);
-    assert.equal(canvas._cells.length, process.stdout.columns * process.stdout.rows);
   });
 
   it('Should properly initialize with custom arguments', () => {
@@ -401,6 +400,5 @@ describe('Canvas', () => {
     assert.notOk(canvas._display.blink);
     assert.notOk(canvas._display.reverse);
     assert.notOk(canvas._display.hidden);
-    assert.equal(canvas._cells.length, process.stdout.columns * process.stdout.rows);
   });
 });
