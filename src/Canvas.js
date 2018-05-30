@@ -92,16 +92,20 @@ class Canvas {
    * @returns {Canvas}
    */
   flush() {
+    let payload = '';
+
     for (let i = 0; i < this._cells.length; i++) {
       if (this._cells[i].isModified()) {
         const cellSeq = this._cells[i].setModified(false).toString();
 
         if (cellSeq !== this._lastFrame[i]) {
           this._lastFrame[i] = cellSeq;
-          this._stream.write(cellSeq);
+          payload += cellSeq;
         }
       }
     }
+
+    this._stream.write(payload);
 
     return this;
   }
