@@ -80,7 +80,7 @@ describe('Canvas', () => {
     assert.instanceOf(canvas.flush(), Canvas);
     assert.instanceOf(canvas.moveTo(0, 0).write('1234'), Canvas);
     assert.instanceOf(canvas.flush(), Canvas);
-    assert.equal(canvas._stream.write.callCount, 8);
+    assert.equal(canvas._stream.write.callCount, 2);
   });
 
   it('Should properly skip the flush when changes the same', () => {
@@ -90,7 +90,7 @@ describe('Canvas', () => {
     assert.instanceOf(canvas.flush(), Canvas);
     assert.instanceOf(canvas.moveTo(0, 0).write('test'), Canvas);
     assert.instanceOf(canvas.flush(), Canvas);
-    assert.equal(canvas._stream.write.callCount, 4);
+    assert.equal(canvas._stream.write.callCount, 2);
   });
 
   it('Should properly calculate buffer pointer', () => {
