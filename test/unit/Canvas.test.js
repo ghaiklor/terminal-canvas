@@ -1,4 +1,4 @@
-const {assert} = require('chai');
+const { assert } = require('chai');
 const sinon = require('sinon');
 const Canvas = require('../../src/Canvas');
 
@@ -12,8 +12,8 @@ describe('Canvas', () => {
     assert.equal(canvas._height, process.stdout.rows);
     assert.equal(canvas._x, 0);
     assert.equal(canvas._y, 0);
-    assert.deepEqual(canvas._background, {r: -1, g: -1, b: -1});
-    assert.deepEqual(canvas._foreground, {r: -1, g: -1, b: -1});
+    assert.deepEqual(canvas._background, { r: -1, g: -1, b: -1 });
+    assert.deepEqual(canvas._foreground, { r: -1, g: -1, b: -1 });
     assert.notOk(canvas._display.bold);
     assert.notOk(canvas._display.dim);
     assert.notOk(canvas._display.underlined);
@@ -23,7 +23,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly initialize with custom arguments', () => {
-    const canvas = new Canvas({stream: process.stdout, width: 10, height: 20});
+    const canvas = new Canvas({ stream: process.stdout, width: 10, height: 20 });
 
     assert.instanceOf(canvas, Canvas);
     assert.equal(canvas._stream, process.stdout);
@@ -31,8 +31,8 @@ describe('Canvas', () => {
     assert.equal(canvas._height, 20);
     assert.equal(canvas._x, 0);
     assert.equal(canvas._y, 0);
-    assert.deepEqual(canvas._background, {r: -1, g: -1, b: -1});
-    assert.deepEqual(canvas._foreground, {r: -1, g: -1, b: -1});
+    assert.deepEqual(canvas._background, { r: -1, g: -1, b: -1 });
+    assert.deepEqual(canvas._foreground, { r: -1, g: -1, b: -1 });
     assert.notOk(canvas._display.bold);
     assert.notOk(canvas._display.dim);
     assert.notOk(canvas._display.underlined);
@@ -43,7 +43,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly write to the canvas', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._cells[0].getChar(), ' ');
 
@@ -55,7 +55,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly ignore write if out of the bounding box', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._cells[0].getChar(), ' ');
 
@@ -74,7 +74,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly flush the buffer into the stream', () => {
-    const canvas = new Canvas({stream: {write: sinon.spy()}, width: 20, height: 10});
+    const canvas = new Canvas({ stream: { write: sinon.spy() }, width: 20, height: 10 });
 
     assert.instanceOf(canvas.write('test'), Canvas);
     assert.instanceOf(canvas.flush(), Canvas);
@@ -84,7 +84,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly skip the flush when changes the same', () => {
-    const canvas = new Canvas({stream: {write: sinon.spy()}, width: 20, height: 10});
+    const canvas = new Canvas({ stream: { write: sinon.spy() }, width: 20, height: 10 });
 
     assert.instanceOf(canvas.write('test'), Canvas);
     assert.instanceOf(canvas.flush(), Canvas);
@@ -94,7 +94,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly calculate buffer pointer', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas.getPointerFromXY(), 0);
     assert.instanceOf(canvas.moveTo(10, 10), Canvas);
@@ -103,7 +103,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly calculate coordinates from buffer pointer', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.deepEqual(canvas.getXYFromPointer(0), [0, 0]);
     assert.deepEqual(canvas.getXYFromPointer(1), [1, 0]);
@@ -112,7 +112,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor up with default arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._y, 0);
     assert.instanceOf(canvas.up(), Canvas);
@@ -120,7 +120,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor up with custom arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._y, 0);
     assert.instanceOf(canvas.up(5), Canvas);
@@ -128,7 +128,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor down with default arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._y, 0);
     assert.instanceOf(canvas.down(), Canvas);
@@ -136,7 +136,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor down with custom arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._y, 0);
     assert.instanceOf(canvas.down(5), Canvas);
@@ -144,7 +144,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor right with default arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._x, 0);
     assert.instanceOf(canvas.right(), Canvas);
@@ -152,7 +152,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor right with custom arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._x, 0);
     assert.instanceOf(canvas.right(5), Canvas);
@@ -160,7 +160,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor left with default arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._x, 0);
     assert.instanceOf(canvas.left(), Canvas);
@@ -168,7 +168,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly move cursor left with custom arguments', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._x, 0);
     assert.instanceOf(canvas.left(5), Canvas);
@@ -176,7 +176,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly set relative position of cursor', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('right').once().withExactArgs(10);
@@ -190,7 +190,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly set absolute position of cursor', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.equal(canvas._x, 0);
     assert.equal(canvas._y, 0);
@@ -200,27 +200,27 @@ describe('Canvas', () => {
   });
 
   it('Should properly change foreground color', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
-    assert.deepEqual(canvas._foreground, {r: -1, g: -1, b: -1});
+    assert.deepEqual(canvas._foreground, { r: -1, g: -1, b: -1 });
     assert.instanceOf(canvas.foreground('white'), Canvas);
-    assert.deepEqual(canvas._foreground, {r: 255, g: 255, b: 255});
+    assert.deepEqual(canvas._foreground, { r: 255, g: 255, b: 255 });
     assert.instanceOf(canvas.foreground(false), Canvas);
-    assert.deepEqual(canvas._foreground, {r: -1, g: -1, b: -1});
+    assert.deepEqual(canvas._foreground, { r: -1, g: -1, b: -1 });
   });
 
   it('Should properly change background color', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
-    assert.deepEqual(canvas._background, {r: -1, g: -1, b: -1});
+    assert.deepEqual(canvas._background, { r: -1, g: -1, b: -1 });
     assert.instanceOf(canvas.background('black'), Canvas);
-    assert.deepEqual(canvas._background, {r: 0, g: 0, b: 0});
+    assert.deepEqual(canvas._background, { r: 0, g: 0, b: 0 });
     assert.instanceOf(canvas.background(false), Canvas);
-    assert.deepEqual(canvas._background, {r: -1, g: -1, b: -1});
+    assert.deepEqual(canvas._background, { r: -1, g: -1, b: -1 });
   });
 
   it('Should properly toggle bold mode', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.instanceOf(canvas.bold(), Canvas);
     assert.ok(canvas._display.bold);
@@ -229,7 +229,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly toggle dim mode', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.instanceOf(canvas.dim(), Canvas);
     assert.ok(canvas._display.dim);
@@ -238,7 +238,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly toggle underlined mode', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.instanceOf(canvas.underlined(), Canvas);
     assert.ok(canvas._display.underlined);
@@ -247,7 +247,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly toggle blink mode', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.instanceOf(canvas.blink(), Canvas);
     assert.ok(canvas._display.blink);
@@ -256,7 +256,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly toggle reverse mode', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.instanceOf(canvas.reverse(), Canvas);
     assert.ok(canvas._display.reverse);
@@ -265,7 +265,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly toggle hidden mode', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
 
     assert.instanceOf(canvas.hidden(), Canvas);
     assert.ok(canvas._display.hidden);
@@ -274,7 +274,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly erase the specified region', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('getPointerFromXY').exactly(36).returns(0);
@@ -284,7 +284,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly erase from current position to the end of line', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('erase').once().withExactArgs(5, 5, 20 - 1, 5).returns(canvas);
@@ -294,7 +294,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly erase from current position to the start of line', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('erase').once().withExactArgs(0, 5, 5, 5).returns(canvas);
@@ -304,7 +304,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly erase from current line to down', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('erase').once().withExactArgs(0, 5, 20 - 1, 10 - 1).returns(canvas);
@@ -314,7 +314,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly erase from current line to up', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('erase').once().withExactArgs(0, 0, 20 - 1, 5).returns(canvas);
@@ -324,7 +324,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly erase the current line', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('erase').once().withExactArgs(0, 5, 20 - 1, 5).returns(canvas);
@@ -334,7 +334,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly erase the entire screen', () => {
-    const canvas = new Canvas({width: 20, height: 10});
+    const canvas = new Canvas({ width: 20, height: 10 });
     const mock = sinon.mock(canvas);
 
     mock.expects('erase').once().withExactArgs(0, 0, 20 - 1, 10 - 1).returns(canvas);
@@ -344,7 +344,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly save the screen contents', () => {
-    const canvas = new Canvas({stream: {write: sinon.spy()}, width: 20, height: 10});
+    const canvas = new Canvas({ stream: { write: sinon.spy() }, width: 20, height: 10 });
 
     assert.instanceOf(canvas.saveScreen(), Canvas);
     assert.equal(canvas._stream.write.callCount, 1);
@@ -352,7 +352,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly restore the screen contents', () => {
-    const canvas = new Canvas({stream: {write: sinon.spy()}, width: 20, height: 10});
+    const canvas = new Canvas({ stream: { write: sinon.spy() }, width: 20, height: 10 });
 
     assert.instanceOf(canvas.restoreScreen(), Canvas);
     assert.equal(canvas._stream.write.callCount, 1);
@@ -360,7 +360,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly hide the cursor', () => {
-    const canvas = new Canvas({stream: {write: sinon.spy()}, width: 20, height: 10});
+    const canvas = new Canvas({ stream: { write: sinon.spy() }, width: 20, height: 10 });
 
     assert.instanceOf(canvas.hideCursor(), Canvas);
     assert.equal(canvas._stream.write.callCount, 1);
@@ -368,7 +368,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly show the cursor', () => {
-    const canvas = new Canvas({stream: {write: sinon.spy()}, width: 20, height: 10});
+    const canvas = new Canvas({ stream: { write: sinon.spy() }, width: 20, height: 10 });
 
     assert.instanceOf(canvas.showCursor(), Canvas);
     assert.equal(canvas._stream.write.callCount, 1);
@@ -376,7 +376,7 @@ describe('Canvas', () => {
   });
 
   it('Should properly reset the TTY state', () => {
-    const canvas = new Canvas({stream: {write: sinon.spy()}, width: 20, height: 10});
+    const canvas = new Canvas({ stream: { write: sinon.spy() }, width: 20, height: 10 });
 
     assert.instanceOf(canvas.reset(), Canvas);
     assert.equal(canvas._stream.write.callCount, 1);
@@ -392,8 +392,8 @@ describe('Canvas', () => {
     assert.equal(canvas._height, process.stdout.rows);
     assert.equal(canvas._x, 0);
     assert.equal(canvas._y, 0);
-    assert.deepEqual(canvas._background, {r: -1, g: -1, b: -1});
-    assert.deepEqual(canvas._foreground, {r: -1, g: -1, b: -1});
+    assert.deepEqual(canvas._background, { r: -1, g: -1, b: -1 });
+    assert.deepEqual(canvas._foreground, { r: -1, g: -1, b: -1 });
     assert.notOk(canvas._display.bold);
     assert.notOk(canvas._display.dim);
     assert.notOk(canvas._display.underlined);

@@ -32,14 +32,14 @@ class Cell {
    * @param {Boolean} [options.display.hidden] Hidden style
    */
   constructor(char, options = {}) {
-    const {x, y, background = {}, foreground = {}, display = {}} = options;
+    const { x, y, background = {}, foreground = {}, display = {} } = options;
 
     this._char = ' ';
     this._x = 0;
     this._y = 0;
-    this._background = {r: -1, g: -1, b: -1};
-    this._foreground = {r: -1, g: -1, b: -1};
-    this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
+    this._background = { r: -1, g: -1, b: -1 };
+    this._foreground = { r: -1, g: -1, b: -1 };
+    this._display = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
     this._modified = false;
 
     this.setChar(char);
@@ -279,7 +279,7 @@ class Cell {
       RESET_BLINK: 25,
       RESET_REVERSE: 27,
       RESET_HIDDEN: 28
-    }
+    };
   }
 }
 

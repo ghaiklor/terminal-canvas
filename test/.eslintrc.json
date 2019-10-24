@@ -2,8 +2,5 @@
   "extends": "../.eslintrc.json",
   "env": {
     "mocha": true
-  },
-  "rules": {
-    "node/no-unpublished-require": "OFF"
   }
 }

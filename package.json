@@ -1,7 +1,7 @@
 {
   "name": "terminal-canvas",
-  "version": "2.1.0",
-  "description": "High-performant low-level API for access to cursor in terminal",
+  "version": "2.1.1",
+  "description": "Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API",
   "main": "src/Canvas.js",
   "license": "MIT",
   "homepage": "https://github.com/ghaiklor/terminal-canvas#readme",
@@ -29,22 +29,26 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "travis": "npm run lint && npm run test",
+    "build": "npm run lint && npm run test && npm run docs",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "jsdoc2md \"src/**/*.js\" > ./API.md",
     "lint": "eslint .",
-    "prepublish": "npm run lint && npm run test && npm run docs",
+    "prepublish": "npm run build",
     "test": "istanbul cover _mocha"
   },
   "devDependencies": {
-    "chai": "4.1.2",
-    "coveralls": "3.0.1",
-    "eslint": "4.19.1",
-    "eslint-plugin-node": "6.0.1",
+    "chai": "4.2.0",
+    "coveralls": "3.0.7",
+    "eslint": "6.5.1",
+    "eslint-config-standard": "14.1.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-node": "10.0.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
     "istanbul": "0.4.5",
-    "jsdoc-to-markdown": "4.0.1",
-    "mocha": "5.2.0",
-    "sinon": "5.0.10",
-    "youtube-terminal": "0.5.2"
+    "jsdoc-to-markdown": "5.0.2",
+    "mocha": "6.2.2",
+    "sinon": "7.5.0",
+    "youtube-terminal": "0.8.0"
   }
 }

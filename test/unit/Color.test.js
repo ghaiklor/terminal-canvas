@@ -1,4 +1,4 @@
-const {assert} = require('chai');
+const { assert } = require('chai');
 const Color = require('../../src/Color');
 
 describe('Color', () => {
@@ -30,7 +30,7 @@ describe('Color', () => {
   });
 
   it('Should properly throw exception if color is not parsed', () => {
-    assert.throws(() => new Color('false color'), Error, `Color false color can't be parsed`);
+    assert.throws(() => new Color('false color'), Error, 'Color false color can\'t be parsed');
   });
 
   it('Should properly get/set red channel', () => {
@@ -72,11 +72,11 @@ describe('Color', () => {
   it('Should properly return RGB object', () => {
     const color = new Color('black');
 
-    assert.deepEqual(color.toRgb(), {r: 0, g: 0, b: 0});
+    assert.deepEqual(color.toRgb(), { r: 0, g: 0, b: 0 });
     assert.instanceOf(color.setR(10), Color);
     assert.instanceOf(color.setG(20), Color);
     assert.instanceOf(color.setB(30), Color);
-    assert.deepEqual(color.toRgb(), {r: 10, g: 20, b: 30});
+    assert.deepEqual(color.toRgb(), { r: 10, g: 20, b: 30 });
   });
 
   it('Should properly return HEX string', () => {

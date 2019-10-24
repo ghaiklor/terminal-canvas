@@ -9,16 +9,16 @@ const canvas = require('../src/Canvas').create();
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 
 function imageToAscii(data, width, height) {
-  let contrastFactor = 2.95;
+  const contrastFactor = 2.95;
   let ascii = '';
 
   for (let y = 0; y < height; y += 2) {
     for (let x = 0; x < width; x++) {
-      let offset = (y * width + x) * 3;
-      let r = Math.max(0, Math.min(contrastFactor * (data[offset] - 128) + 128, 255));
-      let g = Math.max(0, Math.min(contrastFactor * (data[offset + 1] - 128) + 128, 255));
-      let b = Math.max(0, Math.min(contrastFactor * (data[offset + 2] - 128) + 128, 255));
-      let brightness = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      const offset = (y * width + x) * 3;
+      const r = Math.max(0, Math.min(contrastFactor * (data[offset] - 128) + 128, 255));
+      const g = Math.max(0, Math.min(contrastFactor * (data[offset + 1] - 128) + 128, 255));
+      const b = Math.max(0, Math.min(contrastFactor * (data[offset + 2] - 128) + 128, 255));
+      const brightness = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
       ascii += CHARACTERS[Math.round(brightness * 14)];
     }
@@ -30,18 +30,18 @@ function imageToAscii(data, width, height) {
 function playVideo(info) {
   const video = info.formats.filter(format => format.resolution === '144p' && format.audioBitrate === null).sort((a, b) => a.container === 'webm' ? -1 : 1)[0];
   const m = video.size.match(/^(\d+)x(\d+)$/);
-  const videoSize = {width: m[1], height: m[2]};
+  const videoSize = { width: m[1], height: m[2] };
   const frameHeight = Math.round(canvas._height * 2);
   const frameWidth = Math.round(frameHeight * (videoSize.width / videoSize.height));
   const frameSize = frameWidth * frameHeight * 3;
 
-  ffmpeg.rawImageStream(video.url, {fps: 30, width: frameWidth})
+  ffmpeg.rawImageStream(video.url, { fps: 30, width: frameWidth })
     .on('start', () => canvas.saveScreen().reset())
     .on('end', () => canvas.restoreScreen())
-    .pipe(new Throttle({rate: frameSize * 30}))
+    .pipe(new Throttle({ rate: frameSize * 30 }))
     .pipe(new RawImageStream(frameSize))
     .on('data', function (frameData) {
-      let ascii = imageToAscii(frameData, frameWidth, frameHeight);
+      const ascii = imageToAscii(frameData, frameWidth, frameHeight);
 
       for (let y = 0; y < frameHeight; y++) {
         for (let x = 0; x < frameWidth; x++) {
@@ -60,7 +60,7 @@ function playAudio(info) {
   const speaker = new Speaker();
   const updateSpeaker = codec => {
     speaker.channels = codec.audio_details[2] === 'mono' ? 1 : 2;
-    speaker.sampleRate = parseInt(codec.audio_details[1].match(/\d+/)[0], 10)
+    speaker.sampleRate = parseInt(codec.audio_details[1].match(/\d+/)[0], 10);
   };
 
   pcmAudio(audio.url).on('codecData', updateSpeaker).pipe(speaker);

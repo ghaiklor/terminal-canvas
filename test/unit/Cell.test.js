@@ -1,4 +1,4 @@
-const {assert} = require('chai');
+const { assert } = require('chai');
 const sinon = require('sinon');
 const Cell = require('../../src/Cell');
 
@@ -10,8 +10,8 @@ describe('Cell', () => {
     assert.equal(cell._char, ' ');
     assert.equal(cell._x, 0);
     assert.equal(cell._y, 0);
-    assert.deepEqual(cell._background, {r: -1, g: -1, b: -1});
-    assert.deepEqual(cell._foreground, {r: -1, g: -1, b: -1});
+    assert.deepEqual(cell._background, { r: -1, g: -1, b: -1 });
+    assert.deepEqual(cell._foreground, { r: -1, g: -1, b: -1 });
     assert.deepEqual(cell._display, {
       bold: false,
       dim: false,
@@ -26,17 +26,17 @@ describe('Cell', () => {
     const cell = new Cell(' ', {
       x: 10,
       y: 10,
-      background: {r: 1, g: 2, b: 3},
-      foreground: {r: 1, g: 2, b: 3},
-      display: {bold: true}
+      background: { r: 1, g: 2, b: 3 },
+      foreground: { r: 1, g: 2, b: 3 },
+      display: { bold: true }
     });
 
     assert.instanceOf(cell, Cell);
     assert.equal(cell._char, ' ');
     assert.equal(cell._x, 10);
     assert.equal(cell._y, 10);
-    assert.deepEqual(cell._background, {r: 1, g: 2, b: 3});
-    assert.deepEqual(cell._foreground, {r: 1, g: 2, b: 3});
+    assert.deepEqual(cell._background, { r: 1, g: 2, b: 3 });
+    assert.deepEqual(cell._foreground, { r: 1, g: 2, b: 3 });
     assert.deepEqual(cell._display, {
       bold: true,
       dim: false,
@@ -80,21 +80,21 @@ describe('Cell', () => {
   it('Should properly get/set background color', () => {
     const cell = new Cell();
 
-    assert.deepEqual(cell.getBackground(), {r: -1, g: -1, b: -1});
+    assert.deepEqual(cell.getBackground(), { r: -1, g: -1, b: -1 });
     assert.instanceOf(cell.setBackground(0, 100, 200), Cell);
-    assert.deepEqual(cell.getBackground(), {r: 0, g: 100, b: 200});
+    assert.deepEqual(cell.getBackground(), { r: 0, g: 100, b: 200 });
     assert.instanceOf(cell.setBackground(), Cell);
-    assert.deepEqual(cell.getBackground(), {r: -1, g: -1, b: -1});
+    assert.deepEqual(cell.getBackground(), { r: -1, g: -1, b: -1 });
   });
 
   it('Should properly get/set foreground color', () => {
     const cell = new Cell();
 
-    assert.deepEqual(cell.getForeground(), {r: -1, g: -1, b: -1});
+    assert.deepEqual(cell.getForeground(), { r: -1, g: -1, b: -1 });
     assert.instanceOf(cell.setForeground(0, 100, 200), Cell);
-    assert.deepEqual(cell.getForeground(), {r: 0, g: 100, b: 200});
+    assert.deepEqual(cell.getForeground(), { r: 0, g: 100, b: 200 });
     assert.instanceOf(cell.setForeground(), Cell);
-    assert.deepEqual(cell.getForeground(), {r: -1, g: -1, b: -1});
+    assert.deepEqual(cell.getForeground(), { r: -1, g: -1, b: -1 });
   });
 
   it('Should properly get/set display modes', () => {
@@ -170,14 +170,14 @@ describe('Cell', () => {
   });
 
   it('Should properly create Cell instance from static create()', () => {
-    const cell = Cell.create(' ', {x: 10, y: 20});
+    const cell = Cell.create(' ', { x: 10, y: 20 });
 
     assert.instanceOf(cell, Cell);
     assert.equal(cell._char, ' ');
     assert.equal(cell._x, 10);
     assert.equal(cell._y, 20);
-    assert.deepEqual(cell._background, {r: -1, g: -1, b: -1});
-    assert.deepEqual(cell._foreground, {r: -1, g: -1, b: -1});
+    assert.deepEqual(cell._background, { r: -1, g: -1, b: -1 });
+    assert.deepEqual(cell._foreground, { r: -1, g: -1, b: -1 });
     assert.deepEqual(cell._display, {
       bold: false,
       dim: false,
@@ -186,5 +186,5 @@ describe('Cell', () => {
       reverse: false,
       hidden: false
     });
-  })
+  });
 });

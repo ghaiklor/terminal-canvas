@@ -27,7 +27,7 @@ class Canvas {
    * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
   constructor(options = {}) {
-    const {stream = process.stdout, width = stream.columns, height = stream.rows} = options;
+    const { stream = process.stdout, width = stream.columns, height = stream.rows } = options;
 
     this._stream = stream;
     this._width = width;
@@ -35,12 +35,12 @@ class Canvas {
 
     this._x = 0;
     this._y = 0;
-    this._background = {r: -1, g: -1, b: -1};
-    this._foreground = {r: -1, g: -1, b: -1};
-    this._display = {bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false};
+    this._background = { r: -1, g: -1, b: -1 };
+    this._foreground = { r: -1, g: -1, b: -1 };
+    this._display = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
 
-    this._cells = Array.from({length: width * height}).map(() => new Cell());
-    this._lastFrame = Array.from({length: width * height}).fill('');
+    this._cells = Array.from({ length: width * height }).map(() => new Cell());
+    this._lastFrame = Array.from({ length: width * height }).fill('');
   }
 
   /**
@@ -66,7 +66,7 @@ class Canvas {
       const y = this._y;
       const pointer = this.getPointerFromXY(x, y);
 
-      if (0 <= x && x < width && 0 <= y && y < height) {
+      if (x >= 0 && x < width && y >= 0 && y < height) {
         this._cells[pointer]
           .setChar(char)
           .setX(x)
@@ -240,7 +240,7 @@ class Canvas {
    * canvas.foreground(false); // disables foreground filling (will be used default filling)
    */
   foreground(color) {
-    const newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+    const newColor = color ? Color.create(color).toRgb() : { r: -1, g: -1, b: -1 };
 
     this._foreground.r = newColor.r;
     this._foreground.g = newColor.g;
@@ -262,7 +262,7 @@ class Canvas {
    * canvas.background(false); // disables background filling (will be used default filling)
    */
   background(color) {
-    const newColor = color ? Color.create(color).toRgb() : {r: -1, g: -1, b: -1};
+    const newColor = color ? Color.create(color).toRgb() : { r: -1, g: -1, b: -1 };
 
     this._background.r = newColor.r;
     this._background.g = newColor.g;

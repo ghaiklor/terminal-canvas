@@ -42,7 +42,14 @@ class Color {
     if (Color.isNamed(color)) return Color.fromHex(Color.COLORS[color.toUpperCase()]);
     if (Color.isRgb(color)) return Color.fromRgb(color);
     if (Color.isHex(color)) return Color.fromHex(color);
-    if (!(color.hasOwnProperty('r') || color.hasOwnProperty('g') || color.hasOwnProperty('b'))) throw new Error(`Color ${color} can't be parsed`);
+    if (!(
+      Object.prototype.hasOwnProperty.call(color, 'r') ||
+      Object.prototype.hasOwnProperty.call(color, 'g') ||
+      Object.prototype.hasOwnProperty.call(color, 'b')
+    )
+    ) {
+      throw new Error(`Color ${color} can't be parsed`);
+    }
 
     this._r = 0;
     this._g = 0;
@@ -119,7 +126,7 @@ class Color {
    * @returns {{r: Number, g: Number, b: Number}}
    */
   toRgb() {
-    return {r: this.getR(), g: this.getG(), b: this.getB()};
+    return { r: this.getR(), g: this.getG(), b: this.getB() };
   }
 
   /**
@@ -174,7 +181,7 @@ class Color {
    */
   static fromRgb(rgb) {
     const [, r, g, b] = rgb.match(RGB_REGEX);
-    return this.create({r, g, b});
+    return this.create({ r, g, b });
   }
 
   /**
@@ -186,7 +193,7 @@ class Color {
    */
   static fromHex(hex) {
     const [, r, g, b] = hex.match(HEX_REGEX);
-    return this.create({r: parseInt(r, 16), g: parseInt(g, 16), b: parseInt(b, 16)});
+    return this.create({ r: parseInt(r, 16), g: parseInt(g, 16), b: parseInt(b, 16) });
   }
 
   /**
@@ -455,7 +462,7 @@ class Color {
       YELLOW: '#FCE883',
       YELLOW_GREEN: '#C5E384',
       YELLOW_ORANGE: '#FFAE42'
-    }
+    };
   }
 }
 

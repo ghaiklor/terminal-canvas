@@ -1,6 +1,6 @@
 # terminal-canvas
 
-_Package provides you with API to handle with cursor in terminal_
+Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API.
 
 [![Build Status](https://travis-ci.org/ghaiklor/terminal-canvas.svg?branch=master)](https://travis-ci.org/ghaiklor/terminal-canvas)
 ![Coverage](https://img.shields.io/coveralls/ghaiklor/terminal-canvas.svg)
@@ -13,14 +13,14 @@ _Package provides you with API to handle with cursor in terminal_
 ![dev dependencies](https://img.shields.io/david/dev/ghaiklor/terminal-canvas.svg)
 
 Entirely written with JavaScript, terminal-canvas exposes features that you can use for rendering in terminal.
-High-performance algorithms and optimisations allow to render only cells which have been changed.
+High-performance algorithms and optimizations allow to render only cells which have been changed.
 Just look at the demo videos below to see, what you can do with terminal-canvas :smiley:
 
 ## Demo
 
-| Touhou - Bad Apple  | Rick Astley - Never Gonna Give You Up | Casa Linda Apartments Interview "Not Today" |
-| ------------------- | ------------------------------------- | ------------------------------------------- |
-| [![Touhou - Bad Apple](https://img.youtube.com/vi/_KpDKTihgxY/0.jpg)](https://www.youtube.com/watch?v=_KpDKTihgxY) | [![ Rick Astley - Never Gonna Give You Up ](https://img.youtube.com/vi/JffWhWba2M4/0.jpg)](https://www.youtube.com/watch?v=JffWhWba2M4) | [![Casa Linda Apartments Interview "Not Today"](https://img.youtube.com/vi/ZhN-9Wz97bs/0.jpg)](https://www.youtube.com/watch?v=ZhN-9Wz97bs) |
+|     Touhou - Bad Apple     | Rick Astley - Never Gonna Give You Up |             Casa Linda             |
+| :------------------------: | :-----------------------------------: | :--------------------------------: |
+| [![1][Touhou P]][Touhou V] | [![1][Rick Astley P]][Rick Astley V]  | [![1][Casa Linda P]][Casa Linda V] |
 
 ## Getting Started
 
@@ -47,7 +47,7 @@ You can find API documentation [here](./API.md)
 
 A lot of examples are available to you [here](./examples)
 
-## How terminal-canvas works?
+## How terminal-canvas works
 
 ### Control Sequences
 
@@ -81,7 +81,7 @@ When you are converting Cell to the control sequences, it concatenates the follo
 - Convert cell position to control sequence
 - Convert foreground and background color to control sequence
 - Convert display settings to control sequences
-- Prepend the cell char with sequences above
+- Pre-pend the cell char with sequences above
 - Reset all display settings to default
 
 That way, each cell wrapped in own control sequences that can be flushed at any moment.
@@ -106,3 +106,10 @@ BTW, if I remove Throttle stream, I'm getting 120 FPS :smiley:
 ## License
 
 [MIT](./LICENSE)
+
+[Touhou P]: https://img.youtube.com/vi/_KpDKTihgxY/0.jpg
+[Rick Astley P]: https://img.youtube.com/vi/JffWhWba2M4/0.jpg
+[Casa Linda P]: https://img.youtube.com/vi/ZhN-9Wz97bs/0.jpg
+[Touhou V]: https://www.youtube.com/watch?v=_KpDKTihgxY
+[Rick Astley V]: https://www.youtube.com/watch?v=JffWhWba2M4
+[Casa Linda V]: https://www.youtube.com/watch?v=ZhN-9Wz97bs
