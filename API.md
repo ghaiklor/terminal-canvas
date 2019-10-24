@@ -80,6 +80,10 @@ Also, you can specify custom width and height of viewport where cursor will rend
 | [options.width] | <code>Number</code> | <code>stream.columns</code> | Number of columns (width) |
 | [options.height] | <code>Number</code> | <code>stream.rows</code> | Number of rows (height) |
 
+**Example**  
+```js
+Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
+```
 <a name="Canvas+write"></a>
 
 ### canvas.write(data) ⇒ [<code>Canvas</code>](#Canvas)
@@ -716,7 +720,7 @@ Disables flag which marks cell as modified.
 **Kind**: instance method of [<code>Cell</code>](#Cell)  
 <a name="Cell.DISPLAY_MODES"></a>
 
-### Cell.DISPLAY_MODES ⇒ <code>Object</code>
+### Cell.DISPLAY\_MODES ⇒ <code>Object</code>
 Returns a dictionary of all available display modes.
 
 **Kind**: static property of [<code>Cell</code>](#Cell)  
@@ -769,6 +773,13 @@ Class will try to parse your provided color, otherwise throws an error.
 | color.g | <code>Number</code> | Green channel |
 | color.b | <code>Number</code> | Blue channel |
 
+**Example**  
+```js
+Color.create('black');
+Color.create('rgb(0, 10, 20)');
+Color.create('#AABBCC');
+Color.create({r: 0, g: 10, b: 20});
+```
 <a name="Color+getR"></a>
 
 ### color.getR() ⇒ <code>Number</code>
