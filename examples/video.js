@@ -8,7 +8,7 @@ const canvas = require('../src/Canvas').create();
 
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 
-function imageToAscii(data, width, height) {
+function imageToAscii (data, width, height) {
   const contrastFactor = 2.95;
   let ascii = '';
 
@@ -27,7 +27,7 @@ function imageToAscii(data, width, height) {
   return ascii;
 }
 
-function playVideo(info) {
+function playVideo (info) {
   const video = info.formats.filter(format => format.resolution === '144p' && format.audioBitrate === null).sort((a, b) => a.container === 'webm' ? -1 : 1)[0];
   const m = video.size.match(/^(\d+)x(\d+)$/);
   const videoSize = { width: m[1], height: m[2] };
@@ -55,7 +55,7 @@ function playVideo(info) {
     });
 }
 
-function playAudio(info) {
+function playAudio (info) {
   const audio = info.formats.filter(format => format.resolution === null).sort((a, b) => b.audioBitrate - a.audioBitrate)[0];
   const speaker = new Speaker();
   const updateSpeaker = codec => {

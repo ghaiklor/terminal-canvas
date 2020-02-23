@@ -1,6 +1,4 @@
-const { assert } = require('chai');
-const sinon = require('sinon');
-const Cell = require('../../src/Cell');
+import { Cell } from "../../src/cell/Cell";
 
 describe('Cell', () => {
   it('Should properly create cell with default arguments', () => {

@@ -1,6 +1,8 @@
-const Cell = require('./Cell');
-const Color = require('./Color');
-const encodeToVT100 = require('./encodeToVT100');
+import { Cell } from '../cell/Cell';
+import { Color, IColor } from '../color/Color';
+import { encodeToVT100 } from '../encodeToVT100';
+import { CanvasOptions } from './CanvasOptions';
+import { DisplayOptions } from '../cell/DisplayOptions';
 
 /**
  * Canvas implements low-level API to terminal control codes.
@@ -12,7 +14,18 @@ const encodeToVT100 = require('./encodeToVT100');
  * @see http://wiki.bash-hackers.org/scripting/terminalcodes
  * @since 1.0.0
  */
-class Canvas {
+class Canvas implements CanvasOptions {
+  stream = process.stdout;
+  width: number = this.stream.columns;
+  height: number = this.stream.rows;
+  x = 0;
+  y = 0;
+  currentBackground: IColor = { r: -1, g: -1, b: -1 };
+  currentForeground: IColor = { r: -1, g: -1, b: -1 };
+  display: DisplayOptions = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
+  cells: Cell[] = Array.from<Cell>({ length: this.width * this.height }).map(() => new Cell(' '));
+  lastFrame: string[] = Array.from<string>({ length: this.width * this.height }).fill('');
+
   /**
    * Creates canvas that writes direct to `stdout` by default.
    * You can override destination stream with another Writable stream.
@@ -26,21 +39,20 @@ class Canvas {
    * @example
    * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
-  constructor(options = {}) {
-    const { stream = process.stdout, width = stream.columns, height = stream.rows } = options;
+  constructor (options?: Partial<CanvasOptions>) {
+    if (options !== undefined) {
+      if (options.stream !== undefined) {
+        this.stream = options.stream;
+      }
 
-    this._stream = stream;
-    this._width = width;
-    this._height = height;
+      if (options.width !== undefined) {
+        this.width = options.width;
+      }
 
-    this._x = 0;
-    this._y = 0;
-    this._background = { r: -1, g: -1, b: -1 };
-    this._foreground = { r: -1, g: -1, b: -1 };
-    this._display = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
-
-    this._cells = Array.from({ length: width * height }).map(() => new Cell());
-    this._lastFrame = Array.from({ length: width * height }).fill('');
+      if (options.height !== undefined) {
+        this.height = options.height;
+      }
+    }
   }
 
   /**
@@ -53,31 +65,32 @@ class Canvas {
    * @example
    * canvas.write('Hello, world').flush();
    */
-  write(data) {
-    const width = this._width;
-    const height = this._height;
-    const background = this._background;
-    const foreground = this._foreground;
-    const display = this._display;
+  write (data: string) {
+    const width = this.width;
+    const height = this.height;
+    const background = this.currentBackground;
+    const foreground = this.currentForeground;
+    const display = this.display;
 
     for (let i = 0; i < data.length; i++) {
       const char = data[i];
-      const x = this._x;
-      const y = this._y;
+      const x = this.x;
+      const y = this.y;
       const pointer = this.getPointerFromXY(x, y);
 
       if (x >= 0 && x < width && y >= 0 && y < height) {
-        this._cells[pointer]
-          .setChar(char)
-          .setX(x)
-          .setY(y)
-          .setBackground(background.r, background.g, background.b)
-          .setForeground(foreground.r, foreground.g, foreground.b)
-          .setDisplay(display.bold, display.dim, display.underlined, display.blink, display.reverse, display.hidden)
-          .setModified(true);
+        const cell = this.cells[pointer];
+
+        cell.char = char;
+        cell.x = x;
+        cell.y = y;
+        cell.background = background;
+        cell.foreground = foreground;
+        cell.display = display;
+        cell.isModified = true;
       }
 
-      this._x++;
+      this.x++;
     }
 
     return this;
@@ -91,21 +104,24 @@ class Canvas {
    *
    * @returns {Canvas}
    */
-  flush() {
+  flush () {
     let payload = '';
 
-    for (let i = 0; i < this._cells.length; i++) {
-      if (this._cells[i].isModified()) {
-        const cellSeq = this._cells[i].setModified(false).toString();
+    for (let i = 0; i < this.cells.length; i++) {
+      const cell = this.cells[i];
 
-        if (cellSeq !== this._lastFrame[i]) {
-          this._lastFrame[i] = cellSeq;
+      if (cell.isModified) {
+        cell.isModified = false;
+        const cellSeq = cell.toString();
+
+        if (cellSeq !== this.lastFrame[i]) {
+          this.lastFrame[i] = cellSeq;
           payload += cellSeq;
         }
       }
     }
 
-    this._stream.write(payload);
+    this.stream.write(payload);
 
     return this;
   }
@@ -120,8 +136,8 @@ class Canvas {
    * canvas.getPointerFromXY(0, 0); // returns 0
    * canvas.getPointerFromXY(); // x and y in this case is current position of the cursor
    */
-  getPointerFromXY(x = this._x, y = this._y) {
-    return y * this._width + x;
+  getPointerFromXY (x = this.x, y = this.y) {
+    return y * this.width + x;
   }
 
   /**
@@ -132,8 +148,8 @@ class Canvas {
    * @example
    * canvas.getXYFromPointer(0); // returns [0, 0]
    */
-  getXYFromPointer(index) {
-    return [index - (Math.floor(index / this._width) * this._width), Math.floor(index / this._width)];
+  getXYFromPointer (index: number) {
+    return [index - (Math.floor(index / this.width) * this.width), Math.floor(index / this.width)];
   }
 
   /**
@@ -145,8 +161,8 @@ class Canvas {
    * canvas.up(); // moves cursor up by one cell
    * canvas.up(5); // moves cursor up by five cells
    */
-  up(y = 1) {
-    this._y -= Math.floor(y);
+  up (y = 1) {
+    this.y -= Math.floor(y);
     return this;
   }
 
@@ -159,8 +175,8 @@ class Canvas {
    * canvas.down(); // moves cursor down by one cell
    * canvas.down(5); // moves cursor down by five cells
    */
-  down(y = 1) {
-    this._y += Math.floor(y);
+  down (y = 1) {
+    this.y += Math.floor(y);
     return this;
   }
 
@@ -173,8 +189,8 @@ class Canvas {
    * canvas.right(); // moves cursor right by one cell
    * canvas.right(5); // moves cursor right by five cells
    */
-  right(x = 1) {
-    this._x += Math.floor(x);
+  right (x = 1) {
+    this.x += Math.floor(x);
     return this;
   }
 
@@ -187,8 +203,8 @@ class Canvas {
    * canvas.left(); // moves cursor left by one cell
    * canvas.left(5); // moves cursor left by five cells
    */
-  left(x = 1) {
-    this._x -= Math.floor(x);
+  left (x = 1) {
+    this.x -= Math.floor(x);
     return this;
   }
 
@@ -201,7 +217,7 @@ class Canvas {
    * @example
    * canvas.moveBy(5, 5); // moves cursor to the right and down by five cells
    */
-  moveBy(x, y) {
+  moveBy (x: number, y: number) {
     if (x < 0) this.left(-x);
     if (x > 0) this.right(x);
 
@@ -220,9 +236,9 @@ class Canvas {
    * @example
    * canvas.moveTo(10, 10); // moves cursor to the (10, 10) coordinate
    */
-  moveTo(x, y) {
-    this._x = Math.floor(x);
-    this._y = Math.floor(y);
+  moveTo (x: number, y: number) {
+    this.x = Math.floor(x);
+    this.y = Math.floor(y);
 
     return this;
   }
@@ -239,12 +255,12 @@ class Canvas {
    * canvas.foreground('rgb(255, 255, 255)');
    * canvas.foreground(false); // disables foreground filling (will be used default filling)
    */
-  foreground(color) {
+  foreground (color: string) {
     const newColor = color ? Color.create(color).toRgb() : { r: -1, g: -1, b: -1 };
 
-    this._foreground.r = newColor.r;
-    this._foreground.g = newColor.g;
-    this._foreground.b = newColor.b;
+    this.currentForeground.r = newColor.r;
+    this.currentForeground.g = newColor.g;
+    this.currentForeground.b = newColor.b;
 
     return this;
   }
@@ -261,12 +277,12 @@ class Canvas {
    * canvas.background('rgb(255, 255, 255)');
    * canvas.background(false); // disables background filling (will be used default filling)
    */
-  background(color) {
+  background (color: string) {
     const newColor = color ? Color.create(color).toRgb() : { r: -1, g: -1, b: -1 };
 
-    this._background.r = newColor.r;
-    this._background.g = newColor.g;
-    this._background.b = newColor.b;
+    this.currentBackground.r = newColor.r;
+    this.currentBackground.g = newColor.g;
+    this.currentBackground.b = newColor.b;
 
     return this;
   }
@@ -280,8 +296,8 @@ class Canvas {
    * canvas.bold(); // enable bold mode
    * canvas.bold(false); // disable bold mode
    */
-  bold(isBold = true) {
-    this._display.bold = isBold;
+  bold (isBold = true) {
+    this.display.bold = isBold;
     return this;
   }
 
@@ -294,8 +310,8 @@ class Canvas {
    * canvas.dim(); // enable dim mode
    * canvas.dim(false); // disable dim mode
    */
-  dim(isDim = true) {
-    this._display.dim = isDim;
+  dim (isDim = true) {
+    this.display.dim = isDim;
     return this;
   }
 
@@ -308,8 +324,8 @@ class Canvas {
    * canvas.underlined(); // enable underlined mode
    * canvas.underlined(false); // disable underlined mode
    */
-  underlined(isUnderlined = true) {
-    this._display.underlined = isUnderlined;
+  underlined (isUnderlined = true) {
+    this.display.underlined = isUnderlined;
     return this;
   }
 
@@ -322,8 +338,8 @@ class Canvas {
    * canvas.blink(); // enable blink mode
    * canvas.blink(false); // disable blink mode
    */
-  blink(isBlink = true) {
-    this._display.blink = isBlink;
+  blink (isBlink = true) {
+    this.display.blink = isBlink;
     return this;
   }
 
@@ -336,8 +352,8 @@ class Canvas {
    * canvas.reverse(); // enable reverse mode
    * canvas.reverse(false); // disable reverse mode
    */
-  reverse(isReverse = true) {
-    this._display.reverse = isReverse;
+  reverse (isReverse = true) {
+    this.display.reverse = isReverse;
     return this;
   }
 
@@ -350,8 +366,8 @@ class Canvas {
    * canvas.hidden(); // enable hidden mode
    * canvas.hidden(false); // disable hidden mode
    */
-  hidden(isHidden = true) {
-    this._display.hidden = isHidden;
+  hidden (isHidden = true) {
+    this.display.hidden = isHidden;
     return this;
   }
 
@@ -367,11 +383,11 @@ class Canvas {
    * @example
    * canvas.erase(0, 0, 5, 5);
    */
-  erase(x1, y1, x2, y2) {
+  erase (x1: number, y1: number, x2: number, y2: number) {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
         const pointer = this.getPointerFromXY(x, y);
-        this._cells[pointer] && this._cells[pointer].reset();
+        this.cells[pointer] && this.cells[pointer].reset();
       }
     }
 
@@ -385,8 +401,8 @@ class Canvas {
    * @example
    * canvas.eraseToEnd();
    */
-  eraseToEnd() {
-    return this.erase(this._x, this._y, this._width - 1, this._y);
+  eraseToEnd () {
+    return this.erase(this.x, this.y, this.width - 1, this.y);
   }
 
   /**
@@ -396,8 +412,8 @@ class Canvas {
    * @example
    * canvas.eraseToStart();
    */
-  eraseToStart() {
-    return this.erase(0, this._y, this._x, this._y);
+  eraseToStart () {
+    return this.erase(0, this.y, this.x, this.y);
   }
 
   /**
@@ -407,8 +423,8 @@ class Canvas {
    * @example
    * canvas.eraseToDown();
    */
-  eraseToDown() {
-    return this.erase(0, this._y, this._width - 1, this._height - 1);
+  eraseToDown () {
+    return this.erase(0, this.y, this.width - 1, this.height - 1);
   }
 
   /**
@@ -418,8 +434,8 @@ class Canvas {
    * @example
    * canvas.eraseToUp();
    */
-  eraseToUp() {
-    return this.erase(0, 0, this._width - 1, this._y);
+  eraseToUp () {
+    return this.erase(0, 0, this.width - 1, this.y);
   }
 
   /**
@@ -429,8 +445,8 @@ class Canvas {
    * @example
    * canvas.eraseLine();
    */
-  eraseLine() {
-    return this.erase(0, this._y, this._width - 1, this._y);
+  eraseLine () {
+    return this.erase(0, this.y, this.width - 1, this.y);
   }
 
   /**
@@ -440,8 +456,8 @@ class Canvas {
    * @example
    * canvas.eraseScreen();
    */
-  eraseScreen() {
-    return this.erase(0, 0, this._width - 1, this._height - 1);
+  eraseScreen () {
+    return this.erase(0, 0, this.width - 1, this.height - 1);
   }
 
   /**
@@ -452,8 +468,8 @@ class Canvas {
    * @example
    * canvas.saveScreen();
    */
-  saveScreen() {
-    this._stream.write(encodeToVT100('[?47h'));
+  saveScreen () {
+    this.stream.write(encodeToVT100('[?47h'));
     return this;
   }
 
@@ -465,8 +481,8 @@ class Canvas {
    * @example
    * canvas.restoreScreen();
    */
-  restoreScreen() {
-    this._stream.write(encodeToVT100('[?47l'));
+  restoreScreen () {
+    this.stream.write(encodeToVT100('[?47l'));
     return this;
   }
 
@@ -478,8 +494,8 @@ class Canvas {
    * @example
    * canvas.hideCursor();
    */
-  hideCursor() {
-    this._stream.write(encodeToVT100('[?25l'));
+  hideCursor () {
+    this.stream.write(encodeToVT100('[?25l'));
     return this;
   }
 
@@ -491,8 +507,8 @@ class Canvas {
    * @example
    * canvas.showCursor();
    */
-  showCursor() {
-    this._stream.write(encodeToVT100('[?25h'));
+  showCursor () {
+    this.stream.write(encodeToVT100('[?25h'));
     return this;
   }
 
@@ -504,8 +520,8 @@ class Canvas {
    * @example
    * canvas.reset();
    */
-  reset() {
-    this._stream.write(encodeToVT100('c'));
+  reset () {
+    this.stream.write(encodeToVT100('c'));
     return this;
   }
 
@@ -515,8 +531,8 @@ class Canvas {
    * @static
    * @returns {Canvas}
    */
-  static create(...args) {
-    return new this(...args);
+  static create (options?: Partial<CanvasOptions>) {
+    return new this(options);
   }
 }
 

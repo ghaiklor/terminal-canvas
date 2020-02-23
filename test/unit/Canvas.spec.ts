@@ -1,6 +1,4 @@
-const { assert } = require('chai');
-const sinon = require('sinon');
-const Canvas = require('../../src/Canvas');
+import { Canvas } from "../../src/canvas/Canvas";
 
 describe('Canvas', () => {
   it('Should properly initialize with default arguments', () => {

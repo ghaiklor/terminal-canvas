@@ -5,4 +5,6 @@
  * @param {String} code Control code that you want to encode
  * @returns {String} Returns VT100 control sequence
  */
-module.exports = code => '\u001b' + code;
+export function encodeToVT100 (code: string): string {
+  return '\u001b' + code.slice(0, 1);
+}
