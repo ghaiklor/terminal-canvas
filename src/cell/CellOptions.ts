@@ -6,5 +6,5 @@ export interface CellOptions {
   y: number
   background: IColor
   foreground: IColor
-  display: DisplayOptions
+  display: Partial<DisplayOptions>
 }

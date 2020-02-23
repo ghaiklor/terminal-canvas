@@ -14,9 +14,9 @@ export interface IColor {
  * @since 2.0.0
  */
 export class Color implements IColor {
-  private _r = 0;
-  private _g = 0;
-  private _b = 0;
+  r = 0;
+  g = 0;
+  b = 0;
 
   /**
    * Create new Color instance.
@@ -49,10 +49,12 @@ export class Color implements IColor {
 
       if (Color.isRgb(color)) return Color.fromRgb(color);
       if (Color.isHex(color)) return Color.fromHex(color);
+
+      throw new Error(`Color ${color} can't be parsed`);
     } else {
-      this.r = color.r;
-      this.g = color.g;
-      this.b = color.b;
+      this.setR(color.r);
+      this.setG(color.g);
+      this.setB(color.b);
     }
   }
 
@@ -61,8 +63,8 @@ export class Color implements IColor {
    *
    * @returns {Number}
    */
-  get r (): number {
-    return Math.round(this._r);
+  getR (): number {
+    return Math.round(this.r);
   }
 
   /**
@@ -71,8 +73,9 @@ export class Color implements IColor {
    * @param {Number} value
    * @returns {Color}
    */
-  set r (value: number) {
-    this._r = Math.max(0, Math.min(value, 255));
+  setR (value: number) {
+    this.r = Math.max(0, Math.min(value, 255));
+    return this;
   }
 
   /**
@@ -80,8 +83,8 @@ export class Color implements IColor {
    *
    * @returns {Number}
    */
-  get g (): number {
-    return Math.round(this._g);
+  getG (): number {
+    return Math.round(this.g);
   }
 
   /**
@@ -90,8 +93,9 @@ export class Color implements IColor {
    * @param {Number} value
    * @returns {Color}
    */
-  set g (value: number) {
-    this._g = Math.max(0, Math.min(value, 255));
+  setG (value: number) {
+    this.g = Math.max(0, Math.min(value, 255));
+    return this;
   }
 
   /**
@@ -99,8 +103,8 @@ export class Color implements IColor {
    *
    * @returns {Number}
    */
-  get b () {
-    return Math.round(this._b);
+  getB () {
+    return Math.round(this.b);
   }
 
   /**
@@ -109,8 +113,9 @@ export class Color implements IColor {
    * @param {Number} value
    * @returns {Color}
    */
-  set b (value: number) {
-    this._b = Math.max(0, Math.min(value, 255));
+  setB (value: number) {
+    this.b = Math.max(0, Math.min(value, 255));
+    return this;
   }
 
   /**
@@ -118,8 +123,8 @@ export class Color implements IColor {
    *
    * @returns {{r: Number, g: Number, b: Number}}
    */
-  toRgb () {
-    return { r: this.r, g: this.g, b: this.b };
+  toRgb (): IColor {
+    return { r: this.getR(), g: this.getG(), b: this.getB() };
   }
 
   /**
@@ -129,7 +134,7 @@ export class Color implements IColor {
    */
   toHex (): string {
     const pad2 = (c: string) => c.length === 1 ? '0' + c : c;
-    return '#' + [pad2(this.r.toString(16)), pad2(this.g.toString(16)), pad2(this.b.toString(16))].join('');
+    return '#' + [pad2(this.getR().toString(16)), pad2(this.getG().toString(16)), pad2(this.getB().toString(16))].join('');
   }
 
   /**

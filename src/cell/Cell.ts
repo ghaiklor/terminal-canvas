@@ -11,13 +11,13 @@ import { DISPLAY_MODES } from './DisplayModes';
  * @since 2.0.0
  */
 export class Cell implements CellOptions {
-  private _char = ' ';
-  private _x = 0;
-  private _y = 0;
-  public background: IColor = { r: -1, g: -1, b: -1 };
-  public foreground: IColor = { r: -1, g: -1, b: -1 };
-  public display: DisplayOptions = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
-  public isModified = false;
+  char = ' ';
+  x = 0;
+  y = 0;
+  background: IColor = { r: -1, g: -1, b: -1 };
+  foreground: IColor = { r: -1, g: -1, b: -1 };
+  display: DisplayOptions = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
+  isModified = false;
 
   /**
    * Create Cell instance which are able to convert itself to ASCII control sequence.
@@ -44,53 +44,163 @@ export class Cell implements CellOptions {
    * @param {Boolean} [options.display.hidden] Hidden style
    */
   constructor (char: string, options?: Partial<CellOptions>) {
-    this.char = char;
+    this.setChar(char);
 
     if (options !== undefined) {
       if (options.x !== undefined) {
-        this.x = options.x;
+        this.setX(options.x);
       }
 
       if (options.y !== undefined) {
-        this.y = options.y;
+        this.setY(options.y);
       }
 
       if (options.background !== undefined) {
-        this.background = options.background;
+        this.setBackground(options.background.r, options.background.g, options.background.b);
       }
 
       if (options.foreground !== undefined) {
-        this.foreground = options.foreground;
+        this.setForeground(options.foreground.r, options.foreground.g, options.foreground.b);
       }
 
       if (options.display !== undefined) {
-        this.display = options.display;
+        this.setDisplay(options.display);
       }
     }
   }
 
-  get char (): string {
-    return this._char;
+  /**
+   * Returns current character in the cell.
+   */
+  getChar (): string {
+    return this.char;
   }
 
-  set char (char) {
-    this._char = char.slice(0, 1);
+  /**
+   * Updates the cell with the newly specified character.
+   *
+   * @param char Char to update in the cell
+   */
+  setChar (char: string) {
+    this.char = char.slice(0, 1);
+    return this;
   }
 
-  get x () {
-    return this._x;
+  /**
+   * Get X coordinate of the cell.
+   */
+  getX () {
+    return this.x;
   }
 
-  set x (x) {
-    this._x = Math.floor(x);
+  /**
+   * Set X coordinate.
+   *
+   * @param x X coordinate of the cell
+   */
+  setX (x: number) {
+    this.x = Math.floor(x);
+    return this;
   }
 
-  get y () {
-    return this._y;
+  /**
+   * Get Y coordinate of the cell.
+   */
+  getY () {
+    return this.y;
   }
 
-  set y (y) {
-    this._y = Math.floor(y);
+  /**
+   * Set Y coordinate.
+   *
+   * @param y Y coordinate of the cell
+   */
+  setY (y: number) {
+    this.y = Math.floor(y);
+    return this;
+  }
+
+  /**
+   * Get current background options of the cell.
+   */
+  getBackground () {
+    return this.background;
+  }
+
+  /**
+   * Set a new background for the cell.
+   *
+   * @param background Color to set on the background of the cell
+   */
+  setBackground (r: number, g: number, b: number) {
+    this.background = { r, g, b };
+    return this;
+  }
+
+  /**
+   * Reset background for the cell.
+   */
+  resetBackground () {
+    this.background = { r: -1, g: -1, b: -1 };
+    return this;
+  }
+
+  /**
+   * Get current foreground options of the cell.
+   */
+  getForeground () {
+    return this.foreground;
+  }
+
+  /**
+   * Set a new foreground for the cell.
+   *
+   * @param foreground Color to set on the foreground of the cell
+   */
+  setForeground (r: number, g: number, b: number) {
+    this.foreground = { r, g, b };
+    return this;
+  }
+
+  /**
+   * Resets foreground for the cell.
+   */
+  resetForeground () {
+    this.foreground = { r: -1, g: -1, b: -1 };
+    return this;
+  }
+
+  /**
+   * Get display characteristics of the cell.
+   */
+  getDisplay () {
+    return this.display;
+  }
+
+  /**
+   * Updates display characteristics of the cell.
+   *
+   * @param display Options for the display characteristics of the character in cell
+   */
+  setDisplay (display: Partial<DisplayOptions>) {
+    this.display = {
+      bold: display.bold === undefined ? false : display.bold,
+      dim: display.dim === undefined ? false : display.dim,
+      underlined: display.underlined === undefined ? false : display.underlined,
+      blink: display.blink === undefined ? false : display.blink,
+      reverse: display.reverse === undefined ? false : display.reverse,
+      hidden: display.hidden === undefined ? false : display.hidden
+    };
+
+    return this;
+  }
+
+  /**
+   * Resets display characteristics for the cell.
+   */
+  resetDisplay () {
+    this.display = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
+    return this;
   }
 
   /**
@@ -100,11 +210,13 @@ export class Cell implements CellOptions {
    * @returns {Cell}
    */
   reset () {
-    this.char = ' ';
-    this.background = { r: -1, g: -1, b: -1 };
-    this.foreground = { r: -1, g: -1, b: -1 };
-    this.display = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
+    this.setChar(' ');
+    this.resetBackground();
+    this.resetForeground();
+    this.resetDisplay();
     this.isModified = true;
+
+    return this;
   }
 
   /**

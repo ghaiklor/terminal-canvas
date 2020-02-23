@@ -2,15 +2,14 @@ import { Cell } from "../../src/cell/Cell";
 
 describe('Cell', () => {
   it('Should properly create cell with default arguments', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.instanceOf(cell, Cell);
-    assert.equal(cell._char, ' ');
-    assert.equal(cell._x, 0);
-    assert.equal(cell._y, 0);
-    assert.deepEqual(cell._background, { r: -1, g: -1, b: -1 });
-    assert.deepEqual(cell._foreground, { r: -1, g: -1, b: -1 });
-    assert.deepEqual(cell._display, {
+    expect(cell.char).toEqual(' ');
+    expect(cell.x).toEqual(0);
+    expect(cell.y).toEqual(0);
+    expect(cell.background).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.foreground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.display).toEqual({
       bold: false,
       dim: false,
       underlined: false,
@@ -21,21 +20,20 @@ describe('Cell', () => {
   });
 
   it('Should properly create cell with custom arguments', () => {
-    const cell = new Cell(' ', {
+    const cell = new Cell('s', {
       x: 10,
-      y: 10,
+      y: 20,
       background: { r: 1, g: 2, b: 3 },
-      foreground: { r: 1, g: 2, b: 3 },
+      foreground: { r: 4, g: 5, b: 6 },
       display: { bold: true }
     });
 
-    assert.instanceOf(cell, Cell);
-    assert.equal(cell._char, ' ');
-    assert.equal(cell._x, 10);
-    assert.equal(cell._y, 10);
-    assert.deepEqual(cell._background, { r: 1, g: 2, b: 3 });
-    assert.deepEqual(cell._foreground, { r: 1, g: 2, b: 3 });
-    assert.deepEqual(cell._display, {
+    expect(cell.char).toEqual('s');
+    expect(cell.x).toEqual(10);
+    expect(cell.y).toEqual(20);
+    expect(cell.background).toEqual({ r: 1, g: 2, b: 3 });
+    expect(cell.foreground).toEqual({ r: 4, g: 5, b: 6 });
+    expect(cell.display).toEqual({
       bold: true,
       dim: false,
       underlined: false,
@@ -46,59 +44,59 @@ describe('Cell', () => {
   });
 
   it('Should properly get/set char', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.equal(cell.getChar(), ' ');
-    assert.instanceOf(cell.setChar('t'), Cell);
-    assert.equal(cell.getChar(), 't');
-    assert.instanceOf(cell.setChar('long text'), Cell);
-    assert.equal(cell.getChar(), 'l');
+    expect(cell.getChar()).toEqual(' ');
+    expect(cell.setChar('t')).toBeInstanceOf(Cell);
+    expect(cell.getChar()).toEqual('t');
+    expect(cell.setChar('long text')).toBeInstanceOf(Cell);
+    expect(cell.getChar()).toEqual('l');
   });
 
   it('Should properly get/set X coordinate', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.equal(cell.getX(), 0);
-    assert.instanceOf(cell.setX(40), Cell);
-    assert.equal(cell.getX(), 40);
-    assert.instanceOf(cell.setX(50.99), Cell);
-    assert.equal(cell.getX(), 50);
+    expect(cell.getX()).toEqual(0);
+    expect(cell.setX(40)).toBeInstanceOf(Cell);
+    expect(cell.getX()).toEqual(40);
+    expect(cell.setX(50.99)).toBeInstanceOf(Cell);
+    expect(cell.getX()).toEqual(50);
   });
 
   it('Should properly get/set Y coordinate', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.equal(cell.getY(), 0);
-    assert.instanceOf(cell.setY(40), Cell);
-    assert.equal(cell.getY(), 40);
-    assert.instanceOf(cell.setY(50.99), Cell);
-    assert.equal(cell.getY(), 50);
+    expect(cell.getY()).toEqual(0);
+    expect(cell.setY(40)).toBeInstanceOf(Cell);
+    expect(cell.getY()).toEqual(40);
+    expect(cell.setY(50.99)).toBeInstanceOf(Cell);
+    expect(cell.getY()).toEqual(50);
   });
 
   it('Should properly get/set background color', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.deepEqual(cell.getBackground(), { r: -1, g: -1, b: -1 });
-    assert.instanceOf(cell.setBackground(0, 100, 200), Cell);
-    assert.deepEqual(cell.getBackground(), { r: 0, g: 100, b: 200 });
-    assert.instanceOf(cell.setBackground(), Cell);
-    assert.deepEqual(cell.getBackground(), { r: -1, g: -1, b: -1 });
+    expect(cell.getBackground()).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.setBackground(0, 100, 200)).toBeInstanceOf(Cell);
+    expect(cell.getBackground()).toEqual({ r: 0, g: 100, b: 200 });
+    expect(cell.resetBackground()).toBeInstanceOf(Cell);
+    expect(cell.getBackground()).toEqual({ r: -1, g: -1, b: -1 });
   });
 
   it('Should properly get/set foreground color', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.deepEqual(cell.getForeground(), { r: -1, g: -1, b: -1 });
-    assert.instanceOf(cell.setForeground(0, 100, 200), Cell);
-    assert.deepEqual(cell.getForeground(), { r: 0, g: 100, b: 200 });
-    assert.instanceOf(cell.setForeground(), Cell);
-    assert.deepEqual(cell.getForeground(), { r: -1, g: -1, b: -1 });
+    expect(cell.getForeground()).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.setForeground(0, 100, 200)).toBeInstanceOf(Cell);
+    expect(cell.getForeground()).toEqual({ r: 0, g: 100, b: 200 });
+    expect(cell.resetForeground()).toBeInstanceOf(Cell);
+    expect(cell.getForeground()).toEqual({ r: -1, g: -1, b: -1 });
   });
 
   it('Should properly get/set display modes', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.deepEqual(cell.getDisplay(), {
+    expect(cell.getDisplay()).toEqual({
       bold: false,
       dim: false,
       underlined: false,
@@ -107,8 +105,16 @@ describe('Cell', () => {
       hidden: false
     });
 
-    assert.instanceOf(cell.setDisplay(true, false, true, false, false, false), Cell);
-    assert.deepEqual(cell.getDisplay(), {
+    expect(cell.setDisplay({
+      bold: true,
+      dim: false,
+      underlined: true,
+      blink: false,
+      reverse: false,
+      hidden: false
+    })).toBeInstanceOf(Cell);
+
+    expect(cell.getDisplay()).toEqual({
       bold: true,
       dim: false,
       underlined: true,
@@ -117,8 +123,8 @@ describe('Cell', () => {
       hidden: false
     });
 
-    assert.instanceOf(cell.setDisplay(), Cell);
-    assert.deepEqual(cell.getDisplay(), {
+    expect(cell.resetDisplay()).toBeInstanceOf(Cell);
+    expect(cell.getDisplay()).toEqual({
       bold: false,
       dim: false,
       underlined: false,
@@ -128,55 +134,70 @@ describe('Cell', () => {
     });
   });
 
-  it('Should properly mark cell as modified', () => {
-    const cell = new Cell();
-
-    assert.notOk(cell.isModified());
-    assert.instanceOf(cell.setModified(false), Cell);
-    assert.notOk(cell.isModified());
-    assert.instanceOf(cell.setModified(), Cell);
-    assert.ok(cell.isModified());
-  });
-
   it('Should properly reset the cell contents and display settings', () => {
-    const cell = new Cell();
-    const mock = sinon.mock(cell);
+    const cell = new Cell('s', {
+      x: 10,
+      y: 20,
+      background: { r: 1, g: 2, b: 3 },
+      foreground: { r: 4, g: 5, b: 6 },
+      display: { bold: true, dim: true, underlined: true, blink: true, reverse: true, hidden: true }
+    });
 
-    mock.expects('setChar').once().withExactArgs(' ').returns(cell);
-    mock.expects('setBackground').once().withExactArgs(-1, -1, -1).returns(cell);
-    mock.expects('setForeground').once().withExactArgs(-1, -1, -1).returns(cell);
-    mock.expects('setDisplay').once().withExactArgs(false, false, false, false, false, false).returns(cell);
+    expect(cell.char).toEqual('s');
+    expect(cell.x).toEqual(10);
+    expect(cell.y).toEqual(20);
+    expect(cell.background).toEqual({ r: 1, g: 2, b: 3 });
+    expect(cell.foreground).toEqual({ r: 4, g: 5, b: 6 });
+    expect(cell.display).toEqual({
+      bold: true,
+      dim: true,
+      underlined: true,
+      blink: true,
+      reverse: true,
+      hidden: true
+    });
 
-    assert.instanceOf(cell.reset(), Cell);
-    mock.verify();
+    expect(cell.reset()).toBeInstanceOf(Cell);
+    expect(cell.char).toEqual(' ');
+    expect(cell.x).toEqual(10);
+    expect(cell.y).toEqual(20);
+    expect(cell.background).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.foreground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.display).toEqual({
+      bold: false,
+      dim: false,
+      underlined: false,
+      blink: false,
+      reverse: false,
+      hidden: false
+    });
   });
 
   it('Should properly convert Cell into ASCII sequence', () => {
-    const cell = new Cell();
+    const cell = new Cell(' ');
 
-    assert.equal(cell.toString(), '\u001b[1;1f \u001b[0m');
-    assert.instanceOf(cell.setX(20), Cell);
-    assert.equal(cell.toString(), '\u001b[1;21f \u001b[0m');
-    assert.instanceOf(cell.setY(10), Cell);
-    assert.equal(cell.toString(), '\u001b[11;21f \u001b[0m');
-    assert.instanceOf(cell.setBackground(0, 100, 200), Cell);
-    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m \u001b[0m');
-    assert.instanceOf(cell.setForeground(200, 100, 0), Cell);
-    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m \u001b[0m');
-    assert.instanceOf(cell.setDisplay(true, true, true, true, true, true), Cell);
-    assert.equal(cell.toString(), '\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m\u001b[1m\u001b[2m\u001b[4m\u001b[5m\u001b[7m\u001b[8m \u001b[0m');
+    expect(cell.toString()).toEqual('\u001b[1;1f \u001b[0m');
+    expect(cell.setX(20)).toBeInstanceOf(Cell);
+    expect(cell.toString()).toEqual('\u001b[1;21f \u001b[0m');
+    expect(cell.setY(10)).toBeInstanceOf(Cell);
+    expect(cell.toString()).toEqual('\u001b[11;21f \u001b[0m');
+    expect(cell.setBackground(0, 100, 200)).toBeInstanceOf(Cell);
+    expect(cell.toString()).toEqual('\u001b[11;21f\u001b[48;2;0;100;200m \u001b[0m');
+    expect(cell.setForeground(200, 100, 0)).toBeInstanceOf(Cell);
+    expect(cell.toString()).toEqual('\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m \u001b[0m');
+    expect(cell.setDisplay({ bold: true, dim: true, underlined: true, blink: true, reverse: true, hidden: true })).toBeInstanceOf(Cell);
+    expect(cell.toString()).toEqual('\u001b[11;21f\u001b[48;2;0;100;200m\u001b[38;2;200;100;0m\u001b[1m\u001b[2m\u001b[4m\u001b[5m\u001b[7m\u001b[8m \u001b[0m');
   });
 
   it('Should properly create Cell instance from static create()', () => {
-    const cell = Cell.create(' ', { x: 10, y: 20 });
+    const cell = Cell.create('s', { x: 10, y: 20 });
 
-    assert.instanceOf(cell, Cell);
-    assert.equal(cell._char, ' ');
-    assert.equal(cell._x, 10);
-    assert.equal(cell._y, 20);
-    assert.deepEqual(cell._background, { r: -1, g: -1, b: -1 });
-    assert.deepEqual(cell._foreground, { r: -1, g: -1, b: -1 });
-    assert.deepEqual(cell._display, {
+    expect(cell.char).toEqual('s');
+    expect(cell.x).toEqual(10);
+    expect(cell.y).toEqual(20);
+    expect(cell.background).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.foreground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(cell.display).toEqual({
       bold: false,
       dim: false,
       underlined: false,
