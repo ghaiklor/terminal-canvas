@@ -43,6 +43,22 @@ describe('Cell', () => {
     });
   });
 
+  it('Should properly create cell with custom X argument', () => {
+    const cell = new Cell('s', { x: 10 });
+
+    expect(cell.char).toEqual('s');
+    expect(cell.x).toEqual(10);
+    expect(cell.y).toEqual(0);
+  });
+
+  it('Should properly create cell with custom Y argument', () => {
+    const cell = new Cell('s', { y: 10 });
+
+    expect(cell.char).toEqual('s');
+    expect(cell.x).toEqual(0);
+    expect(cell.y).toEqual(10);
+  });
+
   it('Should properly get/set char', () => {
     const cell = new Cell(' ');
 
@@ -125,6 +141,19 @@ describe('Cell', () => {
 
     expect(cell.resetDisplay()).toBeInstanceOf(Cell);
     expect(cell.getDisplay()).toEqual({
+      bold: false,
+      dim: false,
+      underlined: false,
+      blink: false,
+      reverse: false,
+      hidden: false
+    });
+  });
+
+  it('Should properly set display options if display is an empty object', () => {
+    const cell = new Cell('s', { display: {} });
+
+    expect(cell.display).toEqual({
       bold: false,
       dim: false,
       underlined: false,

@@ -40,6 +40,22 @@ describe('Canvas', () => {
     expect(canvas.cells.length).toEqual(10 * 20);
   });
 
+  it('Should properly initialize with custom width argument', () => {
+    const canvas = new Canvas({ width: 10 });
+
+    expect(canvas.stream).toEqual(process.stdout);
+    expect(canvas.width).toEqual(10);
+    expect(canvas.height).toEqual(process.stdout.rows);
+  });
+
+  it('Should properly initialize with custom height argument', () => {
+    const canvas = new Canvas({ height: 10 });
+
+    expect(canvas.stream).toEqual(process.stdout);
+    expect(canvas.width).toEqual(process.stdout.columns);
+    expect(canvas.height).toEqual(10);
+  });
+
   it('Should properly write to the canvas', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 

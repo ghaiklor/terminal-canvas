@@ -113,12 +113,20 @@ describe('Color', () => {
     expect(color.b).toEqual(30);
   });
 
+  it('Should properly throw an error if RGB pattern is incorrect', () => {
+    expect(() => Color.fromRgb('wrong rgb')).toThrowError('Unrecognized RGB pattern: wrong rgb');
+  });
+
   it('Should properly create color from HEX', () => {
     const color = Color.fromHex('#102030');
 
     expect(color.r).toEqual(16);
     expect(color.g).toEqual(32);
     expect(color.b).toEqual(48);
+  });
+
+  it('Should properly throw an error if HEX pattern is incorrect', () => {
+    expect(() => Color.fromHex('wrong hex')).toThrowError('Unrecognized HEX pattern: wrong hex');
   });
 
   it('Should properly create Color instance from static create()', () => {

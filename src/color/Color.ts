@@ -38,12 +38,8 @@ export class Color implements IColor {
    */
   constructor(color: string | IColor) {
     if (typeof color === 'string') {
-      if (Color.isNamed(color)) {
-        const hex = NAMED_COLORS.get(color.toUpperCase());
-        if (hex === undefined) {
-          throw new Error(`Unknown color name: ${color}`);
-        }
-
+      const hex = NAMED_COLORS.get(color.toUpperCase());
+      if (hex !== undefined) {
         return Color.fromHex(hex);
       }
 
