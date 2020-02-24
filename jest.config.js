@@ -4,6 +4,7 @@ module.exports = {
   coverageReporters: ['json', 'text', 'lcov', 'clover'],
   errorOnDeprecated: true,
   preset: 'ts-jest',
+  restoreMocks: true,
   testEnvironment: 'node',
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
