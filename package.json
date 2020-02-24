@@ -2,7 +2,7 @@
   "name": "terminal-canvas",
   "version": "3.0.0",
   "description": "Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API",
-  "main": "dist/Canvas.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "homepage": "https://github.com/ghaiklor/terminal-canvas#readme",
   "keywords": [
@@ -30,7 +30,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf coverage dist",
+    "clean": "rimraf coverage dist tsconfig.tsbuildinfo",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint --fix --ext .js,.ts .",
     "test": "jest"
@@ -50,7 +50,11 @@
     "eslint-plugin-standard": "4.0.1",
     "jest": "25.1.0",
     "rimraf": "3.0.2",
+    "speaker": "0.5.1",
+    "stream-throttle": "0.1.3",
     "ts-jest": "25.2.1",
-    "typescript": "3.8.2"
+    "typescript": "3.8.2",
+    "youtube-terminal": "0.8.0",
+    "ytdl-core": "2.0.0"
   }
 }

@@ -39,12 +39,12 @@ export class Color implements IColor {
   constructor (color: string | IColor) {
     if (typeof color === 'string') {
       if (Color.isNamed(color)) {
-        const name = NAMED_COLORS.get(color.toUpperCase());
-        if (name === undefined) {
-          throw new Error(`Unknown color name: ${name}`);
+        const hex = NAMED_COLORS.get(color.toUpperCase());
+        if (hex === undefined) {
+          throw new Error(`Unknown color name: ${color}`);
         }
 
-        return Color.fromHex(name);
+        return Color.fromHex(hex);
       }
 
       if (Color.isRgb(color)) return Color.fromRgb(color);
@@ -73,7 +73,7 @@ export class Color implements IColor {
    * @param {Number} value
    * @returns {Color}
    */
-  setR (value: number) {
+  setR (value: number): Color {
     this.r = Math.max(0, Math.min(value, 255));
     return this;
   }
@@ -93,7 +93,7 @@ export class Color implements IColor {
    * @param {Number} value
    * @returns {Color}
    */
-  setG (value: number) {
+  setG (value: number): Color {
     this.g = Math.max(0, Math.min(value, 255));
     return this;
   }
@@ -103,7 +103,7 @@ export class Color implements IColor {
    *
    * @returns {Number}
    */
-  getB () {
+  getB (): number {
     return Math.round(this.b);
   }
 
@@ -113,7 +113,7 @@ export class Color implements IColor {
    * @param {Number} value
    * @returns {Color}
    */
-  setB (value: number) {
+  setB (value: number): Color {
     this.b = Math.max(0, Math.min(value, 255));
     return this;
   }
@@ -133,7 +133,7 @@ export class Color implements IColor {
    * @returns {String}
    */
   toHex (): string {
-    const pad2 = (c: string) => c.length === 1 ? '0' + c : c;
+    const pad2 = (c: string): string => c.length === 1 ? '0' + c : c;
     return '#' + [pad2(this.getR().toString(16)), pad2(this.getG().toString(16)), pad2(this.getB().toString(16))].join('');
   }
 
@@ -178,7 +178,7 @@ export class Color implements IColor {
    * @returns {Color}
    */
   static fromRgb (rgb: string): Color {
-    const match = rgb.match(RGB_REGEX);
+    const match = RGB_REGEX.exec(rgb);
     if (match === null) {
       throw new Error(`Unrecognized RGB pattern: ${rgb}`);
     }
@@ -195,7 +195,7 @@ export class Color implements IColor {
    * @returns {Color}
    */
   static fromHex (hex: string): Color {
-    const match = hex.match(HEX_REGEX);
+    const match = HEX_REGEX.exec(hex);
     if (match === null) {
       throw new Error(`Unrecognized HEX pattern: ${hex}`);
     }

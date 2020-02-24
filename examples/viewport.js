@@ -1,4 +1,4 @@
-const Canvas = require('../src/Canvas');
+const Canvas = require('..');
 const canvas = Canvas.create({ width: 5 }).reset();
 
 // It will print only 34567 because you have negative X coordinate and width equal to 5

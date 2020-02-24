@@ -1,4 +1,4 @@
-const Canvas = require('../src/Canvas');
+const Canvas = require('..');
 const canvas = Canvas.create().reset();
 
 let x = 0;

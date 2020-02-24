@@ -1,6 +1,6 @@
 import { WriteStream } from 'tty';
 
-export interface CanvasOptions {
+export interface ICanvasOptions {
   stream: WriteStream
   width: number
   height: number

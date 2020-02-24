@@ -1,4 +1,4 @@
-import { Canvas } from "../../src/canvas/Canvas";
+import { Canvas } from '../../src/canvas/Canvas';
 
 describe('Canvas', () => {
   it('Should properly initialize with default arguments', () => {

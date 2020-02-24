@@ -1,4 +1,4 @@
-const Canvas = require('../src/Canvas');
+const Canvas = require('..');
 const canvas = Canvas.create().reset();
 const colors = ['red', 'cyan', 'yellow', 'green', 'blue'];
 const text = 'Always after me lucky charms.';

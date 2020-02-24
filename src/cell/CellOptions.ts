@@ -1,10 +1,10 @@
 import { IColor } from '../color/Color';
-import { DisplayOptions } from './DisplayOptions';
+import { IDisplayOptions } from './DisplayOptions';
 
-export interface CellOptions {
+export interface ICellOptions {
   x: number
   y: number
   background: IColor
   foreground: IColor
-  display: Partial<DisplayOptions>
+  display: Partial<IDisplayOptions>
 }

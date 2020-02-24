@@ -4,7 +4,7 @@ const Throttle = require('stream-throttle').Throttle;
 const pcmAudio = require('youtube-terminal/lib/pcm-audio');
 const ffmpeg = require('youtube-terminal/lib/ffmpeg');
 const RawImageStream = require('youtube-terminal/lib/raw-image-stream');
-const canvas = require('../src/Canvas').create();
+const canvas = require('..').create();
 
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 

@@ -1,4 +1,4 @@
-export interface DisplayOptions {
+export interface IDisplayOptions {
   bold: boolean
   dim: boolean
   underlined: boolean
