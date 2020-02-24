@@ -72,25 +72,25 @@ describe('Canvas', () => {
   });
 
   it('Should properly flush the buffer into the stream', () => {
-    // @ts-ignore
-    const canvas = new Canvas({ stream: { write: jest.fn() }, width: 20, height: 10 });
+    const canvas = new Canvas({ width: 20, height: 10 });
+    const spy = jest.spyOn(process.stdout, 'write');
 
     expect(canvas.write('test')).toBeInstanceOf(Canvas);
     expect(canvas.flush()).toBeInstanceOf(Canvas);
     expect(canvas.moveTo(0, 0).write('1234')).toBeInstanceOf(Canvas);
     expect(canvas.flush()).toBeInstanceOf(Canvas);
-    expect(canvas.stream.write.mock.calls.length).toEqual(2);
+    expect(spy.mock.calls.length).toEqual(2);
   });
 
   it('Should properly skip the flush when changes the same', () => {
-    // @ts-ignore
-    const canvas = new Canvas({ stream: { write: jest.fn() }, width: 20, height: 10 });
+    const canvas = new Canvas({ width: 20, height: 10 });
+    const spy = jest.spyOn(process.stdout, 'write');
 
     expect(canvas.write('test')).toBeInstanceOf(Canvas);
     expect(canvas.flush()).toBeInstanceOf(Canvas);
     expect(canvas.moveTo(0, 0).write('test')).toBeInstanceOf(Canvas);
     expect(canvas.flush()).toBeInstanceOf(Canvas);
-    expect(canvas.stream.write.mock.calls.length).toEqual(2);
+    expect(spy.mock.calls.length).toEqual(2);
   });
 
   it('Should properly calculate buffer pointer', () => {
@@ -331,48 +331,48 @@ describe('Canvas', () => {
   });
 
   it('Should properly save the screen contents', () => {
-    // @ts-ignore
-    const canvas = new Canvas({ stream: { write: jest.fn() }, width: 20, height: 10 });
+    const canvas = new Canvas({ width: 20, height: 10 });
+    const spy = jest.spyOn(process.stdout, 'write');
 
     expect(canvas.saveScreen()).toBeInstanceOf(Canvas);
-    expect(canvas.stream.write.mock.calls.length).toEqual(1);
-    expect(canvas.stream.write.mock.calls[0][0]).toEqual('\u001b[?47h');
+    expect(spy.mock.calls.length).toEqual(1);
+    expect(spy.mock.calls[0][0]).toEqual('\u001b[?47h');
   });
 
   it('Should properly restore the screen contents', () => {
-    // @ts-ignore
-    const canvas = new Canvas({ stream: { write: jest.fn() }, width: 20, height: 10 });
+    const canvas = new Canvas({ width: 20, height: 10 });
+    const spy = jest.spyOn(process.stdout, 'write');
 
     expect(canvas.restoreScreen()).toBeInstanceOf(Canvas);
-    expect(canvas.stream.write.mock.calls.length).toEqual(1);
-    expect(canvas.stream.write.mock.calls[0][0]).toEqual('\u001b[?47l');
+    expect(spy.mock.calls.length).toEqual(1);
+    expect(spy.mock.calls[0][0]).toEqual('\u001b[?47l');
   });
 
   it('Should properly hide the cursor', () => {
-    // @ts-ignore
-    const canvas = new Canvas({ stream: { write: jest.fn() }, width: 20, height: 10 });
+    const canvas = new Canvas({ width: 20, height: 10 });
+    const spy = jest.spyOn(process.stdout, 'write');
 
     expect(canvas.hideCursor()).toBeInstanceOf(Canvas);
-    expect(canvas.stream.write.mock.calls.length).toEqual(1);
-    expect(canvas.stream.write.mock.calls[0][0]).toEqual('\u001b[?25l');
+    expect(spy.mock.calls.length).toEqual(1);
+    expect(spy.mock.calls[0][0]).toEqual('\u001b[?25l');
   });
 
   it('Should properly show the cursor', () => {
-    // @ts-ignore
-    const canvas = new Canvas({ stream: { write: jest.fn() }, width: 20, height: 10 });
+    const canvas = new Canvas({ width: 20, height: 10 });
+    const spy = jest.spyOn(process.stdout, 'write');
 
     expect(canvas.showCursor()).toBeInstanceOf(Canvas);
-    expect(canvas.stream.write.mock.calls.length).toEqual(1);
-    expect(canvas.stream.write.mock.calls[0][0]).toEqual('\u001b[?25h');
+    expect(spy.mock.calls.length).toEqual(1);
+    expect(spy.mock.calls[0][0]).toEqual('\u001b[?25h');
   });
 
   it('Should properly reset the TTY state', () => {
-    // @ts-ignore
-    const canvas = new Canvas({ stream: { write: jest.fn() }, width: 20, height: 10 });
+    const canvas = new Canvas({ width: 20, height: 10 });
+    const spy = jest.spyOn(process.stdout, 'write');
 
     expect(canvas.reset()).toBeInstanceOf(Canvas);
-    expect(canvas.stream.write.mock.calls.length).toEqual(1);
-    expect(canvas.stream.write.mock.calls[0][0]).toEqual('\u001bc');
+    expect(spy.mock.calls.length).toEqual(1);
+    expect(spy.mock.calls[0][0]).toEqual('\u001bc');
   });
 
   it('Should properly create new instance from static create()', () => {

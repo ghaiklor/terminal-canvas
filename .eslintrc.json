@@ -65,6 +65,18 @@
       {
         "allowNumber": true
       }
+    ],
+    "space-before-function-paren": [
+      "error",
+      {
+        "named": "never"
+      }
+    ],
+    "@typescript-eslint/space-before-function-paren": [
+      "error",
+      {
+        "named": "never"
+      }
     ]
   }
 }

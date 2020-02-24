@@ -39,7 +39,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
-  constructor (options?: Partial<ICanvasOptions>) {
+  constructor(options?: Partial<ICanvasOptions>) {
     if (options !== undefined) {
       if (options.stream !== undefined) {
         this.stream = options.stream;
@@ -68,7 +68,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.write('Hello, world').flush();
    */
-  write (data: string): Canvas {
+  write(data: string): Canvas {
     const width = this.width;
     const height = this.height;
     const background = this.currentBackground;
@@ -107,7 +107,7 @@ export class Canvas implements ICanvasOptions {
    *
    * @returns {Canvas}
    */
-  flush (): Canvas {
+  flush(): Canvas {
     let payload = '';
 
     for (let i = 0; i < this.cells.length; i++) {
@@ -139,7 +139,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.getPointerFromXY(0, 0); // returns 0
    * canvas.getPointerFromXY(); // x and y in this case is current position of the cursor
    */
-  getPointerFromXY (x = this.x, y = this.y): number {
+  getPointerFromXY(x = this.x, y = this.y): number {
     return y * this.width + x;
   }
 
@@ -151,7 +151,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.getXYFromPointer(0); // returns [0, 0]
    */
-  getXYFromPointer (index: number): [number, number] {
+  getXYFromPointer(index: number): [number, number] {
     return [index - (Math.floor(index / this.width) * this.width), Math.floor(index / this.width)];
   }
 
@@ -164,7 +164,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.up(); // moves cursor up by one cell
    * canvas.up(5); // moves cursor up by five cells
    */
-  up (y = 1): Canvas {
+  up(y = 1): Canvas {
     this.y -= Math.floor(y);
     return this;
   }
@@ -178,7 +178,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.down(); // moves cursor down by one cell
    * canvas.down(5); // moves cursor down by five cells
    */
-  down (y = 1): Canvas {
+  down(y = 1): Canvas {
     this.y += Math.floor(y);
     return this;
   }
@@ -192,7 +192,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.right(); // moves cursor right by one cell
    * canvas.right(5); // moves cursor right by five cells
    */
-  right (x = 1): Canvas {
+  right(x = 1): Canvas {
     this.x += Math.floor(x);
     return this;
   }
@@ -206,7 +206,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.left(); // moves cursor left by one cell
    * canvas.left(5); // moves cursor left by five cells
    */
-  left (x = 1): Canvas {
+  left(x = 1): Canvas {
     this.x -= Math.floor(x);
     return this;
   }
@@ -220,7 +220,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.moveBy(5, 5); // moves cursor to the right and down by five cells
    */
-  moveBy (x: number, y: number): Canvas {
+  moveBy(x: number, y: number): Canvas {
     if (x < 0) this.left(-x);
     if (x > 0) this.right(x);
 
@@ -239,7 +239,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.moveTo(10, 10); // moves cursor to the (10, 10) coordinate
    */
-  moveTo (x: number, y: number): Canvas {
+  moveTo(x: number, y: number): Canvas {
     this.x = Math.floor(x);
     this.y = Math.floor(y);
 
@@ -258,7 +258,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.foreground('rgb(255, 255, 255)');
    * canvas.foreground(false); // disables foreground filling (will be used default filling)
    */
-  foreground (color: string | boolean): Canvas {
+  foreground(color: string | boolean): Canvas {
     let newColor: IColor;
     if (typeof color === 'string') {
       newColor = Color.create(color).toRgb();
@@ -285,7 +285,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.background('rgb(255, 255, 255)');
    * canvas.background(false); // disables background filling (will be used default filling)
    */
-  background (color: string | boolean): Canvas {
+  background(color: string | boolean): Canvas {
     let newColor: IColor;
     if (typeof color === 'string') {
       newColor = Color.create(color).toRgb();
@@ -309,7 +309,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.bold(); // enable bold mode
    * canvas.bold(false); // disable bold mode
    */
-  bold (isBold = true): Canvas {
+  bold(isBold = true): Canvas {
     this.display.bold = isBold;
     return this;
   }
@@ -323,7 +323,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.dim(); // enable dim mode
    * canvas.dim(false); // disable dim mode
    */
-  dim (isDim = true): Canvas {
+  dim(isDim = true): Canvas {
     this.display.dim = isDim;
     return this;
   }
@@ -337,7 +337,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.underlined(); // enable underlined mode
    * canvas.underlined(false); // disable underlined mode
    */
-  underlined (isUnderlined = true): Canvas {
+  underlined(isUnderlined = true): Canvas {
     this.display.underlined = isUnderlined;
     return this;
   }
@@ -351,7 +351,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.blink(); // enable blink mode
    * canvas.blink(false); // disable blink mode
    */
-  blink (isBlink = true): Canvas {
+  blink(isBlink = true): Canvas {
     this.display.blink = isBlink;
     return this;
   }
@@ -365,7 +365,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.reverse(); // enable reverse mode
    * canvas.reverse(false); // disable reverse mode
    */
-  reverse (isReverse = true): Canvas {
+  reverse(isReverse = true): Canvas {
     this.display.reverse = isReverse;
     return this;
   }
@@ -379,7 +379,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.hidden(); // enable hidden mode
    * canvas.hidden(false); // disable hidden mode
    */
-  hidden (isHidden = true): Canvas {
+  hidden(isHidden = true): Canvas {
     this.display.hidden = isHidden;
     return this;
   }
@@ -396,7 +396,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.erase(0, 0, 5, 5);
    */
-  erase (x1: number, y1: number, x2: number, y2: number): Canvas {
+  erase(x1: number, y1: number, x2: number, y2: number): Canvas {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
         const pointer = this.getPointerFromXY(x, y);
@@ -414,7 +414,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToEnd();
    */
-  eraseToEnd (): Canvas {
+  eraseToEnd(): Canvas {
     return this.erase(this.x, this.y, this.width - 1, this.y);
   }
 
@@ -425,7 +425,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToStart();
    */
-  eraseToStart (): Canvas {
+  eraseToStart(): Canvas {
     return this.erase(0, this.y, this.x, this.y);
   }
 
@@ -436,7 +436,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToDown();
    */
-  eraseToDown (): Canvas {
+  eraseToDown(): Canvas {
     return this.erase(0, this.y, this.width - 1, this.height - 1);
   }
 
@@ -447,7 +447,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToUp();
    */
-  eraseToUp (): Canvas {
+  eraseToUp(): Canvas {
     return this.erase(0, 0, this.width - 1, this.y);
   }
 
@@ -458,7 +458,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseLine();
    */
-  eraseLine (): Canvas {
+  eraseLine(): Canvas {
     return this.erase(0, this.y, this.width - 1, this.y);
   }
 
@@ -469,7 +469,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseScreen();
    */
-  eraseScreen (): Canvas {
+  eraseScreen(): Canvas {
     return this.erase(0, 0, this.width - 1, this.height - 1);
   }
 
@@ -481,7 +481,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.saveScreen();
    */
-  saveScreen (): Canvas {
+  saveScreen(): Canvas {
     this.stream.write(encodeToVT100('[?47h'));
     return this;
   }
@@ -494,7 +494,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.restoreScreen();
    */
-  restoreScreen (): Canvas {
+  restoreScreen(): Canvas {
     this.stream.write(encodeToVT100('[?47l'));
     return this;
   }
@@ -507,7 +507,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.hideCursor();
    */
-  hideCursor (): Canvas {
+  hideCursor(): Canvas {
     this.stream.write(encodeToVT100('[?25l'));
     return this;
   }
@@ -520,7 +520,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.showCursor();
    */
-  showCursor (): Canvas {
+  showCursor(): Canvas {
     this.stream.write(encodeToVT100('[?25h'));
     return this;
   }
@@ -533,7 +533,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.reset();
    */
-  reset (): Canvas {
+  reset(): Canvas {
     this.stream.write(encodeToVT100('c'));
     return this;
   }
@@ -544,7 +544,7 @@ export class Canvas implements ICanvasOptions {
    * @static
    * @returns {Canvas}
    */
-  static create (options?: Partial<ICanvasOptions>): Canvas {
+  static create(options?: Partial<ICanvasOptions>): Canvas {
     return new this(options);
   }
 }

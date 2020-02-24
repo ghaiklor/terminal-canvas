@@ -3,12 +3,12 @@ const Speaker = require('speaker');
 const Throttle = require('stream-throttle').Throttle;
 const pcmAudio = require('youtube-terminal/lib/pcm-audio');
 const ffmpeg = require('youtube-terminal/lib/ffmpeg');
-const RawImageStream = require('youtube-terminal/lib/raw-image-stream');
+const ChopStream = require('chop-stream');
 const canvas = require('..').create();
 
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 
-function imageToAscii (data, width, height) {
+function imageToAscii(data, width, height) {
   const contrastFactor = 2.95;
   let ascii = '';
 
@@ -27,8 +27,8 @@ function imageToAscii (data, width, height) {
   return ascii;
 }
 
-function playVideo (info) {
-  const video = info.formats.filter(format => format.resolution === '144p' && format.audioBitrate === null).sort((a, b) => a.container === 'webm' ? -1 : 1)[0];
+function playVideo(info) {
+  const video = info.formats.filter(format => format.resolution === '144p' && format.audioBitrate === null).sort((a) => a.container === 'webm' ? -1 : 1)[0];
   const m = video.size.match(/^(\d+)x(\d+)$/);
   const videoSize = { width: m[1], height: m[2] };
   const frameHeight = Math.round(canvas._height * 2);
@@ -39,7 +39,7 @@ function playVideo (info) {
     .on('start', () => canvas.saveScreen().reset())
     .on('end', () => canvas.restoreScreen())
     .pipe(new Throttle({ rate: frameSize * 30 }))
-    .pipe(new RawImageStream(frameSize))
+    .pipe(new ChopStream(frameSize))
     .on('data', function (frameData) {
       const ascii = imageToAscii(frameData, frameWidth, frameHeight);
 
@@ -55,7 +55,7 @@ function playVideo (info) {
     });
 }
 
-function playAudio (info) {
+function playAudio(info) {
   const audio = info.formats.filter(format => format.resolution === null).sort((a, b) => b.audioBitrate - a.audioBitrate)[0];
   const speaker = new Speaker();
   const updateSpeaker = codec => {
