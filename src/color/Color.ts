@@ -24,7 +24,7 @@ export class Color implements IColor {
    * Class will try to parse your provided color, otherwise throws an error.
    *
    * @constructor
-   * @param {String|Object} color String with named color, rgb, hex or object with {r, g, b} properties
+   * @param {String|IColor} color String with named color, rgb, hex or object with {r, g, b} properties
    * @param {Number} color.r Red channel
    * @param {Number} color.g Green channel
    * @param {Number} color.b Blue channel

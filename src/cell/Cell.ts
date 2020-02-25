@@ -1,12 +1,12 @@
+import { DISPLAY_MODES } from './DisplayModes';
 import { encodeToVT100 } from '../encodeToVT100';
 import { ICellOptions } from './CellOptions';
 import { IColor } from '../color/Color';
 import { IDisplayOptions } from './DisplayOptions';
-import { DISPLAY_MODES } from './DisplayModes';
 
 /**
- * Wrapper around one cell in the terminal.
- * Used for filling terminal wrapper in the cursor.
+ * Wrapper for one cell in the terminal.
+ * It is used for converting abstract configuration of the cell to the real control sequence.
  *
  * @since 2.0.0
  */
@@ -23,7 +23,7 @@ export class Cell implements ICellOptions {
    * Create Cell instance which are able to convert itself to ASCII control sequence.
    *
    * @constructor
-   * @param {String} [char] Char that you want to wrap with control sequence
+   * @param {String} char Char that you want to wrap with control sequence
    * @param {Object} [options] Options object where you can set additional style to char
    * @param {Number} [options.x] X coordinate
    * @param {Number} [options.y] Y coordinate
@@ -46,31 +46,31 @@ export class Cell implements ICellOptions {
   constructor(char: string, options?: Partial<ICellOptions>) {
     this.setChar(char);
 
-    if (options !== undefined) {
-      if (options.x !== undefined) {
-        this.setX(options.x);
-      }
+    if (options?.x !== undefined) {
+      this.setX(options.x);
+    }
 
-      if (options.y !== undefined) {
-        this.setY(options.y);
-      }
+    if (options?.y !== undefined) {
+      this.setY(options.y);
+    }
 
-      if (options.background !== undefined) {
-        this.setBackground(options.background.r, options.background.g, options.background.b);
-      }
+    if (options?.background !== undefined) {
+      this.setBackground(options.background.r, options.background.g, options.background.b);
+    }
 
-      if (options.foreground !== undefined) {
-        this.setForeground(options.foreground.r, options.foreground.g, options.foreground.b);
-      }
+    if (options?.foreground !== undefined) {
+      this.setForeground(options.foreground.r, options.foreground.g, options.foreground.b);
+    }
 
-      if (options.display !== undefined) {
-        this.setDisplay(options.display);
-      }
+    if (options?.display !== undefined) {
+      this.setDisplay(options.display);
     }
   }
 
   /**
    * Returns current character in the cell.
+   *
+   * @returns {String}
    */
   getChar(): string {
     return this.char;
@@ -79,7 +79,7 @@ export class Cell implements ICellOptions {
   /**
    * Updates the cell with the newly specified character.
    *
-   * @param char Char to update in the cell
+   * @param {String} char Char to update in the cell
    */
   setChar(char: string): Cell {
     this.char = char.slice(0, 1);
@@ -88,6 +88,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Get X coordinate of the cell.
+   *
+   * @returns {Number}
    */
   getX(): number {
     return this.x;
@@ -96,7 +98,7 @@ export class Cell implements ICellOptions {
   /**
    * Set X coordinate.
    *
-   * @param x X coordinate of the cell
+   * @param {Number} x X coordinate of the cell
    */
   setX(x: number): Cell {
     this.x = Math.floor(x);
@@ -105,6 +107,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Get Y coordinate of the cell.
+   *
+   * @returns {Number}
    */
   getY(): number {
     return this.y;
@@ -113,7 +117,7 @@ export class Cell implements ICellOptions {
   /**
    * Set Y coordinate.
    *
-   * @param y Y coordinate of the cell
+   * @param {Number} y Y coordinate of the cell
    */
   setY(y: number): Cell {
     this.y = Math.floor(y);
@@ -122,6 +126,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Get current background options of the cell.
+   *
+   * @returns {IColor}
    */
   getBackground(): IColor {
     return this.background;
@@ -130,7 +136,7 @@ export class Cell implements ICellOptions {
   /**
    * Set a new background for the cell.
    *
-   * @param background Color to set on the background of the cell
+   * @param {IColor} background Color to set on the background of the cell
    */
   setBackground(r: number, g: number, b: number): Cell {
     this.background = { r, g, b };
@@ -139,6 +145,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Reset background for the cell.
+   *
+   * @returns {Cell}
    */
   resetBackground(): Cell {
     this.background = { r: -1, g: -1, b: -1 };
@@ -147,6 +155,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Get current foreground options of the cell.
+   *
+   * @returns {IColor}
    */
   getForeground(): IColor {
     return this.foreground;
@@ -155,7 +165,7 @@ export class Cell implements ICellOptions {
   /**
    * Set a new foreground for the cell.
    *
-   * @param foreground Color to set on the foreground of the cell
+   * @param {IColor} foreground Color to set on the foreground of the cell
    */
   setForeground(r: number, g: number, b: number): Cell {
     this.foreground = { r, g, b };
@@ -164,6 +174,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Resets foreground for the cell.
+   *
+   * @returns {Cell}
    */
   resetForeground(): Cell {
     this.foreground = { r: -1, g: -1, b: -1 };
@@ -172,6 +184,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Get display characteristics of the cell.
+   *
+   * @returns {IDisplayOptions}
    */
   getDisplay(): IDisplayOptions {
     return this.display;
@@ -180,7 +194,7 @@ export class Cell implements ICellOptions {
   /**
    * Updates display characteristics of the cell.
    *
-   * @param display Options for the display characteristics of the character in cell
+   * @param {IDisplayOptions} display Options for the display characteristics of the character in cell
    */
   setDisplay(display: Partial<IDisplayOptions>): Cell {
     this.display = {
@@ -197,6 +211,8 @@ export class Cell implements ICellOptions {
 
   /**
    * Resets display characteristics for the cell.
+   *
+   * @returns {Cell}
    */
   resetDisplay(): Cell {
     this.display = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
@@ -204,7 +220,7 @@ export class Cell implements ICellOptions {
   }
 
   /**
-   * Reset display settings.
+   * Reset all display settings for the cell.
    * It resets char, background, foreground and display mode.
    *
    * @returns {Cell}
@@ -220,8 +236,7 @@ export class Cell implements ICellOptions {
   }
 
   /**
-   * Convert cell to ASCII control sequence.
-   * Disables flag which marks cell as modified.
+   * Convert cell to VT100 control sequence.
    *
    * @returns {String}
    */

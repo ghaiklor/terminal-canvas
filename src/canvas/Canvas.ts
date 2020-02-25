@@ -3,6 +3,7 @@ import { Color, IColor } from '../color/Color';
 import { encodeToVT100 } from '../encodeToVT100';
 import { ICanvasOptions } from './CanvasOptions';
 import { IDisplayOptions } from '../cell/DisplayOptions';
+import { WriteStream } from 'tty';
 
 /**
  * Canvas implements low-level API to terminal control codes.
@@ -15,14 +16,14 @@ import { IDisplayOptions } from '../cell/DisplayOptions';
  * @since 1.0.0
  */
 export class Canvas implements ICanvasOptions {
-  stream = process.stdout;
+  stream: WriteStream = process.stdout;
   width: number = this.stream.columns;
   height: number = this.stream.rows;
-  x = 0;
-  y = 0;
-  currentBackground: IColor = { r: -1, g: -1, b: -1 };
-  currentForeground: IColor = { r: -1, g: -1, b: -1 };
-  display: IDisplayOptions = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
+  cursorX = 0;
+  cursorY = 0;
+  cursorBackground: IColor = { r: -1, g: -1, b: -1 };
+  cursorForeground: IColor = { r: -1, g: -1, b: -1 };
+  cursorDisplay: IDisplayOptions = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
   cells: Cell[];
   lastFrame: string[];
 
@@ -40,18 +41,16 @@ export class Canvas implements ICanvasOptions {
    * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
   constructor(options?: Partial<ICanvasOptions>) {
-    if (options !== undefined) {
-      if (options.stream !== undefined) {
-        this.stream = options.stream;
-      }
+    if (options?.stream !== undefined) {
+      this.stream = options.stream;
+    }
 
-      if (options.width !== undefined) {
-        this.width = options.width;
-      }
+    if (options?.width !== undefined) {
+      this.width = options.width;
+    }
 
-      if (options.height !== undefined) {
-        this.height = options.height;
-      }
+    if (options?.height !== undefined) {
+      this.height = options.height;
     }
 
     this.cells = Array.from<Cell>({ length: this.width * this.height }).map(() => new Cell(' '));
@@ -60,7 +59,7 @@ export class Canvas implements ICanvasOptions {
 
   /**
    * Write to the buffer.
-   * It doesn't applies immediately, but stores in virtual terminal that represented as array of {@link Cell} instances.
+   * It doesn't apply immediately, but stores in virtual terminal that represented as array of {@link Cell} instances.
    * For applying changes, you need to call {@link flush} method.
    *
    * @param {String} data Data to write to the terminal
@@ -71,14 +70,14 @@ export class Canvas implements ICanvasOptions {
   write(data: string): Canvas {
     const width = this.width;
     const height = this.height;
-    const background = this.currentBackground;
-    const foreground = this.currentForeground;
-    const display = this.display;
+    const background = this.cursorBackground;
+    const foreground = this.cursorForeground;
+    const display = this.cursorDisplay;
 
     for (let i = 0; i < data.length; i++) {
       const char = data[i];
-      const x = this.x;
-      const y = this.y;
+      const x = this.cursorX;
+      const y = this.cursorY;
       const pointer = this.getPointerFromXY(x, y);
 
       if (x >= 0 && x < width && y >= 0 && y < height) {
@@ -93,7 +92,7 @@ export class Canvas implements ICanvasOptions {
         cell.isModified = true;
       }
 
-      this.x++;
+      this.cursorX++;
     }
 
     return this;
@@ -139,7 +138,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.getPointerFromXY(0, 0); // returns 0
    * canvas.getPointerFromXY(); // x and y in this case is current position of the cursor
    */
-  getPointerFromXY(x = this.x, y = this.y): number {
+  getPointerFromXY(x = this.cursorX, y = this.cursorY): number {
     return y * this.width + x;
   }
 
@@ -165,7 +164,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.up(5); // moves cursor up by five cells
    */
   up(y = 1): Canvas {
-    this.y -= Math.floor(y);
+    this.cursorY -= Math.floor(y);
     return this;
   }
 
@@ -179,7 +178,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.down(5); // moves cursor down by five cells
    */
   down(y = 1): Canvas {
-    this.y += Math.floor(y);
+    this.cursorY += Math.floor(y);
     return this;
   }
 
@@ -193,7 +192,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.right(5); // moves cursor right by five cells
    */
   right(x = 1): Canvas {
-    this.x += Math.floor(x);
+    this.cursorX += Math.floor(x);
     return this;
   }
 
@@ -207,7 +206,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.left(5); // moves cursor left by five cells
    */
   left(x = 1): Canvas {
-    this.x -= Math.floor(x);
+    this.cursorX -= Math.floor(x);
     return this;
   }
 
@@ -240,8 +239,8 @@ export class Canvas implements ICanvasOptions {
    * canvas.moveTo(10, 10); // moves cursor to the (10, 10) coordinate
    */
   moveTo(x: number, y: number): Canvas {
-    this.x = Math.floor(x);
-    this.y = Math.floor(y);
+    this.cursorX = Math.floor(x);
+    this.cursorY = Math.floor(y);
 
     return this;
   }
@@ -266,10 +265,7 @@ export class Canvas implements ICanvasOptions {
       newColor = { r: -1, g: -1, b: -1 };
     }
 
-    this.currentForeground.r = newColor.r;
-    this.currentForeground.g = newColor.g;
-    this.currentForeground.b = newColor.b;
-
+    this.cursorForeground = newColor;
     return this;
   }
 
@@ -293,10 +289,7 @@ export class Canvas implements ICanvasOptions {
       newColor = { r: -1, g: -1, b: -1 };
     }
 
-    this.currentBackground.r = newColor.r;
-    this.currentBackground.g = newColor.g;
-    this.currentBackground.b = newColor.b;
-
+    this.cursorBackground = newColor;
     return this;
   }
 
@@ -310,7 +303,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.bold(false); // disable bold mode
    */
   bold(isBold = true): Canvas {
-    this.display.bold = isBold;
+    this.cursorDisplay.bold = isBold;
     return this;
   }
 
@@ -324,7 +317,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.dim(false); // disable dim mode
    */
   dim(isDim = true): Canvas {
-    this.display.dim = isDim;
+    this.cursorDisplay.dim = isDim;
     return this;
   }
 
@@ -338,7 +331,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.underlined(false); // disable underlined mode
    */
   underlined(isUnderlined = true): Canvas {
-    this.display.underlined = isUnderlined;
+    this.cursorDisplay.underlined = isUnderlined;
     return this;
   }
 
@@ -352,7 +345,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.blink(false); // disable blink mode
    */
   blink(isBlink = true): Canvas {
-    this.display.blink = isBlink;
+    this.cursorDisplay.blink = isBlink;
     return this;
   }
 
@@ -366,7 +359,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.reverse(false); // disable reverse mode
    */
   reverse(isReverse = true): Canvas {
-    this.display.reverse = isReverse;
+    this.cursorDisplay.reverse = isReverse;
     return this;
   }
 
@@ -380,7 +373,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.hidden(false); // disable hidden mode
    */
   hidden(isHidden = true): Canvas {
-    this.display.hidden = isHidden;
+    this.cursorDisplay.hidden = isHidden;
     return this;
   }
 
@@ -415,7 +408,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.eraseToEnd();
    */
   eraseToEnd(): Canvas {
-    return this.erase(this.x, this.y, this.width - 1, this.y);
+    return this.erase(this.cursorX, this.cursorY, this.width - 1, this.cursorY);
   }
 
   /**
@@ -426,7 +419,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.eraseToStart();
    */
   eraseToStart(): Canvas {
-    return this.erase(0, this.y, this.x, this.y);
+    return this.erase(0, this.cursorY, this.cursorX, this.cursorY);
   }
 
   /**
@@ -437,7 +430,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.eraseToDown();
    */
   eraseToDown(): Canvas {
-    return this.erase(0, this.y, this.width - 1, this.height - 1);
+    return this.erase(0, this.cursorY, this.width - 1, this.height - 1);
   }
 
   /**
@@ -448,7 +441,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.eraseToUp();
    */
   eraseToUp(): Canvas {
-    return this.erase(0, 0, this.width - 1, this.y);
+    return this.erase(0, 0, this.width - 1, this.cursorY);
   }
 
   /**
@@ -459,7 +452,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.eraseLine();
    */
   eraseLine(): Canvas {
-    return this.erase(0, this.y, this.width - 1, this.y);
+    return this.erase(0, this.cursorY, this.width - 1, this.cursorY);
   }
 
   /**

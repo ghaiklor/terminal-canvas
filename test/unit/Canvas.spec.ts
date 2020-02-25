@@ -8,16 +8,16 @@ describe('Canvas', () => {
     expect(canvas.stream).toEqual(process.stdout);
     expect(canvas.width).toEqual(process.stdout.columns);
     expect(canvas.height).toEqual(process.stdout.rows);
-    expect(canvas.x).toEqual(0);
-    expect(canvas.y).toEqual(0);
-    expect(canvas.currentBackground).toEqual({ r: -1, g: -1, b: -1 });
-    expect(canvas.currentForeground).toEqual({ r: -1, g: -1, b: -1 });
-    expect(canvas.display.bold).toBeFalsy();
-    expect(canvas.display.dim).toBeFalsy();
-    expect(canvas.display.underlined).toBeFalsy();
-    expect(canvas.display.blink).toBeFalsy();
-    expect(canvas.display.reverse).toBeFalsy();
-    expect(canvas.display.hidden).toBeFalsy();
+    expect(canvas.cursorX).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
+    expect(canvas.cursorBackground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorForeground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorDisplay.bold).toBeFalsy();
+    expect(canvas.cursorDisplay.dim).toBeFalsy();
+    expect(canvas.cursorDisplay.underlined).toBeFalsy();
+    expect(canvas.cursorDisplay.blink).toBeFalsy();
+    expect(canvas.cursorDisplay.reverse).toBeFalsy();
+    expect(canvas.cursorDisplay.hidden).toBeFalsy();
   });
 
   it('Should properly initialize with custom arguments', () => {
@@ -27,16 +27,16 @@ describe('Canvas', () => {
     expect(canvas.stream).toEqual(process.stdout);
     expect(canvas.width).toEqual(10);
     expect(canvas.height).toEqual(20);
-    expect(canvas.x).toEqual(0);
-    expect(canvas.y).toEqual(0);
-    expect(canvas.currentBackground).toEqual({ r: -1, g: -1, b: -1 });
-    expect(canvas.currentForeground).toEqual({ r: -1, g: -1, b: -1 });
-    expect(canvas.display.bold).toBeFalsy();
-    expect(canvas.display.dim).toBeFalsy();
-    expect(canvas.display.underlined).toBeFalsy();
-    expect(canvas.display.blink).toBeFalsy();
-    expect(canvas.display.reverse).toBeFalsy();
-    expect(canvas.display.hidden).toBeFalsy();
+    expect(canvas.cursorX).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
+    expect(canvas.cursorBackground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorForeground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorDisplay.bold).toBeFalsy();
+    expect(canvas.cursorDisplay.dim).toBeFalsy();
+    expect(canvas.cursorDisplay.underlined).toBeFalsy();
+    expect(canvas.cursorDisplay.blink).toBeFalsy();
+    expect(canvas.cursorDisplay.reverse).toBeFalsy();
+    expect(canvas.cursorDisplay.hidden).toBeFalsy();
     expect(canvas.cells.length).toEqual(10 * 20);
   });
 
@@ -58,7 +58,6 @@ describe('Canvas', () => {
 
   it('Should properly write to the canvas', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
-
     expect(canvas.cells[0].getChar()).toEqual(' ');
 
     canvas.write('test');
@@ -70,7 +69,6 @@ describe('Canvas', () => {
 
   it('Should properly ignore write if out of the bounding box', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
-
     expect(canvas.cells[0].getChar()).toEqual(' ');
 
     canvas.write('test');
@@ -130,65 +128,65 @@ describe('Canvas', () => {
   it('Should properly move cursor up with default arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.y).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
     expect(canvas.up()).toBeInstanceOf(Canvas);
-    expect(canvas.y).toEqual(-1);
+    expect(canvas.cursorY).toEqual(-1);
   });
 
   it('Should properly move cursor up with custom arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.y).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
     expect(canvas.up(5)).toBeInstanceOf(Canvas);
-    expect(canvas.y).toEqual(-5);
+    expect(canvas.cursorY).toEqual(-5);
   });
 
   it('Should properly move cursor down with default arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.y).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
     expect(canvas.down()).toBeInstanceOf(Canvas);
-    expect(canvas.y).toEqual(1);
+    expect(canvas.cursorY).toEqual(1);
   });
 
   it('Should properly move cursor down with custom arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.y).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
     expect(canvas.down(5)).toBeInstanceOf(Canvas);
-    expect(canvas.y).toEqual(5);
+    expect(canvas.cursorY).toEqual(5);
   });
 
   it('Should properly move cursor right with default arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.x).toEqual(0);
+    expect(canvas.cursorX).toEqual(0);
     expect(canvas.right()).toBeInstanceOf(Canvas);
-    expect(canvas.x).toEqual(1);
+    expect(canvas.cursorX).toEqual(1);
   });
 
   it('Should properly move cursor right with custom arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.x).toEqual(0);
+    expect(canvas.cursorX).toEqual(0);
     expect(canvas.right(5)).toBeInstanceOf(Canvas);
-    expect(canvas.x).toEqual(5);
+    expect(canvas.cursorX).toEqual(5);
   });
 
   it('Should properly move cursor left with default arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.x).toEqual(0);
+    expect(canvas.cursorX).toEqual(0);
     expect(canvas.left()).toBeInstanceOf(Canvas);
-    expect(canvas.x).toEqual(-1);
+    expect(canvas.cursorX).toEqual(-1);
   });
 
   it('Should properly move cursor left with custom arguments', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.x).toEqual(0);
+    expect(canvas.cursorX).toEqual(0);
     expect(canvas.left(5)).toBeInstanceOf(Canvas);
-    expect(canvas.x).toEqual(-5);
+    expect(canvas.cursorX).toEqual(-5);
   });
 
   it('Should properly set relative position of cursor', () => {
@@ -209,85 +207,85 @@ describe('Canvas', () => {
   it('Should properly set absolute position of cursor', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.x).toEqual(0);
-    expect(canvas.y).toEqual(0);
+    expect(canvas.cursorX).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
     expect(canvas.moveTo(5, 10)).toBeInstanceOf(Canvas);
-    expect(canvas.x).toEqual(5);
-    expect(canvas.y).toEqual(10);
+    expect(canvas.cursorX).toEqual(5);
+    expect(canvas.cursorY).toEqual(10);
   });
 
   it('Should properly change foreground color', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.currentForeground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorForeground).toEqual({ r: -1, g: -1, b: -1 });
     expect(canvas.foreground('white')).toBeInstanceOf(Canvas);
-    expect(canvas.currentForeground).toEqual({ r: 255, g: 255, b: 255 });
+    expect(canvas.cursorForeground).toEqual({ r: 255, g: 255, b: 255 });
     expect(canvas.foreground(false)).toBeInstanceOf(Canvas);
-    expect(canvas.currentForeground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorForeground).toEqual({ r: -1, g: -1, b: -1 });
   });
 
   it('Should properly change background color', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
-    expect(canvas.currentBackground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorBackground).toEqual({ r: -1, g: -1, b: -1 });
     expect(canvas.background('black')).toBeInstanceOf(Canvas);
-    expect(canvas.currentBackground).toEqual({ r: 0, g: 0, b: 0 });
+    expect(canvas.cursorBackground).toEqual({ r: 0, g: 0, b: 0 });
     expect(canvas.background(false)).toBeInstanceOf(Canvas);
-    expect(canvas.currentBackground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorBackground).toEqual({ r: -1, g: -1, b: -1 });
   });
 
   it('Should properly toggle bold mode', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
     expect(canvas.bold()).toBeInstanceOf(Canvas);
-    expect(canvas.display.bold).toBeTruthy();
+    expect(canvas.cursorDisplay.bold).toBeTruthy();
     expect(canvas.bold(false)).toBeInstanceOf(Canvas);
-    expect(canvas.display.bold).toBeFalsy();
+    expect(canvas.cursorDisplay.bold).toBeFalsy();
   });
 
   it('Should properly toggle dim mode', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
     expect(canvas.dim()).toBeInstanceOf(Canvas);
-    expect(canvas.display.dim).toBeTruthy();
+    expect(canvas.cursorDisplay.dim).toBeTruthy();
     expect(canvas.dim(false)).toBeInstanceOf(Canvas);
-    expect(canvas.display.dim).toBeFalsy();
+    expect(canvas.cursorDisplay.dim).toBeFalsy();
   });
 
   it('Should properly toggle underlined mode', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
     expect(canvas.underlined()).toBeInstanceOf(Canvas);
-    expect(canvas.display.underlined).toBeTruthy();
+    expect(canvas.cursorDisplay.underlined).toBeTruthy();
     expect(canvas.underlined(false)).toBeInstanceOf(Canvas);
-    expect(canvas.display.underlined).toBeFalsy();
+    expect(canvas.cursorDisplay.underlined).toBeFalsy();
   });
 
   it('Should properly toggle blink mode', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
     expect(canvas.blink()).toBeInstanceOf(Canvas);
-    expect(canvas.display.blink).toBeTruthy();
+    expect(canvas.cursorDisplay.blink).toBeTruthy();
     expect(canvas.blink(false)).toBeInstanceOf(Canvas);
-    expect(canvas.display.blink).toBeFalsy();
+    expect(canvas.cursorDisplay.blink).toBeFalsy();
   });
 
   it('Should properly toggle reverse mode', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
     expect(canvas.reverse()).toBeInstanceOf(Canvas);
-    expect(canvas.display.reverse).toBeTruthy();
+    expect(canvas.cursorDisplay.reverse).toBeTruthy();
     expect(canvas.reverse(false)).toBeInstanceOf(Canvas);
-    expect(canvas.display.reverse).toBeFalsy();
+    expect(canvas.cursorDisplay.reverse).toBeFalsy();
   });
 
   it('Should properly toggle hidden mode', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
 
     expect(canvas.hidden()).toBeInstanceOf(Canvas);
-    expect(canvas.display.hidden).toBeTruthy();
+    expect(canvas.cursorDisplay.hidden).toBeTruthy();
     expect(canvas.hidden(false)).toBeInstanceOf(Canvas);
-    expect(canvas.display.hidden).toBeFalsy();
+    expect(canvas.cursorDisplay.hidden).toBeFalsy();
   });
 
   it('Should properly erase the specified region', () => {
@@ -398,15 +396,15 @@ describe('Canvas', () => {
     expect(canvas.stream).toEqual(process.stdout);
     expect(canvas.width).toEqual(process.stdout.columns);
     expect(canvas.height).toEqual(process.stdout.rows);
-    expect(canvas.x).toEqual(0);
-    expect(canvas.y).toEqual(0);
-    expect(canvas.currentBackground).toEqual({ r: -1, g: -1, b: -1 });
-    expect(canvas.currentForeground).toEqual({ r: -1, g: -1, b: -1 });
-    expect(canvas.display.bold).toBeFalsy();
-    expect(canvas.display.dim).toBeFalsy();
-    expect(canvas.display.underlined).toBeFalsy();
-    expect(canvas.display.blink).toBeFalsy();
-    expect(canvas.display.reverse).toBeFalsy();
-    expect(canvas.display.hidden).toBeFalsy();
+    expect(canvas.cursorX).toEqual(0);
+    expect(canvas.cursorY).toEqual(0);
+    expect(canvas.cursorBackground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorForeground).toEqual({ r: -1, g: -1, b: -1 });
+    expect(canvas.cursorDisplay.bold).toBeFalsy();
+    expect(canvas.cursorDisplay.dim).toBeFalsy();
+    expect(canvas.cursorDisplay.underlined).toBeFalsy();
+    expect(canvas.cursorDisplay.blink).toBeFalsy();
+    expect(canvas.cursorDisplay.reverse).toBeFalsy();
+    expect(canvas.cursorDisplay.hidden).toBeFalsy();
   });
 });
