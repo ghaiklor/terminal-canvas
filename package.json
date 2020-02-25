@@ -33,11 +33,12 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "all": "npm run clean && npm run build && npm run lint && npm run test",
+    "all": "npm run clean && npm run build && npm run lint && npm run test && npm run docs",
     "build": "tsc",
     "clean": "rimraf coverage dist tsconfig.tsbuildinfo",
     "commit": "git cz",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "docs": "typedoc ./src",
     "lint": "eslint --fix --ext .js,.ts .",
     "postversion": "git push && git push --tags",
     "prepare": "npm run build",
@@ -63,6 +64,7 @@
     "jest": "25.1.0",
     "rimraf": "3.0.2",
     "ts-jest": "25.2.1",
+    "typedoc": "0.16.10",
     "typescript": "3.8.2"
   },
   "peerDependencies": {

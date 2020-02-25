@@ -1,0 +1,8 @@
+{
+  "includeVersion": true,
+  "mode": "file",
+  "name": "terminal-canvas",
+  "out": "./docs",
+  "readme": "README.md",
+  "theme": "minimal"
+}
