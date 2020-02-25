@@ -1,4 +1,4 @@
-import { Color } from '../../src/color/Color';
+import { Color } from '../src/color/Color';
 
 describe('Color', () => {
   it('Should properly create Color instance from named color', () => {
