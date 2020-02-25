@@ -296,6 +296,11 @@ describe('Canvas', () => {
     expect(spy.mock.calls.length).toEqual(36);
   });
 
+  it('Should properly ignore reset method on the cell if out of boundaries', () => {
+    const canvas = new Canvas({ width: 20, height: 10 });
+    expect(canvas.erase(0, 0, 30, 30)).toBeInstanceOf(Canvas);
+  });
+
   it('Should properly erase from current position to the end of line', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
     const spy = jest.spyOn(canvas, 'erase').mockImplementation(() => canvas);
