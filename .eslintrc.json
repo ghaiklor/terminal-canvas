@@ -89,6 +89,16 @@
           "off"
         ]
       }
+    },
+    {
+      "files": [
+        "examples/*.js"
+      ],
+      "rules": {
+        "@typescript-eslint/no-var-requires": [
+          "off"
+        ]
+      }
     }
   ]
 }
