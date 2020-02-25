@@ -11,6 +11,8 @@
     "kittik",
     "lcov",
     "performant",
-    "tsbuildinfo"
+    "tsbuildinfo",
+    "youtube",
+    "ytdl"
   ]
 }

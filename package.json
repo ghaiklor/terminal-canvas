@@ -12,6 +12,9 @@
     "renderer",
     "render"
   ],
+  "files": [
+    "./dist/**/*"
+  ],
   "bugs": {
     "url": "https://github.com/ghaiklor/terminal-canvas/issues",
     "email": "ghaiklor@gmail.com"
