@@ -28,10 +28,9 @@ function imageToAscii(data, width, height) {
 }
 
 function playVideo(info) {
-  const video = info.formats.filter(format => format.resolution === '144p' && format.audioBitrate === null).sort((a) => a.container === 'webm' ? -1 : 1)[0];
-  const m = video.size.match(/^(\d+)x(\d+)$/);
-  const videoSize = { width: m[1], height: m[2] };
-  const frameHeight = Math.round(canvas._height * 2);
+  const video = info.formats.filter(format => format.quality === 'tiny' && format.audioBitrate === null).sort((a) => a.container === 'webm' ? -1 : 1)[0];
+  const videoSize = { width: video.width, height: video.height };
+  const frameHeight = Math.round(canvas.height * 2);
   const frameWidth = Math.round(frameHeight * (videoSize.width / videoSize.height));
   const frameSize = frameWidth * frameHeight * 3;
 
@@ -46,7 +45,7 @@ function playVideo(info) {
       for (let y = 0; y < frameHeight; y++) {
         for (let x = 0; x < frameWidth; x++) {
           canvas
-            .moveTo(x + (canvas._width / 2 - frameWidth / 2), y)
+            .moveTo(x + (canvas.width / 2 - frameWidth / 2), y)
             .write(ascii[y * frameWidth + x] || '');
         }
       }
@@ -56,7 +55,7 @@ function playVideo(info) {
 }
 
 function playAudio(info) {
-  const audio = info.formats.filter(format => format.resolution === null).sort((a, b) => b.audioBitrate - a.audioBitrate)[0];
+  const audio = info.formats.filter(format => format.quality === 'tiny').sort((a, b) => b.audioBitrate - a.audioBitrate)[0];
   const speaker = new Speaker();
   const updateSpeaker = codec => {
     speaker.channels = codec.audio_details[2] === 'mono' ? 1 : 2;

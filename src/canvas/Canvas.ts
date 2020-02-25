@@ -393,7 +393,7 @@ export class Canvas implements ICanvasOptions {
     for (let y = y1; y <= y2; y++) {
       for (let x = x1; x <= x2; x++) {
         const pointer = this.getPointerFromXY(x, y);
-        this.cells[pointer].reset();
+        this.cells[pointer]?.reset();
       }
     }
 
