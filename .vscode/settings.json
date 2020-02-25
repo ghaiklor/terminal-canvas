@@ -11,6 +11,8 @@
     "kittik",
     "lcov",
     "performant",
+    "postversion",
+    "preversion",
     "tsbuildinfo",
     "youtube",
     "ytdl"
