@@ -33,7 +33,7 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "all": "npm run clean && npm run build && npm run lint && npm run test && npm run docs",
+    "all": "npm run clean && npm run build && npm run lint && npm run test",
     "build": "tsc",
     "clean": "rimraf coverage dist tsconfig.tsbuildinfo",
     "commit": "git cz",
