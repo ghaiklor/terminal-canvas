@@ -2,17 +2,14 @@
 
 Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API.
 
-[![Build Status](https://travis-ci.org/ghaiklor/terminal-canvas.svg?branch=master)](https://travis-ci.org/ghaiklor/terminal-canvas)
-![Coverage](https://img.shields.io/coveralls/ghaiklor/terminal-canvas.svg)
-![Downloads](https://img.shields.io/npm/dm/terminal-canvas.svg)
-![Downloads](https://img.shields.io/npm/dt/terminal-canvas.svg)
-![npm version](https://img.shields.io/npm/v/terminal-canvas.svg)
-![License](https://img.shields.io/npm/l/terminal-canvas.svg)
+![Travis (.com)](https://img.shields.io/travis/com/ghaiklor/terminal-canvas?style=for-the-badge)
+![Codecov](https://img.shields.io/codecov/c/gh/ghaiklor/terminal-canvas?style=for-the-badge)
+![npm](https://img.shields.io/npm/dt/terminal-canvas?style=for-the-badge)
 
-![dependencies](https://img.shields.io/david/ghaiklor/terminal-canvas.svg)
-![dev dependencies](https://img.shields.io/david/dev/ghaiklor/terminal-canvas.svg)
+[![GitHub followers](https://img.shields.io/github/followers/ghaiklor.svg?label=Follow&style=social)](https://github.com/ghaiklor)
+[![Twitter Follow](https://img.shields.io/twitter/follow/ghaiklor.svg?label=Follow&style=social)](https://twitter.com/ghaiklor)
 
-Entirely written with JavaScript, terminal-canvas exposes features that you can use for rendering in terminal.
+Entirely written with TypeScript, terminal-canvas exposes features that you can use for rendering in terminal.
 High-performance algorithms and optimizations allow to render only cells which have been changed.
 Just look at the demo videos below to see, what you can do with terminal-canvas :smiley:
 
@@ -39,13 +36,13 @@ const canvas = new Canvas();
 canvas.moveTo(10, 10).write('Hello, world').flush();
 ```
 
-## API
-
-You can find API documentation [here](./API.md)
-
 ## Examples
 
 A lot of examples are available to you [here](./examples)
+
+## API Reference
+
+API Reference is accessible [here](https://ghaiklor.github.io/terminal-canvas/)
 
 ## How terminal-canvas works
 
@@ -78,11 +75,11 @@ It works the following way.
 Each Cell has style settings and position in the real terminal.
 When you are converting Cell to the control sequences, it concatenates the following sequences:
 
-- Convert cell position to control sequence
-- Convert foreground and background color to control sequence
-- Convert display settings to control sequences
-- Pre-pend the cell char with sequences above
-- Reset all display settings to default
+1. Convert cell position to control sequence
+2. Convert foreground and background color to control sequence
+3. Convert display settings to control sequences
+4. Pre-pend the cell char with sequences above
+5. Reset all display settings to default
 
 That way, each cell wrapped in own control sequences that can be flushed at any moment.
 
@@ -95,9 +92,9 @@ The algorithm is simple.
 When you are writing to the canvas, all write operations mark virtual cells as modified cells.
 After some time, you decide to flush changes. When flush() method is called it does 2 things:
 
-- Iterate through all cells and find only cells with modified marker;
-- Convert modified cell to control sequence and compare that sequence with the sequence that was used at the previous frame;
-- If they are not equal, store new control sequence and write to stream, otherwise, ignore it
+1. Iterate through all cells and find only cells with modified marker;
+2. Convert modified cell to control sequence and compare that sequence with the sequence that was used at the previous frame;
+3. If they are not equal, store new control sequence and write to stream, otherwise, ignore it
 
 That's how I made it possible to render videos in the terminal at 30 FPS.
 
