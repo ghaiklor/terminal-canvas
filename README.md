@@ -1,13 +1,13 @@
 # terminal-canvas
 
-Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API.
-
 ![Travis (.com)](https://img.shields.io/travis/com/ghaiklor/terminal-canvas?style=for-the-badge)
 ![Codecov](https://img.shields.io/codecov/c/gh/ghaiklor/terminal-canvas?style=for-the-badge)
 ![npm](https://img.shields.io/npm/dt/terminal-canvas?style=for-the-badge)
 
-[![GitHub followers](https://img.shields.io/github/followers/ghaiklor.svg?label=Follow&style=social)](https://github.com/ghaiklor)
+[![GitHub Follow](https://img.shields.io/github/followers/ghaiklor.svg?label=Follow&style=social)](https://github.com/ghaiklor)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ghaiklor.svg?label=Follow&style=social)](https://twitter.com/ghaiklor)
+
+Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API.
 
 Entirely written with TypeScript, terminal-canvas exposes features that you can use for rendering in terminal.
 High-performance algorithms and optimizations allow to render only cells which have been changed.
