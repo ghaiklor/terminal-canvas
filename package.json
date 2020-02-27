@@ -15,7 +15,7 @@
     "render"
   ],
   "files": [
-    "./dist/**/*"
+    "dist"
   ],
   "directories": {
     "doc": "./docs",
