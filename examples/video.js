@@ -1,11 +1,11 @@
-const ytdl = require('ytdl-core');
+const ChopStream = require('chop-stream');
+const ffmpeg = require('fluent-ffmpeg');
 const Speaker = require('speaker');
 const Throttle = require('stream-throttle').Throttle;
-const pcmAudio = require('youtube-terminal/lib/pcm-audio');
-const ffmpeg = require('youtube-terminal/lib/ffmpeg');
-const ChopStream = require('chop-stream');
+const ytdl = require('ytdl-core');
 const canvas = require('..').create();
 
+const YOUTUBE_URL = process.env.YOUTUBE_URL || 'https://www.youtube.com/watch?v=Hiqn1Ur32AE';
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 
 function imageToAscii(data, width, height) {
@@ -34,7 +34,14 @@ function playVideo(info) {
   const frameWidth = Math.round(frameHeight * (videoSize.width / videoSize.height));
   const frameSize = frameWidth * frameHeight * 3;
 
-  ffmpeg.rawImageStream(video.url, { fps: 30, width: frameWidth })
+  return ffmpeg(video.url)
+    .format('rawvideo')
+    .videoFilters([
+      { filter: 'fps', options: 30 },
+      { filter: 'scale', options: frameWidth + ':-1' }
+    ])
+    .outputOptions('-pix_fmt', 'rgb24')
+    .outputOptions('-update', '1')
     .on('start', () => canvas.saveScreen().reset())
     .on('end', () => canvas.restoreScreen())
     .pipe(new Throttle({ rate: frameSize * 30 }))
@@ -62,10 +69,15 @@ function playAudio(info) {
     speaker.sampleRate = parseInt(codec.audio_details[1].match(/\d+/)[0], 10);
   };
 
-  pcmAudio(audio.url).on('codecData', updateSpeaker).pipe(speaker);
+  return ffmpeg(audio.url)
+    .noVideo()
+    .audioCodec('pcm_s16le')
+    .format('s16le')
+    .on('codecData', updateSpeaker)
+    .pipe(speaker);
 }
 
-ytdl.getInfo('https://www.youtube.com/watch?v=Hiqn1Ur32AE', (error, info) => {
+ytdl.getInfo(YOUTUBE_URL, (error, info) => {
   if (error) return console.error(error);
 
   playVideo(info);

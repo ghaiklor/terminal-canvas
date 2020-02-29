@@ -15,6 +15,7 @@
     "performant",
     "postversion",
     "preversion",
+    "rawvideo",
     "readonly",
     "tsbuildinfo",
     "typedoc",
