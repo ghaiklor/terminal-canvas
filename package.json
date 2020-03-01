@@ -2,8 +2,8 @@
   "name": "terminal-canvas",
   "version": "3.0.2",
   "description": "Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/canvas/Canvas.js",
+  "types": "dist/canvas/Canvas.d.ts",
   "license": "MIT",
   "homepage": "https://github.com/ghaiklor/terminal-canvas#readme",
   "keywords": [
