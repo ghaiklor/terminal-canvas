@@ -220,7 +220,7 @@ describe('Canvas', () => {
     expect(canvas.cursorForeground).toEqual({ r: -1, g: -1, b: -1 });
     expect(canvas.foreground('white')).toBeInstanceOf(Canvas);
     expect(canvas.cursorForeground).toEqual({ r: 255, g: 255, b: 255 });
-    expect(canvas.foreground(false)).toBeInstanceOf(Canvas);
+    expect(canvas.foreground('none')).toBeInstanceOf(Canvas);
     expect(canvas.cursorForeground).toEqual({ r: -1, g: -1, b: -1 });
   });
 
@@ -230,7 +230,7 @@ describe('Canvas', () => {
     expect(canvas.cursorBackground).toEqual({ r: -1, g: -1, b: -1 });
     expect(canvas.background('black')).toBeInstanceOf(Canvas);
     expect(canvas.cursorBackground).toEqual({ r: 0, g: 0, b: 0 });
-    expect(canvas.background(false)).toBeInstanceOf(Canvas);
+    expect(canvas.background('none')).toBeInstanceOf(Canvas);
     expect(canvas.cursorBackground).toEqual({ r: -1, g: -1, b: -1 });
   });
 

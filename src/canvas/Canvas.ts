@@ -249,23 +249,16 @@ export class Canvas implements ICanvasOptions {
    * Set the foreground color.
    * This color is used when text is rendering.
    *
-   * @param {String|Boolean} color Color name, rgb, hex or false if you want to disable foreground filling
+   * @param {String} color Color name, rgb, hex or none if you want to disable foreground filling
    * @returns {Canvas}
    * @example
    * canvas.foreground('white');
    * canvas.foreground('#000000');
    * canvas.foreground('rgb(255, 255, 255)');
-   * canvas.foreground(false); // disables foreground filling (will be used default filling)
+   * canvas.foreground('none'); // disables foreground filling (will be used default filling)
    */
-  foreground(color: string | boolean): Canvas {
-    let newColor: IColor;
-    if (typeof color === 'string') {
-      newColor = Color.create(color).toRgb();
-    } else {
-      newColor = { r: -1, g: -1, b: -1 };
-    }
-
-    this.cursorForeground = newColor;
+  foreground(color: string): Canvas {
+    this.cursorForeground = color === 'none' ? { r: -1, g: -1, b: -1 } : Color.create(color).toRgb();
     return this;
   }
 
@@ -273,23 +266,16 @@ export class Canvas implements ICanvasOptions {
    * Set the background color.
    * This color is used for filling the whole cell in the TTY.
    *
-   * @param {String|Boolean} color Color name, rgb, hex or false if you want to disable background filling
+   * @param {String} color Color name, rgb, hex or none if you want to disable background filling
    * @returns {Canvas}
    * @example
    * canvas.background('white');
    * canvas.background('#000000');
    * canvas.background('rgb(255, 255, 255)');
-   * canvas.background(false); // disables background filling (will be used default filling)
+   * canvas.background('none'); // disables background filling (will be used default filling)
    */
-  background(color: string | boolean): Canvas {
-    let newColor: IColor;
-    if (typeof color === 'string') {
-      newColor = Color.create(color).toRgb();
-    } else {
-      newColor = { r: -1, g: -1, b: -1 };
-    }
-
-    this.cursorBackground = newColor;
+  background(color: string): Canvas {
+    this.cursorBackground = color === 'none' ? { r: -1, g: -1, b: -1 } : Color.create(color).toRgb();
     return this;
   }
 
