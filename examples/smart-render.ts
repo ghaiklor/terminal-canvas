@@ -1,4 +1,5 @@
-const Canvas = require('..');
+import { Canvas } from '..';
+
 const canvas = Canvas.create().reset();
 
 let x = 0;

@@ -1,4 +1,5 @@
-const Canvas = require('..');
+import { Canvas } from '..';
+
 const canvas = Canvas.create().reset().hideCursor();
 
 for (let y = 0; y < process.stdout.rows; y++) canvas.moveTo(0, y).write('E'.repeat(process.stdout.columns));

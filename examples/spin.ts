@@ -1,4 +1,5 @@
-const Canvas = require('..');
+import { Canvas } from '..';
+
 const canvas = Canvas.create().reset();
 const radius = 10;
 const colors = ['red', 'yellow', 'green', 'dark_cyan', 'blue', 'magenta'];

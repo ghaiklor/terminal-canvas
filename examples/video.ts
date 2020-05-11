@@ -1,14 +1,18 @@
-const ChopStream = require('chop-stream');
-const ffmpeg = require('fluent-ffmpeg');
-const Speaker = require('speaker');
-const Throttle = require('stream-throttle').Throttle;
-const ytdl = require('ytdl-core');
-const canvas = require('..').create();
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+import ChopStream from 'chop-stream';
 
-const YOUTUBE_URL = process.env.YOUTUBE_URL || 'https://www.youtube.com/watch?v=Hiqn1Ur32AE';
+import { Canvas } from '..';
+import { Throttle } from 'stream-throttle';
+import ffmpeg from 'fluent-ffmpeg';
+import Speaker from 'speaker';
+import ytdl, { videoInfo } from 'ytdl-core';
+
+const YOUTUBE_URL = process.env.YOUTUBE_URL ?? 'https://www.youtube.com/watch?v=Hiqn1Ur32AE';
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
+const canvas = Canvas.create().reset();
 
-function imageToAscii(data, width, height) {
+function imageToAscii(data: number[], width: number, height: number): string {
   const contrastFactor = 2.95;
   let ascii = '';
 
@@ -27,9 +31,12 @@ function imageToAscii(data, width, height) {
   return ascii;
 }
 
-function playVideo(info) {
-  const video = info.formats.filter(format => format.quality === 'tiny' && format.audioBitrate === null).sort((a) => a.container === 'webm' ? -1 : 1)[0];
-  const videoSize = { width: video.width, height: video.height };
+function playVideo(info: videoInfo): void {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const video = info.formats.find(format => format.quality === 'tiny' && format.container === 'webm' && format.audioChannels === undefined)!;
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const videoSize = { width: video.width!, height: video.height! };
   const frameHeight = Math.round(canvas.height * 2);
   const frameWidth = Math.round(frameHeight * (videoSize.width / videoSize.height));
   const frameSize = frameWidth * frameHeight * 3;
@@ -38,7 +45,7 @@ function playVideo(info) {
     .format('rawvideo')
     .videoFilters([
       { filter: 'fps', options: 30 },
-      { filter: 'scale', options: frameWidth + ':-1' }
+      { filter: 'scale', options: `${frameWidth}:-1` }
     ])
     .outputOptions('-pix_fmt', 'rgb24')
     .outputOptions('-update', '1')
@@ -46,14 +53,14 @@ function playVideo(info) {
     .on('end', () => canvas.restoreScreen())
     .pipe(new Throttle({ rate: frameSize * 30 }))
     .pipe(new ChopStream(frameSize))
-    .on('data', function (frameData) {
+    .on('data', function (frameData: number[]) {
       const ascii = imageToAscii(frameData, frameWidth, frameHeight);
 
       for (let y = 0; y < frameHeight; y++) {
         for (let x = 0; x < frameWidth; x++) {
           canvas
             .moveTo(x + (canvas.width / 2 - frameWidth / 2), y)
-            .write(ascii[y * frameWidth + x] || '');
+            .write(ascii[y * frameWidth + x] ?? '');
         }
       }
 
@@ -61,27 +68,26 @@ function playVideo(info) {
     });
 }
 
-function playAudio(info) {
-  const audio = info.formats.filter(format => format.quality === 'tiny').sort((a, b) => b.audioBitrate - a.audioBitrate)[0];
-  const speaker = new Speaker();
-  const updateSpeaker = codec => {
-    speaker.channels = codec.audio_details[2] === 'mono' ? 1 : 2;
-    speaker.sampleRate = parseInt(codec.audio_details[1].match(/\d+/)[0], 10);
-  };
+function playAudio(info: videoInfo): NodeJS.WritableStream {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const audio = info.formats.find(format => format.quality === 'tiny' && format.container === 'webm' && format.audioChannels === 2)!;
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  const speaker = new Speaker({ channels: 2, sampleRate: 44100 });
 
   return ffmpeg(audio.url)
     .noVideo()
     .audioCodec('pcm_s16le')
     .format('s16le')
-    .on('codecData', updateSpeaker)
     .pipe(speaker);
 }
 
-ytdl.getInfo(YOUTUBE_URL, (error, info) => {
-  if (error) return console.error(error);
+(async () => {
+  const info = await ytdl.getInfo(YOUTUBE_URL);
 
   playVideo(info);
   playAudio(info);
-});
+})().catch(error => console.error(error));
 
 process.on('SIGTERM', () => canvas.restoreScreen());
