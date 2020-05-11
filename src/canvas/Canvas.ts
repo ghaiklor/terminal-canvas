@@ -53,7 +53,10 @@ export class Canvas implements ICanvasOptions {
       this.height = options.height;
     }
 
-    this.cells = Array.from<Cell>({ length: this.width * this.height }).map(() => new Cell(' '));
+    this.cells = Array
+      .from<Cell>({ length: this.width * this.height })
+      .map((_, index) => new Cell(' ', { x: this.getXYFromPointer(index)[0], y: this.getXYFromPointer(index)[1] }));
+
     this.lastFrame = Array.from<string>({ length: this.width * this.height }).fill('');
   }
 

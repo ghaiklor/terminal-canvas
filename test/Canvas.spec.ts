@@ -56,6 +56,22 @@ describe('Canvas', () => {
     expect(canvas.height).toEqual(10);
   });
 
+  it('Should properly initialize the coordinates for the cells', () => {
+    const canvas = new Canvas({ width: 2, height: 2 });
+
+    expect(canvas.cells[0].x).toBe(0);
+    expect(canvas.cells[0].y).toBe(0);
+
+    expect(canvas.cells[1].x).toBe(1);
+    expect(canvas.cells[1].y).toBe(0);
+
+    expect(canvas.cells[2].x).toBe(0);
+    expect(canvas.cells[2].y).toBe(1);
+
+    expect(canvas.cells[3].x).toBe(1);
+    expect(canvas.cells[3].y).toBe(1);
+  });
+
   it('Should properly write to the canvas', () => {
     const canvas = new Canvas({ width: 20, height: 10 });
     expect(canvas.cells[0].getChar()).toEqual(' ');
