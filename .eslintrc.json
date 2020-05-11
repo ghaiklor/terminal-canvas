@@ -9,7 +9,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:import/recommended",
+    "plugin:import/typescript",
     "plugin:node/recommended",
     "plugin:promise/recommended",
     "standard-with-typescript"
@@ -25,35 +25,12 @@
     "project": "./tsconfig.eslint.json"
   },
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "import",
+    "node",
+    "promise"
   ],
   "rules": {
-    "semi": [
-      "error",
-      "always"
-    ],
-    "node/no-unsupported-features/es-syntax": [
-      "error",
-      {
-        "ignores": [
-          "modules"
-        ]
-      }
-    ],
-    "node/no-missing-import": [
-      "error",
-      {
-        "tryExtensions": [
-          ".js",
-          ".ts",
-          ".json",
-          ".node"
-        ]
-      }
-    ],
-    "import/no-unresolved": [
-      "off"
-    ],
     "@typescript-eslint/interface-name-prefix": [
       "error",
       {
@@ -66,42 +43,32 @@
         "allowNumber": true
       }
     ],
-    "space-before-function-paren": [
+    "@typescript-eslint/semi": [
+      "error",
+      "always"
+    ],
+    "node/no-missing-import": [
       "error",
       {
-        "named": "never"
+        "tryExtensions": [
+          ".js",
+          ".ts",
+          ".json",
+          ".node"
+        ]
       }
     ],
-    "@typescript-eslint/space-before-function-paren": [
+    "node/no-unsupported-features/es-syntax": [
       "error",
       {
-        "named": "never"
+        "ignores": [
+          "modules"
+        ]
       }
+    ],
+    "semi": [
+      "error",
+      "always"
     ]
-  },
-  "overrides": [
-    {
-      "files": [
-        "*.js"
-      ],
-      "rules": {
-        "@typescript-eslint/explicit-function-return-type": [
-          "off"
-        ]
-      }
-    },
-    {
-      "files": [
-        "examples/*.js"
-      ],
-      "rules": {
-        "@typescript-eslint/no-var-requires": [
-          "off"
-        ],
-        "node/no-missing-require": [
-          "off"
-        ]
-      }
-    }
-  ]
+  }
 }

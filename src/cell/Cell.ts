@@ -43,7 +43,7 @@ export class Cell implements ICellOptions {
    * @param {Boolean} [options.display.reverse] Reverse style
    * @param {Boolean} [options.display.hidden] Hidden style
    */
-  constructor(char: string, options?: Partial<ICellOptions>) {
+  constructor (char: string, options?: Partial<ICellOptions>) {
     this.setChar(char);
 
     if (options?.x !== undefined) {
@@ -72,7 +72,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {String}
    */
-  getChar(): string {
+  getChar (): string {
     return this.char;
   }
 
@@ -81,7 +81,7 @@ export class Cell implements ICellOptions {
    *
    * @param {String} char Char to update in the cell
    */
-  setChar(char: string): Cell {
+  setChar (char: string): Cell {
     this.char = char.slice(0, 1);
     return this;
   }
@@ -91,7 +91,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {Number}
    */
-  getX(): number {
+  getX (): number {
     return this.x;
   }
 
@@ -100,7 +100,7 @@ export class Cell implements ICellOptions {
    *
    * @param {Number} x X coordinate of the cell
    */
-  setX(x: number): Cell {
+  setX (x: number): Cell {
     this.x = Math.floor(x);
     return this;
   }
@@ -110,7 +110,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {Number}
    */
-  getY(): number {
+  getY (): number {
     return this.y;
   }
 
@@ -119,7 +119,7 @@ export class Cell implements ICellOptions {
    *
    * @param {Number} y Y coordinate of the cell
    */
-  setY(y: number): Cell {
+  setY (y: number): Cell {
     this.y = Math.floor(y);
     return this;
   }
@@ -129,7 +129,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {IColor}
    */
-  getBackground(): IColor {
+  getBackground (): IColor {
     return this.background;
   }
 
@@ -138,7 +138,7 @@ export class Cell implements ICellOptions {
    *
    * @param {IColor} background Color to set on the background of the cell
    */
-  setBackground(r: number, g: number, b: number): Cell {
+  setBackground (r: number, g: number, b: number): Cell {
     this.background = { r, g, b };
     return this;
   }
@@ -148,7 +148,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {Cell}
    */
-  resetBackground(): Cell {
+  resetBackground (): Cell {
     this.background = { r: -1, g: -1, b: -1 };
     return this;
   }
@@ -158,7 +158,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {IColor}
    */
-  getForeground(): IColor {
+  getForeground (): IColor {
     return this.foreground;
   }
 
@@ -167,7 +167,7 @@ export class Cell implements ICellOptions {
    *
    * @param {IColor} foreground Color to set on the foreground of the cell
    */
-  setForeground(r: number, g: number, b: number): Cell {
+  setForeground (r: number, g: number, b: number): Cell {
     this.foreground = { r, g, b };
     return this;
   }
@@ -177,7 +177,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {Cell}
    */
-  resetForeground(): Cell {
+  resetForeground (): Cell {
     this.foreground = { r: -1, g: -1, b: -1 };
     return this;
   }
@@ -187,7 +187,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {IDisplayOptions}
    */
-  getDisplay(): IDisplayOptions {
+  getDisplay (): IDisplayOptions {
     return this.display;
   }
 
@@ -196,7 +196,7 @@ export class Cell implements ICellOptions {
    *
    * @param {IDisplayOptions} display Options for the display characteristics of the character in cell
    */
-  setDisplay(display: Partial<IDisplayOptions>): Cell {
+  setDisplay (display: Partial<IDisplayOptions>): Cell {
     this.display = {
       bold: display.bold === undefined ? false : display.bold,
       dim: display.dim === undefined ? false : display.dim,
@@ -214,7 +214,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {Cell}
    */
-  resetDisplay(): Cell {
+  resetDisplay (): Cell {
     this.display = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
     return this;
   }
@@ -225,7 +225,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {Cell}
    */
-  reset(): Cell {
+  reset (): Cell {
     this.setChar(' ');
     this.resetBackground();
     this.resetForeground();
@@ -240,7 +240,7 @@ export class Cell implements ICellOptions {
    *
    * @returns {String}
    */
-  toString(): string {
+  toString (): string {
     return (
       encodeToVT100(`[${this.y + 1};${this.x + 1}f`) +
       (this.background.r > -1 ? encodeToVT100(`[48;2;${this.background.r};${this.background.g};${this.background.b}m`) : '') +
@@ -262,7 +262,7 @@ export class Cell implements ICellOptions {
    * @static
    * @returns {Cell}
    */
-  static create(char: string, options?: Partial<ICellOptions>): Cell {
+  static create (char: string, options?: Partial<ICellOptions>): Cell {
     return new this(char, options);
   }
 }

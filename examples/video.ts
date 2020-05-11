@@ -12,7 +12,7 @@ const YOUTUBE_URL = process.env.YOUTUBE_URL ?? 'https://www.youtube.com/watch?v=
 const CHARACTERS = ' .,:;i1tfLCG08@'.split('');
 const canvas = Canvas.create().reset();
 
-function imageToAscii(data: number[], width: number, height: number): string {
+function imageToAscii (data: number[], width: number, height: number): string {
   const contrastFactor = 2.95;
   let ascii = '';
 
@@ -31,7 +31,7 @@ function imageToAscii(data: number[], width: number, height: number): string {
   return ascii;
 }
 
-function playVideo(info: videoInfo): void {
+function playVideo (info: videoInfo): void {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const video = info.formats.find(format => format.quality === 'tiny' && format.container === 'webm' && format.audioChannels === undefined)!;
 
@@ -68,7 +68,7 @@ function playVideo(info: videoInfo): void {
     });
 }
 
-function playAudio(info: videoInfo): NodeJS.WritableStream {
+function playAudio (info: videoInfo): NodeJS.WritableStream {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const audio = info.formats.find(format => format.quality === 'tiny' && format.container === 'webm' && format.audioChannels === 2)!;
 
