@@ -70,5 +70,15 @@
       "error",
       "always"
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "examples/**/*"
+      ],
+      "rules": {
+        "node/no-missing-import": "off"
+      }
+    }
+  ]
 }
