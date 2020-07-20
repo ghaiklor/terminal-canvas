@@ -50,9 +50,8 @@ function playVideo (info: videoInfo): void {
             const g = frameData[offset + 1];
             const b = frameData[offset + 2];
 
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             canvas
-              .moveTo(x + (canvas.width / 2 - frameWidth / 2), y)
+              .moveTo(x + (canvas.width / 2 - frameWidth / 2), y + (canvas.height / 2 - frameHeight / 2))
               .background(`rgb(${r}, ${g}, ${b})`)
               .write(' ');
           }
@@ -68,7 +67,9 @@ function playVideo (info: videoInfo): void {
             const b = Math.max(0, Math.min(contrastFactor * (frameData[offset + 2] - 128) + 128, 255));
             const brightness = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
-            canvas.moveTo(x + (canvas.width / 2 - frameWidth / 2), y).write(CHARACTERS[Math.round(brightness * 14)]);
+            canvas
+              .moveTo(x + (canvas.width / 2 - frameWidth / 2), y + (canvas.height / 2 - frameHeight / 2))
+              .write(CHARACTERS[Math.round(brightness * 14)]);
           }
         }
       }
