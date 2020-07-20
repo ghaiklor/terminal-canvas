@@ -1,139 +1,167 @@
 import { Color } from '../src/color/Color';
 
-describe('Color', () => {
-  it('Should properly create Color instance from named color', () => {
+describe('color', () => {
+  it('should properly create Color instance from named color', () => {
+    expect.hasAssertions();
+
     const color = new Color('black');
 
-    expect(color.r).toEqual(0);
-    expect(color.g).toEqual(0);
-    expect(color.b).toEqual(0);
+    expect(color.r).toStrictEqual(0);
+    expect(color.g).toStrictEqual(0);
+    expect(color.b).toStrictEqual(0);
   });
 
-  it('Should properly create Color instance from RGB color', () => {
+  it('should properly create Color instance from RGB color', () => {
+    expect.hasAssertions();
+
     const color = new Color('rgb(0, 100, 200)');
 
-    expect(color.r).toEqual(0);
-    expect(color.g).toEqual(100);
-    expect(color.b).toEqual(200);
+    expect(color.r).toStrictEqual(0);
+    expect(color.g).toStrictEqual(100);
+    expect(color.b).toStrictEqual(200);
   });
 
-  it('Should properly create Color instance from HEX color', () => {
+  it('should properly create Color instance from HEX color', () => {
+    expect.hasAssertions();
+
     const color = new Color('#001020');
 
-    expect(color.r).toEqual(0);
-    expect(color.g).toEqual(16);
-    expect(color.b).toEqual(32);
+    expect(color.r).toStrictEqual(0);
+    expect(color.g).toStrictEqual(16);
+    expect(color.b).toStrictEqual(32);
   });
 
-  it('Should properly throw exception if color is not parsed', () => {
-    expect(() => new Color('false color')).toThrowError(new Error('Color false color can\'t be parsed'));
+  it('should properly throw exception if color is not parsed', () => {
+    expect.hasAssertions();
+    expect(() => new Color('false color')).toThrow(new Error('Color false color can\'t be parsed'));
   });
 
-  it('Should properly get/set red channel', () => {
+  it('should properly get/set red channel', () => {
+    expect.hasAssertions();
+
     const color = new Color('black');
 
-    expect(color.getR()).toEqual(0);
+    expect(color.getR()).toStrictEqual(0);
     expect(color.setR(20)).toBeInstanceOf(Color);
-    expect(color.getR()).toEqual(20);
+    expect(color.getR()).toStrictEqual(20);
     expect(color.setR(-50)).toBeInstanceOf(Color);
-    expect(color.getR()).toEqual(0);
+    expect(color.getR()).toStrictEqual(0);
     expect(color.setR(500)).toBeInstanceOf(Color);
-    expect(color.getR()).toEqual(255);
+    expect(color.getR()).toStrictEqual(255);
   });
 
-  it('Should properly get/set green channel', () => {
+  it('should properly get/set green channel', () => {
+    expect.hasAssertions();
+
     const color = new Color('black');
 
-    expect(color.getG()).toEqual(0);
+    expect(color.getG()).toStrictEqual(0);
     expect(color.setG(20)).toBeInstanceOf(Color);
-    expect(color.getG()).toEqual(20);
+    expect(color.getG()).toStrictEqual(20);
     expect(color.setG(-50)).toBeInstanceOf(Color);
-    expect(color.getG()).toEqual(0);
+    expect(color.getG()).toStrictEqual(0);
     expect(color.setG(500)).toBeInstanceOf(Color);
-    expect(color.getG()).toEqual(255);
+    expect(color.getG()).toStrictEqual(255);
   });
 
-  it('Should properly get/set blue channel', () => {
+  it('should properly get/set blue channel', () => {
+    expect.hasAssertions();
+
     const color = new Color('black');
 
-    expect(color.getB()).toEqual(0);
+    expect(color.getB()).toStrictEqual(0);
     expect(color.setB(20)).toBeInstanceOf(Color);
-    expect(color.getB()).toEqual(20);
+    expect(color.getB()).toStrictEqual(20);
     expect(color.setB(-50)).toBeInstanceOf(Color);
-    expect(color.getB()).toEqual(0);
+    expect(color.getB()).toStrictEqual(0);
     expect(color.setB(500)).toBeInstanceOf(Color);
-    expect(color.getB()).toEqual(255);
+    expect(color.getB()).toStrictEqual(255);
   });
 
-  it('Should properly return RGB object', () => {
+  it('should properly return RGB object', () => {
+    expect.hasAssertions();
+
     const color = new Color('black');
 
-    expect(color.toRgb()).toEqual({ r: 0, g: 0, b: 0 });
+    expect(color.toRgb()).toStrictEqual({ r: 0, g: 0, b: 0 });
     expect(color.setR(10)).toBeInstanceOf(Color);
     expect(color.setG(20)).toBeInstanceOf(Color);
     expect(color.setB(30)).toBeInstanceOf(Color);
-    expect(color.toRgb()).toEqual({ r: 10, g: 20, b: 30 });
+    expect(color.toRgb()).toStrictEqual({ r: 10, g: 20, b: 30 });
   });
 
-  it('Should properly return HEX string', () => {
+  it('should properly return HEX string', () => {
+    expect.hasAssertions();
+
     const color = new Color('black');
 
-    expect(color.toHex()).toEqual('#000000');
+    expect(color.toHex()).toStrictEqual('#000000');
     expect(color.setR(16)).toBeInstanceOf(Color);
     expect(color.setG(32)).toBeInstanceOf(Color);
     expect(color.setB(48)).toBeInstanceOf(Color);
-    expect(color.toHex()).toEqual('#102030');
+    expect(color.toHex()).toStrictEqual('#102030');
   });
 
-  it('Should properly check if color is named', () => {
-    expect(Color.isNamed('black')).toBeTruthy();
-    expect(Color.isNamed('BlAcK')).toBeTruthy();
-    expect(Color.isNamed('BLACK')).toBeTruthy();
-    expect(Color.isNamed('False Color')).toBeFalsy();
+  it('should properly check if color is named', () => {
+    expect.hasAssertions();
+    expect(Color.isNamed('black')).toBe(true);
+    expect(Color.isNamed('BlAcK')).toBe(true);
+    expect(Color.isNamed('BLACK')).toBe(true);
+    expect(Color.isNamed('False Color')).toBe(false);
   });
 
-  it('Should properly check if color in RGB', () => {
-    expect(Color.isRgb('rgb(0, 10, 20)')).toBeTruthy();
-    expect(Color.isRgb('RgB(0, 10, 50)')).toBeTruthy();
-    expect(Color.isRgb('False Color')).toBeFalsy();
+  it('should properly check if color in RGB', () => {
+    expect.hasAssertions();
+    expect(Color.isRgb('rgb(0, 10, 20)')).toBe(true);
+    expect(Color.isRgb('RgB(0, 10, 50)')).toBe(true);
+    expect(Color.isRgb('False Color')).toBe(false);
   });
 
-  it('Should properly check if color in HEX', () => {
-    expect(Color.isHex('#001020')).toBeTruthy();
-    expect(Color.isHex('#AABBCC')).toBeTruthy();
-    expect(Color.isHex('#aaBbdD')).toBeTruthy();
-    expect(Color.isHex('False Color')).toBeFalsy();
+  it('should properly check if color in HEX', () => {
+    expect.hasAssertions();
+    expect(Color.isHex('#001020')).toBe(true);
+    expect(Color.isHex('#AABBCC')).toBe(true);
+    expect(Color.isHex('#aaBbdD')).toBe(true);
+    expect(Color.isHex('False Color')).toBe(false);
   });
 
-  it('Should properly create color from RGB', () => {
+  it('should properly create color from RGB', () => {
+    expect.hasAssertions();
+
     const color = Color.fromRgb('rgb(10, 20, 30)');
 
-    expect(color.r).toEqual(10);
-    expect(color.g).toEqual(20);
-    expect(color.b).toEqual(30);
+    expect(color.r).toStrictEqual(10);
+    expect(color.g).toStrictEqual(20);
+    expect(color.b).toStrictEqual(30);
   });
 
-  it('Should properly throw an error if RGB pattern is incorrect', () => {
-    expect(() => Color.fromRgb('wrong rgb')).toThrowError('Unrecognized RGB pattern: wrong rgb');
+  it('should properly throw an error if RGB pattern is incorrect', () => {
+    expect.hasAssertions();
+    expect(() => Color.fromRgb('wrong rgb')).toThrow('Unrecognized RGB pattern: wrong rgb');
   });
 
-  it('Should properly create color from HEX', () => {
+  it('should properly create color from HEX', () => {
+    expect.hasAssertions();
+
     const color = Color.fromHex('#102030');
 
-    expect(color.r).toEqual(16);
-    expect(color.g).toEqual(32);
-    expect(color.b).toEqual(48);
+    expect(color.r).toStrictEqual(16);
+    expect(color.g).toStrictEqual(32);
+    expect(color.b).toStrictEqual(48);
   });
 
-  it('Should properly throw an error if HEX pattern is incorrect', () => {
-    expect(() => Color.fromHex('wrong hex')).toThrowError('Unrecognized HEX pattern: wrong hex');
+  it('should properly throw an error if HEX pattern is incorrect', () => {
+    expect.hasAssertions();
+    expect(() => Color.fromHex('wrong hex')).toThrow('Unrecognized HEX pattern: wrong hex');
   });
 
-  it('Should properly create Color instance from static create()', () => {
+  it('should properly create Color instance from static create()', () => {
+    expect.hasAssertions();
+
     const color = Color.create('black');
 
-    expect(color.r).toEqual(0);
-    expect(color.g).toEqual(0);
-    expect(color.b).toEqual(0);
+    expect(color.r).toStrictEqual(0);
+    expect(color.g).toStrictEqual(0);
+    expect(color.b).toStrictEqual(0);
   });
 });

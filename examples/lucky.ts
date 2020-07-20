@@ -10,11 +10,11 @@ setInterval(() => {
   let y = 0;
   let dy = 1;
 
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 40; i += 1) {
     const color = colors[(i + offset) % colors.length];
-    const c = text[(i + offset) % text.length];
+    const char = text[(i + offset) % text.length];
 
-    canvas.moveBy(1, dy).foreground(color).write(c);
+    canvas.moveBy(1, dy).foreground(color).write(char);
 
     y += dy;
 
@@ -22,5 +22,5 @@ setInterval(() => {
   }
 
   canvas.moveTo(0, 0).flush();
-  offset++;
+  offset += 1;
 }, 150);

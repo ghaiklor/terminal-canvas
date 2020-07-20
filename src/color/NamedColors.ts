@@ -1,7 +1,5 @@
 /**
  * Dictionary of all available named colors in terminal-canvas.
- *
- * @private
  */
 export const NAMED_COLORS = new Map<string, string>([
   ['ALICE_BLUE', '#F0F8FF'],
@@ -251,5 +249,5 @@ export const NAMED_COLORS = new Map<string, string>([
   ['WISTERIA', '#CDA4DE'],
   ['YELLOW_GREEN', '#C5E384'],
   ['YELLOW_ORANGE', '#FFAE42'],
-  ['YELLOW', '#FCE883']
+  ['YELLOW', '#FCE883'],
 ]);

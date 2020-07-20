@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "node"
-  - "lts/*"
+  - node
+  - lts/*
 script:
   - npm run all
 after_success:

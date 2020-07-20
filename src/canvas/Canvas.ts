@@ -1,9 +1,9 @@
-import { Cell } from '../cell/Cell';
 import { Color, IColor } from '../color/Color';
-import { encodeToVT100 } from '../encodeToVT100';
+import { Cell } from '../cell/Cell';
 import { ICanvasOptions } from './CanvasOptions';
 import { IDisplayOptions } from '../cell/DisplayOptions';
 import { WriteStream } from 'tty';
+import { encodeToVT100 } from '../encodeToVT100';
 
 /**
  * Canvas implements low-level API to terminal control codes.
@@ -16,16 +16,23 @@ import { WriteStream } from 'tty';
  * @since 1.0.0
  */
 export class Canvas implements ICanvasOptions {
-  stream: WriteStream = process.stdout;
-  width: number = this.stream.columns;
-  height: number = this.stream.rows;
-  cursorX = 0;
-  cursorY = 0;
-  cursorBackground: IColor = { r: -1, g: -1, b: -1 };
-  cursorForeground: IColor = { r: -1, g: -1, b: -1 };
-  cursorDisplay: IDisplayOptions = { bold: false, dim: false, underlined: false, blink: false, reverse: false, hidden: false };
-  cells: Cell[];
-  lastFrame: string[];
+  public readonly cells: Cell[];
+  public lastFrame: string[];
+  public stream: WriteStream = process.stdout;
+  public width: number;
+  public height: number;
+  public cursorX = 0;
+  public cursorY = 0;
+  public cursorBackground: IColor = { r: -1, g: -1, b: -1 };
+  public cursorForeground: IColor = { r: -1, g: -1, b: -1 };
+  public cursorDisplay: IDisplayOptions = {
+    blink: false,
+    bold: false,
+    dim: false,
+    hidden: false,
+    reverse: false,
+    underlined: false,
+  };
 
   /**
    * Creates canvas that writes direct to `stdout` by default.
@@ -40,16 +47,18 @@ export class Canvas implements ICanvasOptions {
    * @example
    * Canvas.create({stream: fs.createWriteStream(), width: 20, height: 20});
    */
-  constructor (options?: Partial<ICanvasOptions>) {
-    if (options?.stream !== undefined) {
+  public constructor (options?: Partial<ICanvasOptions>) {
+    if (typeof options?.stream !== 'undefined') {
       this.stream = options.stream;
     }
 
-    if (options?.width !== undefined) {
+    this.width = this.stream.columns;
+    if (typeof options?.width !== 'undefined') {
       this.width = options.width;
     }
 
-    if (options?.height !== undefined) {
+    this.height = this.stream.rows;
+    if (typeof options?.height !== 'undefined') {
       this.height = options.height;
     }
 
@@ -58,6 +67,16 @@ export class Canvas implements ICanvasOptions {
       .map((_, index) => new Cell(' ', { x: this.getXYFromPointer(index)[0], y: this.getXYFromPointer(index)[1] }));
 
     this.lastFrame = Array.from<string>({ length: this.width * this.height }).fill('');
+  }
+
+  /**
+   * Wrapper around `new Canvas()`.
+   *
+   * @static
+   * @returns {Canvas}
+   */
+  public static create (options?: Partial<ICanvasOptions>): Canvas {
+    return new this(options);
   }
 
   /**
@@ -70,15 +89,13 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.write('Hello, world').flush();
    */
-  write (data: string): Canvas {
-    const width = this.width;
-    const height = this.height;
+  public write (data: string): Canvas {
+    const { width, height } = this;
     const background = this.cursorBackground;
     const foreground = this.cursorForeground;
     const display = this.cursorDisplay;
 
-    for (let i = 0; i < data.length; i++) {
-      const char = data[i];
+    for (const char of data) {
       const x = this.cursorX;
       const y = this.cursorY;
       const pointer = this.getPointerFromXY(x, y);
@@ -95,7 +112,7 @@ export class Canvas implements ICanvasOptions {
         cell.isModified = true;
       }
 
-      this.cursorX++;
+      this.cursorX += 1;
     }
 
     return this;
@@ -109,10 +126,10 @@ export class Canvas implements ICanvasOptions {
    *
    * @returns {Canvas}
    */
-  flush (): Canvas {
+  public flush (): Canvas {
     let payload = '';
 
-    for (let i = 0; i < this.cells.length; i++) {
+    for (let i = 0; i < this.cells.length; i += 1) {
       const cell = this.cells[i];
 
       if (cell.isModified) {
@@ -141,7 +158,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.getPointerFromXY(0, 0); // returns 0
    * canvas.getPointerFromXY(); // x and y in this case is current position of the cursor
    */
-  getPointerFromXY (x = this.cursorX, y = this.cursorY): number {
+  public getPointerFromXY (x: number = this.cursorX, y: number = this.cursorY): number {
     return y * this.width + x;
   }
 
@@ -153,8 +170,8 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.getXYFromPointer(0); // returns [0, 0]
    */
-  getXYFromPointer (index: number): [number, number] {
-    return [index - (Math.floor(index / this.width) * this.width), Math.floor(index / this.width)];
+  public getXYFromPointer (index: number): [number, number] {
+    return [index - Math.floor(index / this.width) * this.width, Math.floor(index / this.width)];
   }
 
   /**
@@ -166,7 +183,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.up(); // moves cursor up by one cell
    * canvas.up(5); // moves cursor up by five cells
    */
-  up (y = 1): Canvas {
+  public up (y = 1): Canvas {
     this.cursorY -= Math.floor(y);
     return this;
   }
@@ -180,7 +197,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.down(); // moves cursor down by one cell
    * canvas.down(5); // moves cursor down by five cells
    */
-  down (y = 1): Canvas {
+  public down (y = 1): Canvas {
     this.cursorY += Math.floor(y);
     return this;
   }
@@ -194,7 +211,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.right(); // moves cursor right by one cell
    * canvas.right(5); // moves cursor right by five cells
    */
-  right (x = 1): Canvas {
+  public right (x = 1): Canvas {
     this.cursorX += Math.floor(x);
     return this;
   }
@@ -208,7 +225,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.left(); // moves cursor left by one cell
    * canvas.left(5); // moves cursor left by five cells
    */
-  left (x = 1): Canvas {
+  public left (x = 1): Canvas {
     this.cursorX -= Math.floor(x);
     return this;
   }
@@ -222,7 +239,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.moveBy(5, 5); // moves cursor to the right and down by five cells
    */
-  moveBy (x: number, y: number): Canvas {
+  public moveBy (x: number, y: number): Canvas {
     if (x < 0) this.left(-x);
     if (x > 0) this.right(x);
 
@@ -241,7 +258,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.moveTo(10, 10); // moves cursor to the (10, 10) coordinate
    */
-  moveTo (x: number, y: number): Canvas {
+  public moveTo (x: number, y: number): Canvas {
     this.cursorX = Math.floor(x);
     this.cursorY = Math.floor(y);
 
@@ -260,7 +277,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.foreground('rgb(255, 255, 255)');
    * canvas.foreground('none'); // disables foreground filling (will be used default filling)
    */
-  foreground (color: string): Canvas {
+  public foreground (color: string): Canvas {
     this.cursorForeground = color === 'none' ? { r: -1, g: -1, b: -1 } : Color.create(color).toRgb();
     return this;
   }
@@ -277,7 +294,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.background('rgb(255, 255, 255)');
    * canvas.background('none'); // disables background filling (will be used default filling)
    */
-  background (color: string): Canvas {
+  public background (color: string): Canvas {
     this.cursorBackground = color === 'none' ? { r: -1, g: -1, b: -1 } : Color.create(color).toRgb();
     return this;
   }
@@ -291,7 +308,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.bold(); // enable bold mode
    * canvas.bold(false); // disable bold mode
    */
-  bold (isBold = true): Canvas {
+  public bold (isBold = true): Canvas {
     this.cursorDisplay.bold = isBold;
     return this;
   }
@@ -305,7 +322,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.dim(); // enable dim mode
    * canvas.dim(false); // disable dim mode
    */
-  dim (isDim = true): Canvas {
+  public dim (isDim = true): Canvas {
     this.cursorDisplay.dim = isDim;
     return this;
   }
@@ -319,7 +336,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.underlined(); // enable underlined mode
    * canvas.underlined(false); // disable underlined mode
    */
-  underlined (isUnderlined = true): Canvas {
+  public underlined (isUnderlined = true): Canvas {
     this.cursorDisplay.underlined = isUnderlined;
     return this;
   }
@@ -333,7 +350,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.blink(); // enable blink mode
    * canvas.blink(false); // disable blink mode
    */
-  blink (isBlink = true): Canvas {
+  public blink (isBlink = true): Canvas {
     this.cursorDisplay.blink = isBlink;
     return this;
   }
@@ -347,7 +364,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.reverse(); // enable reverse mode
    * canvas.reverse(false); // disable reverse mode
    */
-  reverse (isReverse = true): Canvas {
+  public reverse (isReverse = true): Canvas {
     this.cursorDisplay.reverse = isReverse;
     return this;
   }
@@ -361,7 +378,7 @@ export class Canvas implements ICanvasOptions {
    * canvas.hidden(); // enable hidden mode
    * canvas.hidden(false); // disable hidden mode
    */
-  hidden (isHidden = true): Canvas {
+  public hidden (isHidden = true): Canvas {
     this.cursorDisplay.hidden = isHidden;
     return this;
   }
@@ -378,9 +395,9 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.erase(0, 0, 5, 5);
    */
-  erase (x1: number, y1: number, x2: number, y2: number): Canvas {
-    for (let y = y1; y <= y2; y++) {
-      for (let x = x1; x <= x2; x++) {
+  public erase (x1: number, y1: number, x2: number, y2: number): Canvas {
+    for (let y = y1; y <= y2; y += 1) {
+      for (let x = x1; x <= x2; x += 1) {
         const pointer = this.getPointerFromXY(x, y);
         this.cells[pointer]?.reset();
       }
@@ -396,7 +413,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToEnd();
    */
-  eraseToEnd (): Canvas {
+  public eraseToEnd (): Canvas {
     return this.erase(this.cursorX, this.cursorY, this.width - 1, this.cursorY);
   }
 
@@ -407,7 +424,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToStart();
    */
-  eraseToStart (): Canvas {
+  public eraseToStart (): Canvas {
     return this.erase(0, this.cursorY, this.cursorX, this.cursorY);
   }
 
@@ -418,7 +435,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToDown();
    */
-  eraseToDown (): Canvas {
+  public eraseToDown (): Canvas {
     return this.erase(0, this.cursorY, this.width - 1, this.height - 1);
   }
 
@@ -429,7 +446,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseToUp();
    */
-  eraseToUp (): Canvas {
+  public eraseToUp (): Canvas {
     return this.erase(0, 0, this.width - 1, this.cursorY);
   }
 
@@ -440,7 +457,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseLine();
    */
-  eraseLine (): Canvas {
+  public eraseLine (): Canvas {
     return this.erase(0, this.cursorY, this.width - 1, this.cursorY);
   }
 
@@ -451,7 +468,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.eraseScreen();
    */
-  eraseScreen (): Canvas {
+  public eraseScreen (): Canvas {
     return this.erase(0, 0, this.width - 1, this.height - 1);
   }
 
@@ -463,7 +480,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.saveScreen();
    */
-  saveScreen (): Canvas {
+  public saveScreen (): Canvas {
     this.stream.write(encodeToVT100('[?47h'));
     return this;
   }
@@ -476,7 +493,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.restoreScreen();
    */
-  restoreScreen (): Canvas {
+  public restoreScreen (): Canvas {
     this.stream.write(encodeToVT100('[?47l'));
     return this;
   }
@@ -489,7 +506,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.hideCursor();
    */
-  hideCursor (): Canvas {
+  public hideCursor (): Canvas {
     this.stream.write(encodeToVT100('[?25l'));
     return this;
   }
@@ -502,7 +519,7 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.showCursor();
    */
-  showCursor (): Canvas {
+  public showCursor (): Canvas {
     this.stream.write(encodeToVT100('[?25h'));
     return this;
   }
@@ -515,18 +532,8 @@ export class Canvas implements ICanvasOptions {
    * @example
    * canvas.reset();
    */
-  reset (): Canvas {
+  public reset (): Canvas {
     this.stream.write(encodeToVT100('c'));
     return this;
-  }
-
-  /**
-   * Wrapper around `new Canvas()`.
-   *
-   * @static
-   * @returns {Canvas}
-   */
-  static create (options?: Partial<ICanvasOptions>): Canvas {
-    return new this(options);
   }
 }

@@ -2,7 +2,7 @@
   "includeVersion": true,
   "mode": "file",
   "name": "terminal-canvas",
-  "out": "./docs",
+  "out": "docs",
   "readme": "README.md",
   "theme": "minimal"
 }

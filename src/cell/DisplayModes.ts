@@ -1,3 +1,5 @@
+/* eslint-disable sort-keys */
+
 export const DISPLAY_MODES = {
   RESET_ALL: 0,
   BOLD: 1,
@@ -11,5 +13,5 @@ export const DISPLAY_MODES = {
   RESET_UNDERLINED: 24,
   RESET_BLINK: 25,
   RESET_REVERSE: 27,
-  RESET_HIDDEN: 28
+  RESET_HIDDEN: 28,
 };
