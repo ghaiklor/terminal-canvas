@@ -1,6 +1,6 @@
 {
   "name": "terminal-canvas",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Manipulate the cursor in your terminal via high-performant, low-level, canvas-like API",
   "main": "dist/canvas/Canvas.js",
   "types": "dist/canvas/Canvas.d.ts",
