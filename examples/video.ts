@@ -23,10 +23,9 @@ function playVideo (info: videoInfo): void {
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const videoSize = { width: video.width!, height: video.height! }!;
-  const videoRatio = videoSize.width / videoSize.height;
-  const frameRatio = canvas.width / canvas.height;
-  const frameHeight = Math.round(videoRatio > 1 ? canvas.width / frameRatio : canvas.height);
-  const frameWidth = Math.round(videoRatio > 1 ? canvas.width : canvas.height * frameRatio);
+  const scale = Math.min(canvas.width / videoSize.width, canvas.height / videoSize.height);
+  const frameWidth = Math.floor(videoSize.width * scale);
+  const frameHeight = Math.floor(videoSize.height * scale);
   const frameSize = frameWidth * frameHeight * 3;
 
   ffmpeg(video.url)
