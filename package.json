@@ -56,10 +56,10 @@
   "devDependencies": {
     "@types/fluent-ffmpeg": "2.1.14",
     "@types/jest": "26.0.5",
-    "@types/node": "14.0.23",
+    "@types/node": "14.0.24",
     "@types/stream-throttle": "0.1.0",
-    "@typescript-eslint/eslint-plugin": "3.6.1",
-    "@typescript-eslint/parser": "3.6.1",
+    "@typescript-eslint/eslint-plugin": "3.7.0",
+    "@typescript-eslint/parser": "3.7.0",
     "chop-stream": "0.0.2",
     "eslint": "7.5.0",
     "eslint-config-standard": "14.1.1",
