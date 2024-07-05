@@ -71,7 +71,7 @@
     "eslint-plugin-standard": "4.0.1",
     "fluent-ffmpeg": "2.1.2",
     "git-cz": "4.7.0",
-    "jest": "26.1.0",
+    "jest": "29.7.0",
     "rimraf": "3.0.2",
     "speaker": "0.5.2",
     "stream-throttle": "0.1.3",
